@@ -241,22 +241,41 @@ write.xlsx(x = matrix(data = sapply(sort(c(SP1_WGC2Run, SP2_WGC_Run.dat$Whatman.
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Resolving extraction list issues
-# Wed Jul 19 11:14:21 2017
+# Fri Jul 21 12:17:05 2017
 
-## Resolving LW missing WGC issue
-# What Iris sent
-LW_WGC.dat$Whatman.Card..
+## Resolving SP issues
+# Fish in LOKI
+SP_WGC_LOKI <- read.csv(file = "Extraction Lists/KTROL17SP_GEN_SAMPLED_FISH_TISSUE.csv")
+str(SP_WGC_LOKI)
 
-# What is in LOKI
-LW_WGC_LOKI <- as.numeric(readClipboard())
 
-setdiff(LW_WGC.dat$Whatman.Card.., LW_WGC_LOKI)  # 8959 is missing from LOKI, but I wanted it extracted
-setdiff(LW_WGC_LOKI, LW_WGC.dat$Whatman.Card..)  # 7859 is in LOKI but not on Iris' sheet, run that card
+# What Iris sent that I picked
+SP_WGC2Run <- sort(c(SP1_WGC2Run, SP2_WGC_Run.dat$Whatman.Card..))
 
-## Resolving EW missing fish issue
-# Fish 1 on WGC 6248 is missing
-sort(EW_WGC2Run_171)
+setdiff(SP_WGC2Run, unique(SP_WGC_LOKI$DNA_TRAY_CODE))  # 4136 and 4140 do not exist, but 1000004136 and 1000004140 do, and they have the correct # of fish
 
-sort(setdiff(EW_WGC2Sample_171, EW_WGC2Run_171))
 
-# Use 6240 fish #1
+# Still one missing fish...
+SP_WGC_Run.dat <- rbind(SP1_WGC_Run.dat, SP2_WGC_Run.dat)
+SP_WGCFish_Iris <- setNames(object = SP_WGC_Run.dat$X..Tissues, nm = SP_WGC_Run.dat$Whatman.Card..)
+SP_WGCFish_LOKI <- table(SP_WGC_LOKI$DNA_TRAY_CODE)[as.character(SP_WGC_Run.dat$Whatman.Card..)]
+
+sum(SP_WGCFish_Iris); sum(SP_WGCFish_LOKI, na.rm = TRUE)
+
+cbind("Iris" = SP_WGCFish_Iris, "LOKI" = SP_WGCFish_LOKI)
+
+which(!SP_WGCFish_Iris == SP_WGCFish_LOKI)
+
+
+cbind("Iris" = SP_WGCFish_Iris, "LOKI" = SP_WGCFish_LOKI)[names(which(!SP_WGCFish_Iris == SP_WGCFish_LOKI)), ]
+# Lost 2 SP2 SO fish
+# Gained 1 SP2 NO fish
+
+# Adding 1 more SP1 NO fish to keep 1,900 total fish
+SP1_WGC2Run_171
+SP1_WGC2Sample_171
+
+setdiff(SP1_WGC2Sample_171, SP1_WGC2Run_171)
+
+SP1_WGC.dat[SP1_WGC.dat$Whatman.Card.. %in% setdiff(SP1_WGC2Sample_171, SP1_WGC2Run_171), ]
+# Grabbed the 1st fish from 1000004730 to get the extra fish.
