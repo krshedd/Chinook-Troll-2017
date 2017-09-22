@@ -292,7 +292,9 @@ sum(table(KTROL17MS.gcl$attributes$District))  # 479
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Save .gcl's with additional attributes data as back-up:
 # dir.create("Raw genotypes/OriginalCollections_Attributes")
-invisible(sapply(c(K119Mixtures, K120Mixtures), function(silly) {dput(x = get(paste0(silly, ".gcl")), file = paste0("Raw genotypes/OriginalCollections_Attributes/" , silly, ".txt"))} )); beep(8)
+invisible(sapply(c(K119Mixtures, K120Mixtures), function(silly) {
+  dput(x = get(paste0(silly, ".gcl")), file = paste0("Raw genotypes/OriginalCollections_Attributes/" , silly, ".txt"))
+} )); beep(8)
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -455,6 +457,10 @@ invisible(sapply(objects(pattern = ".vials"), function(obj) {
   dput(x = get(obj), file = paste0("Objects/Vials/", obj, ".txt"))
 } ))
 
+invisible(sapply(objects(pattern = "Mixtures"), function(obj) {
+  dput(x = get(obj), file = paste0("Objects/", obj, ".txt"))
+} ))
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Save .gcl's with additional attributes data as back-up:
 # dir.create("Raw genotypes/OriginalCollections_Attributes_Strata")
@@ -464,40 +470,192 @@ invisible(sapply(c(EWint_Mixtures, LWint_Mixtures, SpringRet1_Mixtures, SpringRe
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Clean workspace; dget .gcl objects and Locus Control ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+rm(list = ls(all = TRUE))
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
+# This sources all of the new GCL functions to this workspace
+source("C:/Users/krshedd/Documents/R/Functions.GCL.R")
+source("H:/R Source Scripts/Functions.GCL_KS.R")
+
+## Get objects
+SEAKobjects <- list.files(path = "Objects", recursive = FALSE)
+SEAKobjects <- SEAKobjects[-which(SEAKobjects == "Vials")]
+SEAKobjects
+
+invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Objects", objct, sep = "/")), pos = 1) })); beep(2)
+
+## Get un-altered mixtures
+invisible(sapply(c(EWint_Mixtures, LWint_Mixtures, SpringRet1_Mixtures, SpringRet2_Mixtures, TBR_Mixtures, MSF_Mixtures), function(silly) {assign(x = paste0(silly, ".gcl"), value = dget(file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata//", silly, ".txt")), pos = 1)} )); beep(2)
+objects(pattern = "\\.gcl")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Data QC/Massage ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 require(xlsx)
 
-KMA2014_2015Strata
+K119_K120_Strata <- c(EWint_Mixtures, LWint_Mixtures, SpringRet1_Mixtures, SpringRet2_Mixtures, TBR_Mixtures, MSF_Mixtures)
 
-KMA2014_2015Strata_SampleSizes <- matrix(data = NA, nrow = length(KMA2014_2015Strata), ncol = 5, 
-                                         dimnames = list(KMA2014_2015Strata, c("Genotyped", "Alternate", "Missing", "Duplicate", "Final")))
+K119_K120_Strata_SampleSizes <- matrix(data = NA, nrow = length(K119_K120_Strata), ncol = 4, 
+                                       dimnames = list(K119_K120_Strata, c("Genotyped", "Missing", "Duplicate", "Final")))
 
 #### Check loci
 ## Get sample size by locus
-Original_KMA2014_2015Strata_SampleSizebyLocus <- SampSizeByLocus.GCL(sillyvec = KMA2014_2015Strata, loci = loci48)
-min(Original_KMA2014_2015Strata_SampleSizebyLocus)  ## 267/285
-apply(Original_KMA2014_2015Strata_SampleSizebyLocus, 1, min) / apply(Original_KMA2014_2015Strata_SampleSizebyLocus, 1, max)  ## Good, 0.947
+Original_K119_K120_Strata_SampleSizebyLocus <- SampSizeByLocus.GCL(sillyvec = K119_K120_Strata, loci = GAPSLoci_reordered)
+min(Original_K119_K120_Strata_SampleSizebyLocus)  ## 40
+apply(Original_K119_K120_Strata_SampleSizebyLocus, 1, min) / apply(Original_K119_K120_Strata_SampleSizebyLocus, 1, max)  ## Good, 0.935
 
-Original_KMA2014_2015Strata_PercentbyLocus <- apply(Original_KMA2014_2015Strata_SampleSizebyLocus, 1, function(row) {row / max(row)} )
-which(apply(Original_KMA2014_2015Strata_PercentbyLocus, 2, min) < 0.8)  # no re-runs!
+Original_K119_K120_Strata_PercentbyLocus <- apply(Original_K119_K120_Strata_SampleSizebyLocus, 1, function(row) {row / max(row)} )
+which(apply(Original_K119_K120_Strata_PercentbyLocus, 2, min) < 0.8)  # no re-runs!
 
 require(lattice)
 new.colors <- colorRampPalette(c("black", "white"))
-levelplot(t(Original_KMA2014_2015Strata_PercentbyLocus), 
+levelplot(t(Original_K119_K120_Strata_PercentbyLocus), 
           col.regions = new.colors, 
           at = seq(from = 0, to = 1, length.out = 100), 
           main = "% Genotyped", xlab = "SILLY", ylab = "Locus", 
           scales = list(x = list(rot = 90)), 
           aspect = "fill")  # aspect = "iso" will make squares
 
-
 #### Check individuals
-## View Histogram of Failure Rate by Strata
-invisible(sapply(KMA2014_2015Strata, function(mix) {
-  my.gcl <- get(paste(mix, ".gcl", sep = ''))
-  failure <- apply(my.gcl$scores[, , 1], 1, function(ind) {sum(ind == "0") / length(ind)} )
-  hist(x = failure, main = mix, xlab = "Failure Rate", col = 8, xlim = c(0, 1), ylim = c(0, 20), breaks = seq(from = 0, to = 1, by = 0.02))
-  abline(v = 0.2, lwd = 3)
-}))
+### Initial
+## Get number of individuals per silly before removing missing loci individuals
+Original_K119_K120_Strata_ColSize <- sapply(paste0(K119_K120_Strata, ".gcl"), function(x) get(x)$n)
+K119_K120_Strata_SampleSizes[, "Genotyped"] <- Original_K119_K120_Strata_ColSize
+
+### Missing
+## Remove individuals with >20% missing data
+K119_K120_Strata_MissLoci <- RemoveIndMissLoci.GCL(sillyvec = K119_K120_Strata, proportion = 0.8)
+dput(x = K119_K120_Strata_MissLoci, file = "Objects/K119_K120_Strata_MissLoci.txt")
+
+## Get number of individuals per silly after removing missing loci individuals
+ColSize_K119_K120_Strata_PostMissLoci <- sapply(paste0(K119_K120_Strata, ".gcl"), function(x) get(x)$n)
+K119_K120_Strata_SampleSizes[, "Missing"] <- Original_K119_K120_Strata_ColSize - ColSize_K119_K120_Strata_PostMissLoci
+
+### Duplicate
+## Check within collections for duplicate individuals.
+K119_K120_Strata_DuplicateCheck95MinProportion <- CheckDupWithinSilly.GCL(sillyvec = K119_K120_Strata, loci = GAPSLoci_reordered, quantile = NULL, minproportion = 0.95)
+K119_K120_Strata_DuplicateCheckReportSummary <- sapply(K119_K120_Strata, function(x) K119_K120_Strata_DuplicateCheck95MinProportion[[x]]$report)
+K119_K120_Strata_DuplicateCheckReportSummary
+dput(x = K119_K120_Strata_DuplicateCheckReportSummary, file = "Objects/K119_K120_Strata_DuplicateCheckReportSummary.txt")
+
+## Remove duplicate individuals
+K119_K120_Strata_RemovedDups <- RemoveDups.GCL(K119_K120_Strata_DuplicateCheck95MinProportion)
+
+## Get number of individuals per silly after removing duplicate individuals
+ColSize_K119_K120_Strata_PostDuplicate <- sapply(paste0(K119_K120_Strata, ".gcl"), function(x) get(x)$n)
+K119_K120_Strata_SampleSizes[, "Duplicate"] <- ColSize_K119_K120_Strata_PostMissLoci-ColSize_K119_K120_Strata_PostDuplicate
+
+### Final
+K119_K120_Strata_SampleSizes[, "Final"] <- ColSize_K119_K120_Strata_PostDuplicate
+K119_K120_Strata_SampleSizes
+
+# dir.create("Output")
+write.xlsx(K119_K120_Strata_SampleSizes, file = "Output/K119_K120_Strata_SampleSizes.xlsx")
+dput(x = K119_K120_Strata_SampleSizes, file = "Objects/K119_K120_Strata_SampleSizes.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Save PostQC .gcl's as back-up:
+# dir.create("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC")
+invisible(sapply(K119_K120_Strata, function(silly) {
+  dput(x = get(paste(silly, ".gcl", sep = '')), file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/" , silly, ".txt"))
+} )); beep(8)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Clean workspace; dget .gcl objects and Locus Control ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+rm(list = ls(all = TRUE))
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
+# This sources all of the new GCL functions to this workspace
+source("C:/Users/krshedd/Documents/R/Functions.GCL.R")
+source("H:/R Source Scripts/Functions.GCL_KS.R")
+
+## Get objects
+SEAKobjects <- list.files(path = "Objects", recursive = FALSE)
+SEAKobjects <- SEAKobjects[-which(SEAKobjects == "Vials")]
+SEAKobjects
+
+invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Objects", objct, sep = "/")), pos = 1) })); beep(2)
+
+## Get un-altered mixtures
+invisible(sapply(K119_K120_Strata, function(silly) {assign(x = paste0(silly, ".gcl"), value = dget(file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/", silly, ".txt")), pos = 1)} )); beep(2)
+objects(pattern = "\\.gcl")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Get/Create MSA Objects ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# dir.create(path = "BAYES")
+# sapply(c("Control", "Mixture", "Output"), function(folder) {dir.create(path = paste("BAYES", folder, sep = "/"))} )
+
+file.copy(from = "V:/Analysis/1_SEAK/Chinook/Baseline/GAPS3.0/Objects/SEAKPops357.txt", to = "Objects")
+file.copy(from = "V:/Analysis/1_SEAK/Chinook/Baseline/GAPS3.0/Objects/bayesfortran_357.txt", to = "Objects")
+# dir.create("BAYES/Baseline")
+file.copy(from = "V:/Analysis/1_SEAK/Chinook/Baseline/GAPS3.0/BAYES/Baseline/GAPS357pops13loci.bse", to = "BAYES/Baseline")
+file.copy(from = "V:/Analysis/4_Westward/Sockeye/KMA Commercial Harvest 2014-2016/Mixtures/Objects/WASSIPSockeyeSeeds.txt", to = "Objects")
+GAPS357PopsInits <- MultiChainInits.GCL(npops = 357, nchains = 5, prop = 0.9)
+dput(x = GAPS357PopsInits, file = "Objects/GAPS357PopsInits.txt")
+GroupNames5 <- c("Taku", "Andrew", "Stikine", "SSEAK", "Other")
+dput(x = GroupNames5, file = "Objects/GroupNames5.txt")
+GroupVec5RG_357 <- as.numeric(readClipboard())
+dput(x = GroupVec5RG_357, file = "Objects/GroupVec5RG_357.txt")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Dumping Mixture Files
+mixfortran <- CreateMixture.GCL(sillys = "EWintNO_2017", loci = GAPSLoci_reordered, IDs = NULL, mixname = "EWintNO_2017", dir = "BAYES/Mixture", type = "BAYES", PT = FALSE)
+dput(x = mixfortran, file = "Objects/mixfortran.txt")
+
+sapply(K119_K120_Strata, function(Mix) {
+  CreateMixture.GCL(sillys = Mix, loci = GAPSLoci_reordered, IDs = NULL, mixname = Mix, dir = "BAYES//Mixture", type = "BAYES", PT = FALSE)
+} )
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Create Priors
+Winter_Spring_Troll_Strata_Priors <- apply(read.table(file = "Associated Data/2016WinterSpringTroll26RGEstimates.txt", header = TRUE), 2, function(mix) {
+  Prior.GCL(groupvec = GroupVec26RG_357, groupweights = mix, minval = 0.01)
+} )
+Winter_Spring_Troll_Strata_Priors <- cbind(Winter_Spring_Troll_Strata_Priors, Winter_Spring_Troll_Strata_Priors[, 5:8])
+colnames(Winter_Spring_Troll_Strata_Priors) <- c(EWint_Mixtures, LWint_Mixtures, SpringRet1_Mixtures, SpringRet2_Mixtures)
+dput(x = Winter_Spring_Troll_Strata_Priors, file = "Objects/Winter_Spring_Troll_Strata_Priors.txt")
+
+
+TBR_Strata_Priors <- apply(read.table(file = "Associated Data/2016D108D111TBR5RGEstimates.txt", header = TRUE), 2, function(mix) {
+  Prior.GCL(groupvec = GroupVec26RG_357, groupweights = mix, minval = 0.01)
+} )
+colnames(TBR_Strata_Priors) <- TBR_Mixtures
+dput(x = TBR_Strata_Priors, file = "Objects/TBR_Strata_Priors.txt")
+
+
+GAPS357Pops26FlatPrior <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = rep(1 / 26, 26), minval = 0.01)
+dput(x = GAPS357Pops26FlatPrior, file = "Objects/GAPS357Pops26FlatPrior.txt")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Dumping Control files
+sapply(c(EWint_Mixtures, LWint_Mixtures, SpringRet1_Mixtures, SpringRet2_Mixtures), function(Mix) {
+  CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname = Mix, basename = "GAPS357pops13loci", suffix = "", nreps = 40000, nchains = 5,
+                        groupvec = GroupVec26RG_357, priorvec = Winter_Spring_Troll_Strata_Priors[, Mix], initmat = GAPS357PopsInits, dir = "BAYES/Control",
+                        seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), mixfortran = mixfortran, basefortran = bayesfortran_357, switches = "F T F T T T F")
+} )
+
+sapply(TBR_Mixtures, function(Mix) {
+  CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname = Mix, basename = "GAPS357pops13loci", suffix = "", nreps = 40000, nchains = 5,
+                        groupvec = GroupVec5RG_357, priorvec = TBR_Strata_Priors[, Mix], initmat = GAPS357PopsInits, dir = "BAYES/Control",
+                        seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), mixfortran = mixfortran, basefortran = bayesfortran_357, switches = "F T F T T T F")
+} )
+
+sapply(MSF_Mixtures, function(Mix) {
+  CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname = Mix, basename = "GAPS357pops13loci", suffix = "", nreps = 40000, nchains = 5,
+                        groupvec = GroupVec26RG_357, priorvec = GAPS357Pops26FlatPrior, initmat = GAPS357PopsInits, dir = "BAYES/Control",
+                        seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), mixfortran = mixfortran, basefortran = bayesfortran_357, switches = "F T F T T T F")
+} )
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Create output directories
+sapply(K119_K120_Strata, function(Mix) {dir.create(paste0("BAYES//Output/", Mix))} )
