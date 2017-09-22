@@ -93,6 +93,7 @@ source("H:/R Source Scripts/Functions.GCL_KS.R")
 
 ## Get objects
 SEAKobjects <- list.files(path = "Objects", recursive = FALSE)
+SEAKobjects <- SEAKobjects[-which(SEAKobjects == "Vials" | SEAKobjects == "OLD_BAD_LOCUSCONTROL")]
 SEAKobjects
 
 invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Objects", objct, sep = "/")), pos = 1) })); beep(2)
@@ -312,6 +313,8 @@ EWintNISISO_2017.vials <- setNames(object = list(AttributesToIDs.GCL(silly = "KT
 PoolCollections.GCL(collections = "KTROL16EW", loci = GAPSLoci_reordered, IDs = EWintNISISO_2017.vials, newname = "EWintNISISO_2017")
 
 sapply(grep(pattern = "EWint", objects(pattern = "\\.gcl"), value = TRUE), function(silly) {get(silly)$n})
+# EWintNISISO_2017.gcl     EWintNO_2017.gcl 
+#                   85                  286 
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -327,6 +330,8 @@ LWintNISISO_2017.vials <- setNames(object = list(AttributesToIDs.GCL(silly = "KT
 PoolCollections.GCL(collections = "KTROL17LW", loci = GAPSLoci_reordered, IDs = LWintNISISO_2017.vials, newname = "LWintNISISO_2017")
 
 sapply(grep(pattern = "LWint", objects(pattern = "\\.gcl"), value = TRUE), function(silly) {get(silly)$n})
+# LWintNISISO_2017.gcl     LWintNO_2017.gcl 
+#                  198                  301 
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -375,6 +380,8 @@ SpringRet2SO_2017.vials <- setNames(object = list(intersect(AttributesToIDs.GCL(
 PoolCollections.GCL(collections = "KTROL17SP", loci = GAPSLoci_reordered, IDs = SpringRet2SO_2017.vials, newname = "SpringRet2SO_2017")
 
 sapply(grep(pattern = "Spring", objects(pattern = "\\.gcl"), value = TRUE), function(silly) {get(silly)$n})
+# SpringRet1NI_2017.gcl SpringRet1NO_2017.gcl SpringRet1SI_2017.gcl SpringRet1SO_2017.gcl SpringRet2NI_2017.gcl SpringRet2NO_2017.gcl SpringRet2SI_2017.gcl SpringRet2SO_2017.gcl
+#                    89                   221                   204                    41                    62                   166                   165                    62
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -409,6 +416,8 @@ D111Sport_2017.vials <- setNames(object = list(intersect(AttributesToIDs.GCL(sil
 PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = D111Sport_2017.vials, newname = "D111Sport_2017")
 
 sapply(grep(pattern = "Sport", objects(pattern = "\\.gcl"), value = TRUE), function(silly) {get(silly)$n})
+# D108Sport_2017.gcl D111Sport_2017.gcl 
+#                154                162 
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -435,6 +444,8 @@ MarkSelectNISI_2017.vials <- setNames(object = list(AttributesToIDs.GCL(silly = 
 PoolCollections.GCL(collections = "KTROL17MS", loci = GAPSLoci_reordered, IDs = MarkSelectNISI_2017.vials, newname = "MarkSelectNISI_2017")
 
 sapply(grep(pattern = "MarkSelect", objects(pattern = "\\.gcl"), value = TRUE), function(silly) {get(silly)$n})
+# MarkSelect_2016.gcl MarkSelectNISI_2017.gcl   MarkSelectNO_2017.gcl   MarkSelectSO_2017.gcl 
+#                 114                     107                     152                     220 
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -481,13 +492,13 @@ source("H:/R Source Scripts/Functions.GCL_KS.R")
 
 ## Get objects
 SEAKobjects <- list.files(path = "Objects", recursive = FALSE)
-SEAKobjects <- SEAKobjects[-which(SEAKobjects == "Vials")]
+SEAKobjects <- SEAKobjects[-which(SEAKobjects == "Vials" | SEAKobjects == "OLD_BAD_LOCUSCONTROL")]
 SEAKobjects
 
 invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Objects", objct, sep = "/")), pos = 1) })); beep(2)
 
 ## Get un-altered mixtures
-invisible(sapply(c(EWint_Mixtures, LWint_Mixtures, SpringRet1_Mixtures, SpringRet2_Mixtures, TBR_Mixtures, MSF_Mixtures), function(silly) {assign(x = paste0(silly, ".gcl"), value = dget(file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata//", silly, ".txt")), pos = 1)} )); beep(2)
+invisible(sapply(c(EWint_Mixtures, LWint_Mixtures, SpringRet1_Mixtures, SpringRet2_Mixtures, TBR_Mixtures, MSF_Mixtures), function(silly) {assign(x = paste0(silly, ".gcl"), value = dget(file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata/", silly, ".txt")), pos = 1)} )); beep(2)
 objects(pattern = "\\.gcl")
 
 
@@ -498,6 +509,7 @@ objects(pattern = "\\.gcl")
 require(xlsx)
 
 K119_K120_Strata <- c(EWint_Mixtures, LWint_Mixtures, SpringRet1_Mixtures, SpringRet2_Mixtures, TBR_Mixtures, MSF_Mixtures)
+dput(x = K119_K120_Strata, file = "Objects/K119_K120_Strata.txt")
 
 K119_K120_Strata_SampleSizes <- matrix(data = NA, nrow = length(K119_K120_Strata), ncol = 4, 
                                        dimnames = list(K119_K120_Strata, c("Genotyped", "Missing", "Duplicate", "Final")))
@@ -578,7 +590,7 @@ source("H:/R Source Scripts/Functions.GCL_KS.R")
 
 ## Get objects
 SEAKobjects <- list.files(path = "Objects", recursive = FALSE)
-SEAKobjects <- SEAKobjects[-which(SEAKobjects == "Vials")]
+SEAKobjects <- SEAKobjects[-which(SEAKobjects == "Vials" | SEAKobjects == "OLD_BAD_LOCUSCONTROL")]
 SEAKobjects
 
 invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Objects", objct, sep = "/")), pos = 1) })); beep(2)
@@ -659,3 +671,52 @@ sapply(MSF_Mixtures, function(Mix) {
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Create output directories
 sapply(K119_K120_Strata, function(Mix) {dir.create(paste0("BAYES//Output/", Mix))} )
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Missing allele in MarkSelectSO_2017 ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GAPS357pops13loci <- read.table(file = "BAYES/Baseline/GAPS357pops13loci.bse")
+str(GAPS357pops13loci)
+
+by(GAPS357pops13loci[, 4:73], GAPS357pops13loci[, 2], colSums)  # stupid format
+GAPS357pops13loci.df <- aggregate(x = GAPS357pops13loci[, -c(1:3)], by = list(GAPS357pops13loci$V2), FUN = sum)
+str(GAPS357pops13loci.df)
+GAPS357pops13loci.df <- GAPS357pops13loci.df[, -1]
+rownames(GAPS357pops13loci.df) <- GAPSLoci_reordered
+colnames(GAPS357pops13loci.df) <- paste("Allele", 1:70)
+
+str(MarkSelectSO_2017.gcl$counts)
+MarkSelectSO_2017.gcl$counts[1, , ]
+
+# Do any fish from MarkSelectSO_2017 have an allele that doesn't exist in the baseline?
+any(apply(MarkSelectSO_2017.gcl$counts[, , ], 1, function(ind) {
+  any(which(ind > 0) %in% which(GAPS357pops13loci.df[, -1] == 0))
+} ))
+
+# Which fish is it?
+which(apply(MarkSelectSO_2017.gcl$counts[, , ], 1, function(ind) {
+  any(which(ind > 0) %in% which(GAPS357pops13loci.df[, -1] == 0))
+} ))  # Fish "212", 211 index
+
+which(MarkSelectSO_2017.gcl$counts["212", , ] > 0) %in% which(GAPS357pops13loci.df[, -1] == 0)  # final allele
+which(MarkSelectSO_2017.gcl$counts["212", , ] > 0)[which(MarkSelectSO_2017.gcl$counts["212", , ] > 0) %in% which(GAPS357pops13loci.df[, -1] == 0)]  # 660
+
+MarkSelectSO_2017.gcl$counts["212", , ][660]
+k <- arrayInd(ind = 660, .dim = dim(MarkSelectSO_2017.gcl$counts["212", , ]))
+GAPSLoci_reordered[k[, 1]]  # Oki100v1
+
+MarkSelectSO_2017.gcl$scores["212", GAPSLoci_reordered[k[, 1]], ]
+# Dose_1 Dose_2 
+#  "268"  "365" 
+
+LocusControl$alleles[GAPSLoci_reordered[k[, 1]]]
+
+MarkSelectSO_2017.gcl$counts["212", k[, 1], ]
+MarkSelectSO_2017.gcl$scores["212", k[, 1], ]
+which(LocusControl$alleles[[GAPSLoci_reordered[k[, 1]]]] == "268")
+which(LocusControl$alleles[[GAPSLoci_reordered[k[, 1]]]] == "365")
+
+GAPS357pops13loci.df[GAPSLoci_reordered[k[, 1]], ]
+
+# Summary: Lost one fish ("212") from MarkSelectSO_2017 due to the presence of an unseen allele, specifically Allele 51 ("365") for Oki100v1
