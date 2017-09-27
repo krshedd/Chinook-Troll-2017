@@ -617,6 +617,14 @@ GroupNames5 <- c("Taku", "Andrew", "Stikine", "SSEAK", "Other")
 dput(x = GroupNames5, file = "Objects/GroupNames5.txt")
 GroupVec5RG_357 <- as.numeric(readClipboard())
 dput(x = GroupVec5RG_357, file = "Objects/GroupVec5RG_357.txt")
+GroupNames3 <- c("TakuStikine", "Andrew", "Other")
+dput(x = GroupNames3, file = "Objects/GroupNames3.txt")
+GroupVec3 <- c(1, 2, 1, 3, 3)
+dput(x = GroupVec3, file = "Objects/GroupVec3.txt")
+GroupNames2 <- c("TakuStikine", "Other")
+dput(x = GroupNames2, file = "Objects/GroupNames2.txt")
+GroupVec2 <- c(1, 2, 1, 2, 2)
+dput(x = GroupVec2, file = "Objects/GroupVec2.txt")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Dumping Mixture Files
@@ -639,7 +647,7 @@ dput(x = Winter_Spring_Troll_Strata_Priors, file = "Objects/Winter_Spring_Troll_
 
 
 TBR_Strata_Priors <- apply(read.table(file = "Associated Data/2016D108D111TBR5RGEstimates.txt", header = TRUE), 2, function(mix) {
-  Prior.GCL(groupvec = GroupVec26RG_357, groupweights = mix, minval = 0.01)
+  Prior.GCL(groupvec = GroupVec5RG_357, groupweights = mix, minval = 0.01)
 } )
 colnames(TBR_Strata_Priors) <- TBR_Mixtures
 dput(x = TBR_Strata_Priors, file = "Objects/TBR_Strata_Priors.txt")
@@ -676,6 +684,7 @@ sapply(K119_K120_Strata, function(Mix) {dir.create(paste0("BAYES//Output/", Mix)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Missing allele in MarkSelectSO_2017 ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Read in baseline
 GAPS357pops13loci <- read.table(file = "BAYES/Baseline/GAPS357pops13loci.bse")
 str(GAPS357pops13loci)
 
@@ -689,18 +698,19 @@ colnames(GAPS357pops13loci.df) <- paste("Allele", 1:70)
 str(MarkSelectSO_2017.gcl$counts)
 MarkSelectSO_2017.gcl$counts[1, , ]
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Do any fish from MarkSelectSO_2017 have an allele that doesn't exist in the baseline?
 any(apply(MarkSelectSO_2017.gcl$counts[, , ], 1, function(ind) {
-  any(which(ind > 0) %in% which(GAPS357pops13loci.df[, -1] == 0))
+  any(which(ind > 0) %in% which(GAPS357pops13loci.df == 0))
 } ))
 
 # Which fish is it?
 which(apply(MarkSelectSO_2017.gcl$counts[, , ], 1, function(ind) {
-  any(which(ind > 0) %in% which(GAPS357pops13loci.df[, -1] == 0))
+  any(which(ind > 0) %in% which(GAPS357pops13loci.df == 0))
 } ))  # Fish "212", 211 index
 
-which(MarkSelectSO_2017.gcl$counts["212", , ] > 0) %in% which(GAPS357pops13loci.df[, -1] == 0)  # final allele
-which(MarkSelectSO_2017.gcl$counts["212", , ] > 0)[which(MarkSelectSO_2017.gcl$counts["212", , ] > 0) %in% which(GAPS357pops13loci.df[, -1] == 0)]  # 660
+which(MarkSelectSO_2017.gcl$counts["212", , ] > 0) %in% which(GAPS357pops13loci.df == 0)  # final allele
+which(MarkSelectSO_2017.gcl$counts["212", , ] > 0)[which(MarkSelectSO_2017.gcl$counts["212", , ] > 0) %in% which(GAPS357pops13loci.df == 0)]  # 660
 
 MarkSelectSO_2017.gcl$counts["212", , ][660]
 k <- arrayInd(ind = 660, .dim = dim(MarkSelectSO_2017.gcl$counts["212", , ]))
@@ -720,3 +730,856 @@ which(LocusControl$alleles[[GAPSLoci_reordered[k[, 1]]]] == "365")
 GAPS357pops13loci.df[GAPSLoci_reordered[k[, 1]], ]
 
 # Summary: Lost one fish ("212") from MarkSelectSO_2017 due to the presence of an unseen allele, specifically Allele 51 ("365") for Oki100v1
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Do any fish from MarkSelectSO_2017 have an allele that doesn't exist in the baseline?
+any(apply(SpringRet2NO_2017.gcl$counts[, , ], 1, function(ind) {
+  any(which(ind > 0) %in% which(GAPS357pops13loci.df == 0))
+} ))
+
+# Which fish is it?
+which(apply(SpringRet2NO_2017.gcl$counts[, , ], 1, function(ind) {
+  any(which(ind > 0) %in% which(GAPS357pops13loci.df == 0))
+} ))  # Fish "3", 3 index
+
+which(SpringRet2NO_2017.gcl$counts["3", , ] > 0) %in% which(GAPS357pops13loci.df == 0)  # final allele
+which(SpringRet2NO_2017.gcl$counts["3", , ] > 0)[which(SpringRet2NO_2017.gcl$counts["3", , ] > 0) %in% which(GAPS357pops13loci.df == 0)]  # 23
+
+SpringRet2NO_2017.gcl$counts["3", , ][23]
+k <- arrayInd(ind = 23, .dim = dim(SpringRet2NO_2017.gcl$counts["3", , ]))
+GAPSLoci_reordered[k[, 1]]  # Oki100v1
+
+SpringRet2NO_2017.gcl$scores["3", GAPSLoci_reordered[k[, 1]], ]
+# Dose_1 Dose_2 
+#  "176"  "248" 
+
+LocusControl$alleles[GAPSLoci_reordered[k[, 1]]]
+
+SpringRet2NO_2017.gcl$counts["3", k[, 1], ]
+SpringRet2NO_2017.gcl$scores["3", k[, 1], ]
+which(LocusControl$alleles[[GAPSLoci_reordered[k[, 1]]]] == "176")
+which(LocusControl$alleles[[GAPSLoci_reordered[k[, 1]]]] == "248")
+
+GAPS357pops13loci.df[GAPSLoci_reordered[k[, 1]], ]
+
+# Summary: Lost one fish ("3") from SpringRet2NO_2017 due to the presence of an unseen allele, specifically Allele 2 ("176") for Oki100v1
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Summarize BAYES 26RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EWint_2017_26RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", mixvec = EWint_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+LWint_2017_26RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", mixvec = LWint_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+SpringRet1_2017_26RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", mixvec = SpringRet1_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+SpringRet2_2017_26RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", mixvec = SpringRet2_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+TBR_2017_5RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = 1:5, groupnames = GroupNames5, maindir = "BAYES/Output", mixvec = TBR_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+MSF_2016_2017_26RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", mixvec = MSF_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dput EstimatesStats
+# dir.create("Estimates objects")
+invisible(sapply(objects(pattern = "RG_EstimatesStats"), function(obj) {
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, ".txt"))
+} ))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Check Gelman-Rubin
+sapply(objects(pattern = "RG_EstimatesStats"), function(obj) {
+  sapply(get(obj), function(Mix) {
+    table(Mix[, "GR"] > 1.2)
+  } )
+} )
+# SpringRet1SO has 2 RGs with GR > 1.2
+
+sort(SpringRet1_2017_26RG_EstimatesStats$SpringRet1SO_2017[, "GR"], decreasing = TRUE) # Two RGs with GR > 1.2 are ColumbiaSp and SORCali (both below 1%); not worth running out to 80K
+# ColumbiaSp      SORCali         Taku
+#   1.241442     1.210065     1.193772
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Stratified Estimates 26RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MSF_2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = MSF_Mixtures[-1], catchvec = c(1957, 466, sum(118, 139)), 
+                          newname = "StratifiedMarkSelectFishery2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+EWint_2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = EWint_Mixtures, catchvec = c(4989, 1599), 
+                          newname = "Stratified_EWint_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+LWint_2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = LWint_Mixtures, catchvec = c(22509, 14782), 
+                          newname = "Stratified_LWint_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringRet1_2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = SpringRet1_Mixtures, catchvec = c(807, 2241, 1700, 283), 
+                          newname = "Stratified_SpringRet1_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringRet2_2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = SpringRet2_Mixtures, catchvec = c(1471, 8507, 1819, 482), 
+                          newname = "Stratified_SpringRet2_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+Spring_2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures, SpringRet2_Mixtures), catchvec = c(807, 2241, 1700, 283, 1471, 8507, 1819, 482), 
+                          newname = "Stratified_Spring_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringNO_2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]), catchvec = c(2241, 8507), 
+                          newname = "Stratified_SpringNO_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringNI_2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[1], SpringRet2_Mixtures[1]), catchvec = c(807, 1471), 
+                          newname = "Stratified_SpringNI_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringSI_2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]), catchvec = c(1700, 1819), 
+                          newname = "Stratified_SpringSI_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+
+invisible(sapply(objects(pattern = "RG_StratifiedEstimates"), function(obj) {
+  dput(x = get(obj)$Stats, file = paste0("Estimates objects/", obj, "Stats.txt"))
+} ))
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Summarize BAYES 18RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EWint_2017_18RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", mixvec = EWint_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+LWint_2017_18RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", mixvec = LWint_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+SpringRet1_2017_18RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", mixvec = SpringRet1_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+SpringRet2_2017_18RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", mixvec = SpringRet2_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+TBR_2017_3RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec3, groupnames = GroupNames3, maindir = "BAYES/Output", mixvec = TBR_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+MSF_2016_2017_18RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", mixvec = MSF_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dput EstimatesStats
+# dir.create("Estimates objects")
+invisible(sapply(objects(pattern = "18RG_EstimatesStats"), function(obj) {
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, ".txt"))
+} ))
+
+invisible(sapply(objects(pattern = "3RG_EstimatesStats"), function(obj) {
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, ".txt"))
+} ))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Check Gelman-Rubin
+sapply(objects(pattern = "18RG_EstimatesStats"), function(obj) {
+  sapply(get(obj), function(Mix) {
+    table(Mix[, "GR"] > 1.2)
+  } )
+} )
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Stratified Estimates 18RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MSF_2017_18RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = MSF_Mixtures[-1], catchvec = c(1957, 466, sum(118, 139)), 
+                          newname = "StratifiedMarkSelectFishery2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+EWint_2017_18RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = EWint_Mixtures, catchvec = c(4989, 1599), 
+                          newname = "Stratified_EWint_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+LWint_2017_18RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = LWint_Mixtures, catchvec = c(22509, 14782), 
+                          newname = "Stratified_LWint_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringRet1_2017_18RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = SpringRet1_Mixtures, catchvec = c(807, 2241, 1700, 283), 
+                          newname = "Stratified_SpringRet1_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringRet2_2017_18RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = SpringRet2_Mixtures, catchvec = c(1471, 8507, 1819, 482), 
+                          newname = "Stratified_SpringRet2_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+Spring_2017_18RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures, SpringRet2_Mixtures), catchvec = c(807, 2241, 1700, 283, 1471, 8507, 1819, 482), 
+                          newname = "Stratified_Spring_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringNO_2017_18RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]), catchvec = c(2241, 8507), 
+                          newname = "Stratified_SpringNO_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringNI_2017_18RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[1], SpringRet2_Mixtures[1]), catchvec = c(807, 1471), 
+                          newname = "Stratified_SpringNI_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringSI_2017_18RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]), catchvec = c(1700, 1819), 
+                          newname = "Stratified_SpringSI_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+
+invisible(sapply(objects(pattern = "18RG_StratifiedEstimates"), function(obj) {
+  dput(x = get(obj)$Stats, file = paste0("Estimates objects/", obj, "Stats.txt"))
+} ))
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Summarize BAYES 8RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EWint_2017_8RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = EWint_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+LWint_2017_8RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = LWint_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+SpringRet1_2017_8RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = SpringRet1_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+SpringRet2_2017_8RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = SpringRet2_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+TBR_2017_2RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec2, groupnames = GroupNames2, maindir = "BAYES/Output", mixvec = TBR_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+MSF_2016_2017_8RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = MSF_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dput EstimatesStats
+# dir.create("Estimates objects")
+invisible(sapply(objects(pattern = "8RG_EstimatesStats"), function(obj) {
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, ".txt"))
+} ))
+
+invisible(sapply(objects(pattern = "2RG_EstimatesStats"), function(obj) {
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, ".txt"))
+} ))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Check Gelman-Rubin
+sapply(objects(pattern = "_8RG_EstimatesStats"), function(obj) {
+  sapply(get(obj), function(Mix) {
+    table(Mix[, "GR"] > 1.2)
+  } )
+} )
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Stratified Estimates 8RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MSF_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = MSF_Mixtures[-1], catchvec = c(1957, 466, sum(118, 139)), 
+                          newname = "StratifiedMarkSelectFishery2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+EWint_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = EWint_Mixtures, catchvec = c(4989, 1599), 
+                          newname = "Stratified_EWint_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+LWint_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = LWint_Mixtures, catchvec = c(22509, 14782), 
+                          newname = "Stratified_LWint_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringRet1_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = SpringRet1_Mixtures, catchvec = c(807, 2241, 1700, 283), 
+                          newname = "Stratified_SpringRet1_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringRet2_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = SpringRet2_Mixtures, catchvec = c(1471, 8507, 1819, 482), 
+                          newname = "Stratified_SpringRet2_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+Spring_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures, SpringRet2_Mixtures), catchvec = c(807, 2241, 1700, 283, 1471, 8507, 1819, 482), 
+                          newname = "Stratified_Spring_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringNO_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]), catchvec = c(2241, 8507), 
+                          newname = "Stratified_SpringNO_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringNI_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[1], SpringRet2_Mixtures[1]), catchvec = c(807, 1471), 
+                          newname = "Stratified_SpringNI_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringSI_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]), catchvec = c(1700, 1819), 
+                          newname = "Stratified_SpringSI_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+
+invisible(sapply(objects(pattern = "8RG_StratifiedEstimates"), function(obj) {
+  dput(x = get(obj)$Stats, file = paste0("Estimates objects/", obj, "Stats.txt"))
+} ))
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Summarize BAYES 4RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EWint_2017_4RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", mixvec = EWint_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+LWint_2017_4RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", mixvec = LWint_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+SpringRet1_2017_4RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", mixvec = SpringRet1_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+SpringRet2_2017_4RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", mixvec = SpringRet2_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+MSF_2016_2017_4RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", mixvec = MSF_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dput EstimatesStats
+# dir.create("Estimates objects")
+invisible(sapply(objects(pattern = "4RG_EstimatesStats"), function(obj) {
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, ".txt"))
+} ))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Check Gelman-Rubin
+sapply(objects(pattern = "_4RG_EstimatesStats"), function(obj) {
+  sapply(get(obj), function(Mix) {
+    table(Mix[, "GR"] > 1.2)
+  } )
+} )
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Stratified Estimates 4RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MSF_2017_4RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = MSF_Mixtures[-1], catchvec = c(1957, 466, sum(118, 139)), 
+                          newname = "StratifiedMarkSelectFishery2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+EWint_2017_4RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = EWint_Mixtures, catchvec = c(4989, 1599), 
+                          newname = "Stratified_EWint_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+LWint_2017_4RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = LWint_Mixtures, catchvec = c(22509, 14782), 
+                          newname = "Stratified_LWint_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringRet1_2017_4RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = SpringRet1_Mixtures, catchvec = c(807, 2241, 1700, 283), 
+                          newname = "Stratified_SpringRet1_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringRet2_2017_4RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = SpringRet2_Mixtures, catchvec = c(1471, 8507, 1819, 482), 
+                          newname = "Stratified_SpringRet2_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+Spring_2017_4RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures, SpringRet2_Mixtures), catchvec = c(807, 2241, 1700, 283, 1471, 8507, 1819, 482), 
+                          newname = "Stratified_Spring_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringNO_2017_4RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]), catchvec = c(2241, 8507), 
+                          newname = "Stratified_SpringNO_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringNI_2017_4RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[1], SpringRet2_Mixtures[1]), catchvec = c(807, 1471), 
+                          newname = "Stratified_SpringNI_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringSI_2017_4RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]), catchvec = c(1700, 1819), 
+                          newname = "Stratified_SpringSI_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SpringSO_2017_4RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures[4], SpringRet2_Mixtures[4]), catchvec = c(283, 482), 
+                          newname = "Stratified_SpringSO_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+invisible(sapply(objects(pattern = "4RG_StratifiedEstimates"), function(obj) {
+  dput(x = get(obj)$Stats, file = paste0("Estimates objects/", obj, "Stats.txt"))
+} ))
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Create 2017 8RG Summary Tables ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+K119_K120_Strata_SampleSizes
+
+## Get objects
+SEAK17estimatesobjects <- list.files(path = "Estimates objects", recursive = FALSE, pattern = "_8RG")
+# SEAK17estimatesobjects <- SEAK17estimatesobjects[-c(grep(pattern = "AllYearTroll", x = SEAK17estimatesobjects), 10)]
+SEAK17estimatesobjects
+
+# Dget all estimates stats
+invisible(sapply(SEAK17estimatesobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Estimates objects", objct, sep = "/")), pos = 1) })); beep(2)
+
+SEAK17estimatesobjects <- unlist(lapply(SEAK17estimatesobjects, function(objct) {unlist(strsplit(x = objct, split = ".txt"))}))
+
+Troll2017_8RG_EstimatesStats <- list(
+  "EWintNO_2017" = EWint_2017_8RG_EstimatesStats[["EWintNO_2017"]],
+  "EWintAllQuad_2017" = EWint_2017_8RG_StratifiedEstimatesStats,
+  "LWintNO_2017" = LWint_2017_8RG_EstimatesStats[["LWintNO_2017"]],
+  "LWintAllQuad_2017" = LWint_2017_8RG_StratifiedEstimatesStats,
+  "SpringRet1NO_2017" = SpringRet1_2017_8RG_EstimatesStats[["SpringRet1NO_2017"]],
+  "SpringRet1SI_2017" = SpringRet1_2017_8RG_EstimatesStats[["SpringRet1SI_2017"]],
+  "SpringRet1AllQuad_2017" = SpringRet1_2017_8RG_StratifiedEstimatesStats,
+  "SpringRet2AllQuad_2017" = SpringRet2_2017_8RG_StratifiedEstimatesStats,
+  "SpringNO_2017" = SpringNO_2017_8RG_StratifiedEstimatesStats,
+  "SpringSI_2017" = SpringSI_2017_8RG_StratifiedEstimatesStats,
+  "SpringAllQuad_2017" = Spring_2017_8RG_StratifiedEstimatesStats,
+  "MarkSelectSO_2017" = MSF_2016_2017_8RG_EstimatesStats[["MarkSelectSO_2017"]],
+  "MarkSelect_2017" = MSF_2017_8RG_StratifiedEstimatesStats
+  )
+dput(x = Troll2017_8RG_EstimatesStats, file = "Estimates objects/Troll2017_8RG_EstimatesStats.txt")
+
+# Check GR
+any(sapply(Troll2017_8RG_EstimatesStats, function(mix) {any(mix[, "GR"] > 1.2)}))
+
+
+# Reformat estimates stats
+Troll2017_8RG_EstimatesStats_Formatted <- sapply(Troll2017_8RG_EstimatesStats, function(yr) {
+  matrix(data = yr[, 1:5], nrow = 8, ncol = 5, dimnames = list(GroupNames8Pub, c("Mean", "SD", "Median", "5%", "95%")))
+}, simplify = FALSE)
+dput(x = Troll2017_8RG_EstimatesStats_Formatted, file = "Estimates objects/Troll2017_8RG_EstimatesStats_Formatted.txt")
+
+Troll2017_8RG_PubNames <- setNames(object = c("Northern Outside Quadrant",
+                                              "All Quadrants",
+                                              "Northern Outside Quadrant",
+                                              "All Quadrants",
+                                              "Northern Outside Quadrant",
+                                              "Southern Inside Quadrant",
+                                              "All Quadrants",
+                                              "All Quadrants",
+                                              "Northern Outside Quadrant",
+                                              "Southern Inside Quadrant",
+                                              "All Quadrants",
+                                              "Southern Outside Quadrant",
+                                              "All Quadrants"), 
+                                   nm = names(Troll2017_8RG_EstimatesStats_Formatted))
+dput(x = Troll2017_8RG_PubNames, file = "Objects/Troll2017_8RG_PubNames.txt")
+
+SEAK2017Mixtures <- list.files(path = "BAYES/Mixture", full.names = FALSE, recursive = FALSE)
+SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures))]
+SEAK2017Mixtures_SampSizes <- sapply(SEAK2017Mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix)))[1]} )
+names(SEAK2017Mixtures_SampSizes) <- sapply(names(SEAK2017Mixtures_SampSizes), function(mix) {unlist(strsplit(x = mix, split = ".mix"))[1]})
+
+Troll2017_8RG_MixNames <- setNames(object = list("EWintNO_2017",
+                                                 EWint_Mixtures,
+                                                 "LWintNO_2017",
+                                                 LWint_Mixtures,
+                                                 SpringRet1_Mixtures[2],
+                                                 SpringRet1_Mixtures[3],
+                                                 SpringRet1_Mixtures,
+                                                 SpringRet2_Mixtures,
+                                                 c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]), 
+                                                 c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]),
+                                                 c(SpringRet1_Mixtures, SpringRet2_Mixtures),
+                                                 MSF_Mixtures[3],
+                                                 MSF_Mixtures[2:4]),
+                                   nm = names(Troll2017_8RG_EstimatesStats_Formatted))
+dput(x = Troll2017_8RG_MixNames, file = "Objects/Troll2017_8RG_MixNames.txt")
+
+
+Troll2017_8RG_SampleSizes <- sapply(Troll2017_8RG_MixNames, function(mix) {sum(SEAK2017Mixtures_SampSizes[mix])} )
+
+# Create fully formatted spreadsheat
+EstimatesStats <- Troll2017_8RG_EstimatesStats_Formatted
+SampSizes <- Troll2017_8RG_SampleSizes
+PubNames <- Troll2017_8RG_PubNames
+
+# dir.create("Estimates tables")
+
+for(mix in names(EstimatesStats)) {
+  
+  TableX <- matrix(data = "", nrow = 11, ncol = 7)
+  TableX[1, 3] <- paste(PubNames[mix], "(n=", SampSizes[mix], ")")
+  TableX[2, 6] <- "90% CI"
+  TableX[3, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
+  TableX[4:11, 1] <- 1:8
+  TableX[4:11, 2] <- rownames(EstimatesStats[[mix]])
+  TableX[4:11, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
+  
+  write.xlsx(x = TableX, file = "Estimates tables/Troll2017_8RG_StratifiedEstimatesStats_FormattedPretty.xlsx",
+             col.names = FALSE, row.names = FALSE, sheetName = paste(mix, " Troll 8 Driver"), append = TRUE)
+  
+}
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Create 2017 18RG Summary Tables ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+K119_K120_Strata_SampleSizes
+
+## Get objects
+SEAK17estimatesobjects <- list.files(path = "Estimates objects", recursive = FALSE, pattern = "_18RG")
+# SEAK17estimatesobjects <- SEAK17estimatesobjects[-c(grep(pattern = "AllYearTroll", x = SEAK17estimatesobjects), 10)]
+SEAK17estimatesobjects
+
+# Dget all estimates stats
+invisible(sapply(SEAK17estimatesobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Estimates objects", objct, sep = "/")), pos = 1) })); beep(2)
+
+SEAK17estimatesobjects <- unlist(lapply(SEAK17estimatesobjects, function(objct) {unlist(strsplit(x = objct, split = ".txt"))}))
+
+Troll2017_18RG_EstimatesStats <- list(
+  "EWintNO_2017" = EWint_2017_18RG_EstimatesStats[["EWintNO_2017"]],
+  "EWintAllQuad_2017" = EWint_2017_18RG_StratifiedEstimatesStats,
+  "LWintNO_2017" = LWint_2017_18RG_EstimatesStats[["LWintNO_2017"]],
+  "LWintAllQuad_2017" = LWint_2017_18RG_StratifiedEstimatesStats,
+  "SpringRet1NO_2017" = SpringRet1_2017_18RG_EstimatesStats[["SpringRet1NO_2017"]],
+  "SpringRet1SI_2017" = SpringRet1_2017_18RG_EstimatesStats[["SpringRet1SI_2017"]],
+  "SpringRet1AllQuad_2017" = SpringRet1_2017_18RG_StratifiedEstimatesStats,
+  "SpringRet2AllQuad_2017" = SpringRet2_2017_18RG_StratifiedEstimatesStats,
+  "SpringNO_2017" = SpringNO_2017_18RG_StratifiedEstimatesStats,
+  "SpringSI_2017" = SpringSI_2017_18RG_StratifiedEstimatesStats,
+  "SpringAllQuad_2017" = Spring_2017_18RG_StratifiedEstimatesStats,
+  "MarkSelectSO_2017" = MSF_2016_2017_18RG_EstimatesStats[["MarkSelectSO_2017"]],
+  "MarkSelect_2017" = MSF_2017_18RG_StratifiedEstimatesStats
+)
+dput(x = Troll2017_18RG_EstimatesStats, file = "Estimates objects/Troll2017_18RG_EstimatesStats.txt")
+
+# Check GR
+any(sapply(Troll2017_18RG_EstimatesStats, function(mix) {any(mix[, "GR"] > 1.2)}))
+
+
+# Reformat estimates stats
+Troll2017_18RG_EstimatesStats_Formatted <- sapply(Troll2017_18RG_EstimatesStats, function(yr) {
+  matrix(data = yr[, 1:5], nrow = 18, ncol = 5, dimnames = list(GroupNames18Pub, c("Mean", "SD", "Median", "5%", "95%")))
+}, simplify = FALSE)
+dput(x = Troll2017_18RG_EstimatesStats_Formatted, file = "Estimates objects/Troll2017_18RG_EstimatesStats_Formatted.txt")
+
+Troll2017_18RG_PubNames <- setNames(object = c("Northern Outside Quadrant",
+                                              "All Quadrants",
+                                              "Northern Outside Quadrant",
+                                              "All Quadrants",
+                                              "Northern Outside Quadrant",
+                                              "Southern Inside Quadrant",
+                                              "All Quadrants",
+                                              "All Quadrants",
+                                              "Northern Outside Quadrant",
+                                              "Southern Inside Quadrant",
+                                              "All Quadrants",
+                                              "Southern Outside Quadrant",
+                                              "All Quadrants"), 
+                                   nm = names(Troll2017_18RG_EstimatesStats_Formatted))
+dput(x = Troll2017_18RG_PubNames, file = "Objects/Troll2017_18RG_PubNames.txt")
+
+SEAK2017Mixtures <- list.files(path = "BAYES/Mixture", full.names = FALSE, recursive = FALSE)
+SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures))]
+SEAK2017Mixtures_SampSizes <- sapply(SEAK2017Mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix)))[1]} )
+names(SEAK2017Mixtures_SampSizes) <- sapply(names(SEAK2017Mixtures_SampSizes), function(mix) {unlist(strsplit(x = mix, split = ".mix"))[1]})
+
+Troll2017_18RG_MixNames <- setNames(object = list("EWintNO_2017",
+                                                 EWint_Mixtures,
+                                                 "LWintNO_2017",
+                                                 LWint_Mixtures,
+                                                 SpringRet1_Mixtures[2],
+                                                 SpringRet1_Mixtures[3],
+                                                 SpringRet1_Mixtures,
+                                                 SpringRet2_Mixtures,
+                                                 c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]), 
+                                                 c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]),
+                                                 c(SpringRet1_Mixtures, SpringRet2_Mixtures),
+                                                 MSF_Mixtures[3],
+                                                 MSF_Mixtures[2:4]),
+                                   nm = names(Troll2017_18RG_EstimatesStats_Formatted))
+dput(x = Troll2017_18RG_MixNames, file = "Objects/Troll2017_18RG_MixNames.txt")
+
+
+Troll2017_18RG_SampleSizes <- sapply(Troll2017_18RG_MixNames, function(mix) {sum(SEAK2017Mixtures_SampSizes[mix])} )
+
+# Create fully formatted spreadsheat
+EstimatesStats <- Troll2017_18RG_EstimatesStats_Formatted
+SampSizes <- Troll2017_18RG_SampleSizes
+PubNames <- Troll2017_18RG_PubNames
+
+# dir.create("Estimates tables")
+
+for(mix in names(EstimatesStats)) {
+  
+  TableX <- matrix(data = "", nrow = 21, ncol = 7)
+  TableX[1, 3] <- paste(PubNames[mix], "(n=", SampSizes[mix], ")")
+  TableX[2, 6] <- "90% CI"
+  TableX[3, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
+  TableX[4:21, 1] <- 1:18
+  TableX[4:21, 2] <- rownames(EstimatesStats[[mix]])
+  TableX[4:21, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
+  
+  write.xlsx(x = TableX, file = "Estimates tables/Troll2017_18RG_StratifiedEstimatesStats_FormattedPretty.xlsx",
+             col.names = FALSE, row.names = FALSE, sheetName = paste(mix, " Troll 18RG"), append = TRUE)
+  
+}
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Create 2017 4RG Summary Tables ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+K119_K120_Strata_SampleSizes
+
+## Get objects
+SEAK17estimatesobjects <- list.files(path = "Estimates objects", recursive = FALSE, pattern = "_4RG")
+# SEAK17estimatesobjects <- SEAK17estimatesobjects[-c(grep(pattern = "AllYearTroll", x = SEAK17estimatesobjects), 10)]
+SEAK17estimatesobjects
+
+# Dget all estimates stats
+invisible(sapply(SEAK17estimatesobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Estimates objects", objct, sep = "/")), pos = 1) })); beep(2)
+
+SEAK17estimatesobjects <- unlist(lapply(SEAK17estimatesobjects, function(objct) {unlist(strsplit(x = objct, split = ".txt"))}))
+
+Troll2017_4RG_EstimatesStats <- list(
+  "EWintNO_2017" = EWint_2017_4RG_EstimatesStats[["EWintNO_2017"]],
+  "EWintAllQuad_2017" = EWint_2017_4RG_StratifiedEstimatesStats,
+  "LWintNO_2017" = LWint_2017_4RG_EstimatesStats[["LWintNO_2017"]],
+  "LWintAllQuad_2017" = LWint_2017_4RG_StratifiedEstimatesStats,
+  "SpringRet1NO_2017" = SpringRet1_2017_4RG_EstimatesStats[["SpringRet1NO_2017"]],
+  "SpringRet1SI_2017" = SpringRet1_2017_4RG_EstimatesStats[["SpringRet1SI_2017"]],
+  "SpringRet1AllQuad_2017" = SpringRet1_2017_4RG_StratifiedEstimatesStats,
+  "SpringRet2NO_2017" = SpringRet2_2017_4RG_EstimatesStats[["SpringRet2NO_2017"]],
+  "SpringRet2SI_2017" = SpringRet2_2017_4RG_EstimatesStats[["SpringRet2SI_2017"]],
+  "SpringRet2AllQuad_2017" = SpringRet2_2017_4RG_StratifiedEstimatesStats,
+  "SpringNO_2017" = SpringNO_2017_4RG_StratifiedEstimatesStats,
+  "SpringNI_2017" = SpringNI_2017_4RG_StratifiedEstimatesStats,
+  "SpringSO_2017" = SpringSO_2017_4RG_StratifiedEstimatesStats,
+  "SpringSI_2017" = SpringSI_2017_4RG_StratifiedEstimatesStats,
+  "SpringAllQuad_2017" = Spring_2017_4RG_StratifiedEstimatesStats,
+  "MarkSelect_2016" = MSF_2016_2017_4RG_EstimatesStats[["MarkSelect_2016"]],
+  "MarkSelectNO_2017" = MSF_2016_2017_4RG_EstimatesStats[["MarkSelectNO_2017"]],
+  "MarkSelectSO_2017" = MSF_2016_2017_4RG_EstimatesStats[["MarkSelectSO_2017"]],
+  "MarkSelectNISI_2017" = MSF_2016_2017_4RG_EstimatesStats[["MarkSelectNISI_2017"]],
+  "MarkSelect_2017" = MSF_2017_4RG_StratifiedEstimatesStats
+)
+dput(x = Troll2017_4RG_EstimatesStats, file = "Estimates objects/Troll2017_4RG_EstimatesStats.txt")
+
+# Check GR
+any(sapply(Troll2017_4RG_EstimatesStats, function(mix) {any(mix[, "GR"] > 1.2)}))
+
+
+# Reformat estimates stats
+Troll2017_4RG_EstimatesStats_Formatted <- sapply(Troll2017_4RG_EstimatesStats, function(yr) {
+  matrix(data = yr[, 1:5], nrow = 4, ncol = 5, dimnames = list(GroupNames4Pub, c("Mean", "SD", "Median", "5%", "95%")))
+}, simplify = FALSE)
+dput(x = Troll2017_4RG_EstimatesStats_Formatted, file = "Estimates objects/Troll2017_4RG_EstimatesStats_Formatted.txt")
+
+Troll2017_4RG_PubNames <- setNames(object = c("Northern Outside Quadrant",
+                                              "All Quadrants",
+                                              "Northern Outside Quadrant",
+                                              "All Quadrants",
+                                              "Northern Outside Quadrant",
+                                              "Southern Inside Quadrant",
+                                              "All Quadrants",
+                                              "Northern Outside Quadrant",
+                                              "Southern Inside Quadrant",
+                                              "All Quadrants",
+                                              "Northern Outside Quadrant",
+                                              "Northern Inside Quadrant",
+                                              "Southern Outside Quadrant",
+                                              "Southern Inside Quadrant",
+                                              "All Quadrants",
+                                              "All Quadrants",
+                                              "Northern Outside Quadrant",
+                                              "Southern Outside Quadrant",
+                                              "Inside Quadrants",
+                                              "All Quadrants"), 
+                                   nm = names(Troll2017_4RG_EstimatesStats_Formatted))
+dput(x = Troll2017_4RG_PubNames, file = "Objects/Troll2017_4RG_PubNames.txt")
+
+SEAK2017Mixtures <- list.files(path = "BAYES/Mixture", full.names = FALSE, recursive = FALSE)
+SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures))]
+SEAK2017Mixtures_SampSizes <- sapply(SEAK2017Mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix)))[1]} )
+names(SEAK2017Mixtures_SampSizes) <- sapply(names(SEAK2017Mixtures_SampSizes), function(mix) {unlist(strsplit(x = mix, split = ".mix"))[1]})
+
+Troll2017_4RG_MixNames <- setNames(object = list("EWintNO_2017",
+                                                 EWint_Mixtures,
+                                                 "LWintNO_2017",
+                                                 LWint_Mixtures,
+                                                 SpringRet1_Mixtures[2],
+                                                 SpringRet1_Mixtures[3],
+                                                 SpringRet1_Mixtures,
+                                                 SpringRet2_Mixtures[2],
+                                                 SpringRet2_Mixtures[3],
+                                                 SpringRet2_Mixtures,
+                                                 c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]), 
+                                                 c(SpringRet1_Mixtures[1], SpringRet2_Mixtures[1]), 
+                                                 c(SpringRet1_Mixtures[4], SpringRet2_Mixtures[4]),
+                                                 c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]),
+                                                 c(SpringRet1_Mixtures, SpringRet2_Mixtures),
+                                                 MSF_Mixtures[1],
+                                                 MSF_Mixtures[2],
+                                                 MSF_Mixtures[3],
+                                                 MSF_Mixtures[4],
+                                                 MSF_Mixtures[2:4]),
+                                   nm = names(Troll2017_4RG_EstimatesStats_Formatted))
+dput(x = Troll2017_4RG_MixNames, file = "Objects/Troll2017_4RG_MixNames.txt")
+
+
+Troll2017_4RG_SampleSizes <- sapply(Troll2017_4RG_MixNames, function(mix) {sum(SEAK2017Mixtures_SampSizes[mix])} )
+
+# Create fully formatted spreadsheat
+EstimatesStats <- Troll2017_4RG_EstimatesStats_Formatted
+SampSizes <- Troll2017_4RG_SampleSizes
+PubNames <- Troll2017_4RG_PubNames
+
+# dir.create("Estimates tables")
+
+for(mix in names(EstimatesStats)) {
+  
+  TableX <- matrix(data = "", nrow = 7, ncol = 7)
+  TableX[1, 3] <- paste(PubNames[mix], "(n=", SampSizes[mix], ")")
+  TableX[2, 6] <- "90% CI"
+  TableX[3, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
+  TableX[4:7, 1] <- 1:4
+  TableX[4:7, 2] <- rownames(EstimatesStats[[mix]])
+  TableX[4:7, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
+  
+  write.xlsx(x = TableX, file = "Estimates tables/Troll2017_4RG_StratifiedEstimatesStats_FormattedPretty.xlsx",
+             col.names = FALSE, row.names = FALSE, sheetName = paste(mix, " Troll 4RG"), append = TRUE)
+  
+}
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Create 2017 HeatMaps ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# dir.create("Figures")
+
+# Create layout
+layoutmat <- matrix(c(9,1,2,11,
+                      9,3,4,11,
+                      9,5,6,11,
+                      9,7,8,11,
+                      12,10,10,13), ncol=4,nrow=5,byrow=T)
+SEAKTrollLayout <- layout(layoutmat,widths=c(0.25,1,1,0.25),heights=c(1,1,1,1,0.25))
+layout.show(SEAKTrollLayout)
+
+# Set color ramp
+library('lattice')
+WhiteRedColPalette <- colorRampPalette(colors=c("white","red"))
+WhiteRedcol <- level.colors(x=seq(from=0,to=1,by=0.01), at = seq(from=0,to=1,by=0.01), col.regions = WhiteRedColPalette(100))
+
+# Mixture names
+EstimatesStats <- Troll2017_8RG_EstimatesStats_Formatted
+EstimatesStats <- c(EstimatesStats[1:5],
+                    EstimatesStats[7],
+                    list("SpringRet2NO_2017" = SpringRet2_2017_8RG_EstimatesStats[["SpringRet2NO_2017"]][, 1:5]),
+                    EstimatesStats[8],
+                    list("MarkSelectNO_2017" = MSF_2016_2017_8RG_EstimatesStats[["MarkSelectNO_2017"]][, 1:5]),
+                    EstimatesStats[13])
+dimnames(EstimatesStats[["SpringRet2NO_2017"]]) <- dimnames(EstimatesStats[[1]])
+dimnames(EstimatesStats[["MarkSelectNO_2017"]]) <- dimnames(EstimatesStats[[1]])
+
+mixnames <- names(EstimatesStats)
+
+# Create list object with by RG stock comps
+HeatmapEstimates <- sapply(GroupNames8Pub, function(RG) {
+  matrix(data = sapply(mixnames, function(mix) {EstimatesStats[[mix]][RG, "Mean"] }),
+         nrow = 2, ncol = 5, dimnames = list(c("NO", "AllQuad"), c("EWint", "LWint", "SpringRet1", "SpringRet2", "MSF"))
+  )
+}, simplify = FALSE)
+zmax <- max(sapply(HeatmapEstimates, max))
+zmax <- 0.6
+
+Testing <- matrix(c(seq(from = 0, to = zmax, length.out = 102), seq(from = 0, to = zmax, length.out = 102)), nrow = 2, ncol = 102, byrow = T)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Plot: Can't do a nested layout, writing out as pdf then pasting in other pdf
+
+# pdf("Figures/2017TrollByFisheryQuadrant.pdf", family = "Times", width = 6.5, height = 6.5, title = "2017 Troll By Fishery and Quadrant")
+png("Figures/2017TrollByFisheryQuadrant.png", family = "Times", width = 6.5, height = 6.5, units = "in", res = 300)
+# x11(width = 6.5, height = 6.5)
+par(xaxt = "n", yaxt = "n", omi = rep(0.1, 4), mar = rep(0.1, 4), family = 'serif')
+layout(layoutmat,widths=c(0.3,1,1,0.25),heights=c(1,1,1,1,0.4))
+
+## Loop through Reporting Group plots
+sapply(GroupNames8Pub, function(RG) {
+  image(t(HeatmapEstimates[[RG]])[, c("AllQuad", "NO")], zlim = c(0, zmax), col = WhiteRedcol, xlab = "", ylab = "", breaks = seq(from = 0, to = zmax, length.out = 102), useRaster = TRUE)
+  abline(h = 0.5, lwd = 2, col = 'grey')
+  abline(v = c(0.135, 0.38, 0.63, 0.875), lwd= 2 , col = 'grey')
+  abline(h = c(-0.5, 1.5), v = c(-0.125, 1.125),lwd = 5, col = 'black')
+  text(labels = RG, cex = 2, adj = c(0, 0.5), x = -0.1, y = 1)
+})
+
+## Plot 10 - Y-axis label
+plot.new()
+text(labels = "Quadrant", cex = 3, srt = 90, x = 0.3, y = 0.5, adj = c(0.5, 0))
+text(labels = "NO", cex = 2, x = 0.99, y = c(0.97, 0.7, 0.43, 0.16), adj = c(1, 0.5))
+text(labels = "All", cex = 2, x = 0.99, y = c(0.97, 0.7, 0.43, 0.16) - 0.135, adj = c(1, 0.5))
+
+## Plot 11 - X-axis label
+plot.new()
+text(labels = "Fishery", cex = 3, adj = c(0.5, 0.5), x = 0.5, y = 0.35)
+text(labels = "EW", cex = 2, adj = c(0.5, 0.5), x = c(0.02, 0.56), y = 0.8)
+text(labels = "LW", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.115, 0.56 + 0.115), y = 0.8)
+text(labels = "SP1", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.22, 0.56 + 0.22), y = 0.8)
+text(labels = "SP2", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.33, 0.56 + 0.33), y = 0.8)
+text(labels = "MSF", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.43, 0.56 + 0.43), y = 0.8)
+
+## Plot 13 - Legend
+image(Testing, col = WhiteRedcol, xlab = "", ylab = "", breaks = seq(from = 0, to = zmax, length.out = 102))
+text(labels = "0%", cex = 2.8, adj = c(0.5, 0.5), x = 0.5, y = 0.03)
+text(labels = "60%", cex = 2.8, adj = c(0.5, 0.5), x = 0.5, y = 0.98)
+abline(h = c(-0.005,  1.005),  v  =  c(-0.5,  1.5), lwd = 5, col = 'black')
+dev.off()
+dev.off()
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
