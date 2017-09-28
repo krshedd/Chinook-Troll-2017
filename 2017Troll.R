@@ -1583,3 +1583,151 @@ abline(h = c(-0.005,  1.005),  v  =  c(-0.5,  1.5), lwd = 5, col = 'black')
 dev.off()
 dev.off()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Create 2017 TBR Summary Tables ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+K119_K120_Strata_SampleSizes
+
+## Get objects
+SEAK17estimatesobjects <- list.files(path = "Estimates objects", recursive = FALSE, pattern = "TBR")
+# SEAK17estimatesobjects <- SEAK17estimatesobjects[-c(grep(pattern = "AllYearTroll", x = SEAK17estimatesobjects), 10)]
+SEAK17estimatesobjects
+
+# Dget all estimates stats
+invisible(sapply(SEAK17estimatesobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Estimates objects", objct, sep = "/")), pos = 1) })); beep(2)
+
+SEAK17estimatesobjects <- unlist(lapply(SEAK17estimatesobjects, function(objct) {unlist(strsplit(x = objct, split = ".txt"))}))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## 5RG
+# Check GR
+any(sapply(TBR_2017_5RG_EstimatesStats, function(mix) {any(mix[, "GR"] > 1.2)}))
+
+
+# Reformat estimates stats
+TBR_2017_5RG_EstimatesStats_Formatted <- sapply(TBR_2017_5RG_EstimatesStats, function(yr) {
+  matrix(data = yr[, 1:5], nrow = 5, ncol = 5, dimnames = list(GroupNames5, c("Mean", "SD", "Median", "5%", "95%")))
+}, simplify = FALSE)
+dput(x = TBR_2017_5RG_EstimatesStats_Formatted, file = "Estimates objects/TBR_2017_5RG_EstimatesStats_Formatted.txt")
+
+TBR2017_5RG_PubNames <- setNames(object = c("District 108 Gillnet",
+                                            "District 111 Gillnet",
+                                            "District 108 Sport",
+                                            "District 111 Sport"), 
+                                 nm = names(TBR_2017_5RG_EstimatesStats_Formatted))
+dput(x = TBR2017_5RG_PubNames, file = "Objects/TBR2017_5RG_PubNames.txt")
+
+SEAK2017Mixtures <- list.files(path = "BAYES/Mixture", full.names = FALSE, recursive = FALSE)
+SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures))]
+SEAK2017Mixtures_SampSizes <- sapply(SEAK2017Mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix)))[1]} )
+names(SEAK2017Mixtures_SampSizes) <- sapply(names(SEAK2017Mixtures_SampSizes), function(mix) {unlist(strsplit(x = mix, split = ".mix"))[1]})
+
+
+# Create fully formatted spreadsheat
+EstimatesStats <- TBR_2017_5RG_EstimatesStats_Formatted
+SampSizes <- SEAK2017Mixtures_SampSizes
+PubNames <- TBR2017_5RG_PubNames
+
+# dir.create("Estimates tables")
+
+for(mix in names(EstimatesStats)) {
+  
+  nRG <- dim(EstimatesStats[[1]])[1]
+  TableX <- matrix(data = "", nrow = nRG + 3, ncol = 7)
+  TableX[1, 3] <- paste(PubNames[mix], "(n=", SampSizes[mix], ")")
+  TableX[2, 6] <- "90% CI"
+  TableX[3, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
+  TableX[seq(nRG) + 3, 1] <- seq(nRG)
+  TableX[seq(nRG) + 3, 2] <- rownames(EstimatesStats[[mix]])
+  TableX[seq(nRG) + 3, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
+  
+  write.xlsx(x = TableX, file = "Estimates tables/TBR2017_5RG_StratifiedEstimatesStats_FormattedPretty.xlsx",
+             col.names = FALSE, row.names = FALSE, sheetName = paste(mix, " Troll 4RG"), append = TRUE)
+  
+}
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## 3RG
+# Check GR
+any(sapply(TBR_2017_3RG_EstimatesStats, function(mix) {any(mix[, "GR"] > 1.2)}))
+
+
+# Reformat estimates stats
+TBR_2017_3RG_EstimatesStats_Formatted <- sapply(TBR_2017_3RG_EstimatesStats, function(yr) {
+  matrix(data = yr[, 1:5], nrow = 3, ncol = 5, dimnames = list(GroupNames3, c("Mean", "SD", "Median", "5%", "95%")))
+}, simplify = FALSE)
+dput(x = TBR_2017_3RG_EstimatesStats_Formatted, file = "Estimates objects/TBR_2017_3RG_EstimatesStats_Formatted.txt")
+
+SEAK2017Mixtures <- list.files(path = "BAYES/Mixture", full.names = FALSE, recursive = FALSE)
+SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures))]
+SEAK2017Mixtures_SampSizes <- sapply(SEAK2017Mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix)))[1]} )
+names(SEAK2017Mixtures_SampSizes) <- sapply(names(SEAK2017Mixtures_SampSizes), function(mix) {unlist(strsplit(x = mix, split = ".mix"))[1]})
+
+
+# Create fully formatted spreadsheat
+EstimatesStats <- TBR_2017_3RG_EstimatesStats_Formatted
+SampSizes <- SEAK2017Mixtures_SampSizes
+PubNames <- TBR2017_5RG_PubNames
+
+# dir.create("Estimates tables")
+
+for(mix in names(EstimatesStats)) {
+  
+  nRG <- dim(EstimatesStats[[1]])[1]
+  TableX <- matrix(data = "", nrow = nRG + 3, ncol = 7)
+  TableX[1, 3] <- paste(PubNames[mix], "(n=", SampSizes[mix], ")")
+  TableX[2, 6] <- "90% CI"
+  TableX[3, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
+  TableX[seq(nRG) + 3, 1] <- seq(nRG)
+  TableX[seq(nRG) + 3, 2] <- rownames(EstimatesStats[[mix]])
+  TableX[seq(nRG) + 3, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
+  
+  write.xlsx(x = TableX, file = "Estimates tables/TBR2017_3RG_StratifiedEstimatesStats_FormattedPretty.xlsx",
+             col.names = FALSE, row.names = FALSE, sheetName = paste(mix, " Troll 4RG"), append = TRUE)
+  
+}
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## 2RG
+# Check GR
+any(sapply(TBR_2017_2RG_EstimatesStats, function(mix) {any(mix[, "GR"] > 1.2)}))
+
+
+# Reformat estimates stats
+TBR_2017_2RG_EstimatesStats_Formatted <- sapply(TBR_2017_2RG_EstimatesStats, function(yr) {
+  matrix(data = yr[, 1:5], nrow = 2, ncol = 5, dimnames = list(GroupNames2, c("Mean", "SD", "Median", "5%", "95%")))
+}, simplify = FALSE)
+dput(x = TBR_2017_2RG_EstimatesStats_Formatted, file = "Estimates objects/TBR_2017_2RG_EstimatesStats_Formatted.txt")
+
+SEAK2017Mixtures <- list.files(path = "BAYES/Mixture", full.names = FALSE, recursive = FALSE)
+SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures))]
+SEAK2017Mixtures_SampSizes <- sapply(SEAK2017Mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix)))[1]} )
+names(SEAK2017Mixtures_SampSizes) <- sapply(names(SEAK2017Mixtures_SampSizes), function(mix) {unlist(strsplit(x = mix, split = ".mix"))[1]})
+
+
+# Create fully formatted spreadsheat
+EstimatesStats <- TBR_2017_2RG_EstimatesStats_Formatted
+SampSizes <- SEAK2017Mixtures_SampSizes
+PubNames <- TBR2017_5RG_PubNames
+
+# dir.create("Estimates tables")
+
+for(mix in names(EstimatesStats)) {
+  
+  nRG <- dim(EstimatesStats[[1]])[1]
+  TableX <- matrix(data = "", nrow = nRG + 3, ncol = 7)
+  TableX[1, 3] <- paste(PubNames[mix], "(n=", SampSizes[mix], ")")
+  TableX[2, 6] <- "90% CI"
+  TableX[3, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
+  TableX[seq(nRG) + 3, 1] <- seq(nRG)
+  TableX[seq(nRG) + 3, 2] <- rownames(EstimatesStats[[mix]])
+  TableX[seq(nRG) + 3, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
+  
+  write.xlsx(x = TableX, file = "Estimates tables/TBR2017_2RG_StratifiedEstimatesStats_FormattedPretty.xlsx",
+             col.names = FALSE, row.names = FALSE, sheetName = paste(mix, " Troll 4RG"), append = TRUE)
+  
+}
+
