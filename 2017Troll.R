@@ -43,6 +43,7 @@ K120Mixtures <- c("KGILL17D8", "KGILL17D11", "KSPORT17", "KTROL16MS", "KTROL17MS
 # ReadLOKI_GAPS.GCL(sillyvec = c(K119Mixtures, K120Mixtures), markersuite = "GAPS_Chinook_uSATs")
 
 LOKI2R_GAPS.GCL(sillyvec = c(K119Mixtures, K120Mixtures), username = username, password = password)
+LOKI2R_GAPS.GCL(sillyvec = "KSPORT17", username = username, password = password)  # re-reading in KSPORT17 because I messed up the metadata matching
 
 rm(username, password)
 objects(pattern = "\\.gcl")
@@ -51,6 +52,7 @@ objects(pattern = "\\.gcl")
 # dir.create("Raw genotypes")
 # dir.create("Raw genotypes/OriginalCollections")
 invisible(sapply(c(K119Mixtures, K120Mixtures), function(silly) {dput(x = get(paste0(silly, ".gcl")), file = paste0("Raw genotypes/OriginalCollections/" , silly, ".txt"))} )); beep(8)
+
 
 ## Original sample sizes by SILLY
 collection.size.original <- sapply(c(K119Mixtures, K120Mixtures), function(silly) get(paste0(silly, ".gcl"))$n)
@@ -240,8 +242,13 @@ D8_D11_Sport.dat$GSI_CARD <- sapply(D8_D11_Sport.dat$GSI_CARD, function(ind) {pa
 
 # Add to attributues table
 KSPORT17.gcl$n  # 489
-D8_D11_Sport.WGC.match <- match(KSPORT17.gcl$attributes$DNA_TRAY_CODE, D8_D11_Sport.dat$GSI_CARD)
+
+KSPORT17.gcl$attributes$DNA_FISH_ID <- paste(KSPORT17.gcl$attributes$DNA_TRAY_CODE, KSPORT17.gcl$attributes$DNA_TRAY_WELL_CODE, sep = "_")
+D8_D11_Sport.dat$DNA_FISH_ID <- paste(D8_D11_Sport.dat$GSI_CARD, D8_D11_Sport.dat$GsiCardRow, sep = "_")
+
+D8_D11_Sport.WGC.match <- match(KSPORT17.gcl$attributes$DNA_FISH_ID, D8_D11_Sport.dat$DNA_FISH_ID)
 any(is.na(D8_D11_Sport.WGC.match))  # FALSE
+KSPORT17.gcl$attributes$DNA_FISH_ID[is.na(D8_D11_Sport.WGC.match)]
 
 KSPORT17.gcl$attributes$District <- D8_D11_Sport.dat$DISTRICT[D8_D11_Sport.WGC.match]
 KSPORT17.gcl$attributes$StatWeek <- D8_D11_Sport.dat$STATWEEK[D8_D11_Sport.WGC.match]
@@ -250,10 +257,10 @@ KSPORT17.gcl$attributes$Size <- D8_D11_Sport.dat$Size[D8_D11_Sport.WGC.match]
 table(KSPORT17.gcl$attributes$StatWeek, useNA = "always")  # All fish are from SW 17-29
 
 table(KSPORT17.gcl$attributes$Size, KSPORT17.gcl$attributes$District, useNA = "always")
-#             101 102 103 104 105 106 107 108 110 111 112 113 114 181 183 325 365 <NA>
-#   LARGE   0   0   0   0   0   0  78   9 154  18 162   0   0   0   0   0   0   0    0
-#   SMALL   0   0   0   0   0   0   0   0  15   0  53   0   0   0   0   0   0   0    0
-#   <NA>    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0    0
+#           101 102 103 104 105 106 107 108 110 111 112 113 114 181 183 325 365 <NA>
+# LARGE   3   0   0   0   0   0  51  11 182  11 148   0   5   1   0   0   0   0    0
+# SMALL   1   0   0   0   0   0   7   0  11   1  56   1   0   0   0   0   0   0    0
+# <NA>    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0    0
 sum(table(KSPORT17.gcl$attributes$District))  # 489
 
 
@@ -296,7 +303,7 @@ sum(table(KTROL17MS.gcl$attributes$District))  # 479
 invisible(sapply(c(K119Mixtures, K120Mixtures), function(silly) {
   dput(x = get(paste0(silly, ".gcl")), file = paste0("Raw genotypes/OriginalCollections_Attributes/" , silly, ".txt"))
 } )); beep(8)
-
+dput(x = KSPORT17.gcl, file = "Raw genotypes/OriginalCollections_Attributes/KSPORT17.txt")  # overwrite with correct attributes (by fish not gy GSI_CARD)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Define Strata ####
@@ -405,8 +412,8 @@ D111Gill_2017.gcl <- KGILL17D11.gcl
 # Create Mixtures for 1) D108Sport_2017 and 2) D111Sport_2017 (large fish >= 660mm, StatWeek 17-29)
 table(KSPORT17.gcl$attributes$Size, KSPORT17.gcl$attributes$District)
 #           101 102 103 104 105 106 107 108 110 111 112 113 114 181 183 325 365
-# LARGE   0   0   0   0   0   0  78   9 154  18 162   0   0   0   0   0   0   0
-# SMALL   0   0   0   0   0   0   0   0  15   0  53   0   0   0   0   0   0   0
+# LARGE   3   0   0   0   0   0  51  11 182  11 148   0   5   1   0   0   0   0
+# SMALL   1   0   0   0   0   0   7   0  11   1  56   1   0   0   0   0   0   0
 D108Sport_2017.vials <- setNames(object = list(intersect(AttributesToIDs.GCL(silly = "KSPORT17", attribute = "District", matching = 108),
                                                          AttributesToIDs.GCL(silly = "KSPORT17", attribute = "Size", matching = "LARGE"))), nm = "KSPORT17")
 PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = D108Sport_2017.vials, newname = "D108Sport_2017")
@@ -417,7 +424,7 @@ PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = D
 
 sapply(grep(pattern = "Sport", objects(pattern = "\\.gcl"), value = TRUE), function(silly) {get(silly)$n})
 # D108Sport_2017.gcl D111Sport_2017.gcl 
-#                154                162 
+#                182                148 
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -468,6 +475,9 @@ invisible(sapply(objects(pattern = ".vials"), function(obj) {
   dput(x = get(obj), file = paste0("Objects/Vials/", obj, ".txt"))
 } ))
 
+dput(x = D108Sport_2017.vials, file = "Objects/Vials/D108Sport_2017.vials.txt")
+dput(x = D111Sport_2017.vials, file = "Objects/Vials/D111Sport_2017.vials.txt")
+
 invisible(sapply(objects(pattern = "Mixtures"), function(obj) {
   dput(x = get(obj), file = paste0("Objects/", obj, ".txt"))
 } ))
@@ -478,7 +488,8 @@ invisible(sapply(objects(pattern = "Mixtures"), function(obj) {
 invisible(sapply(c(EWint_Mixtures, LWint_Mixtures, SpringRet1_Mixtures, SpringRet2_Mixtures, TBR_Mixtures, MSF_Mixtures), function(silly) {
   dput(x = get(paste0(silly, ".gcl")), file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata/" , silly, ".txt"))
 } )); beep(8)
-
+dput(x = D108Sport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata/D108Sport_2017.txt")
+dput(x = D111Sport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata/D111Sport_2017.txt")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Clean workspace; dget .gcl objects and Locus Control ####
@@ -576,6 +587,8 @@ dput(x = K119_K120_Strata_SampleSizes, file = "Objects/K119_K120_Strata_SampleSi
 invisible(sapply(K119_K120_Strata, function(silly) {
   dput(x = get(paste(silly, ".gcl", sep = '')), file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/" , silly, ".txt"))
 } )); beep(8)
+dput(x = D108Sport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/D108Sport_2017.txt")
+dput(x = D111Sport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/D111Sport_2017.txt")
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -635,6 +648,10 @@ sapply(K119_K120_Strata, function(Mix) {
   CreateMixture.GCL(sillys = Mix, loci = GAPSLoci_reordered, IDs = NULL, mixname = Mix, dir = "BAYES//Mixture", type = "BAYES", PT = FALSE)
 } )
 
+sapply(c("D108Sport_2017", "D111Sport_2017"), function(Mix) {
+  CreateMixture.GCL(sillys = Mix, loci = GAPSLoci_reordered, IDs = NULL, mixname = Mix, dir = "BAYES//Mixture", type = "BAYES", PT = FALSE)
+} )
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Create Priors
@@ -679,6 +696,7 @@ sapply(MSF_Mixtures, function(Mix) {
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Create output directories
 sapply(K119_K120_Strata, function(Mix) {dir.create(paste0("BAYES//Output/", Mix))} )
+sapply(c("D108Sport_2017", "D111Sport_2017"), function(Mix) {dir.create(paste0("BAYES//Output/", Mix))} )
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1611,44 +1629,7 @@ TBR_2017_5RG_EstimatesStats_Formatted <- sapply(TBR_2017_5RG_EstimatesStats, fun
 }, simplify = FALSE)
 dput(x = TBR_2017_5RG_EstimatesStats_Formatted, file = "Estimates objects/TBR_2017_5RG_EstimatesStats_Formatted.txt")
 
-TBR2017_5RG_PubNames <- setNames(object = c("District 108 Gillnet",
-                                            "District 111 Gillnet",
-                                            "District 108 Sport",
-                                            "District 111 Sport"), 
-                                 nm = names(TBR_2017_5RG_EstimatesStats_Formatted))
-dput(x = TBR2017_5RG_PubNames, file = "Objects/TBR2017_5RG_PubNames.txt")
-
-SEAK2017Mixtures <- list.files(path = "BAYES/Mixture", full.names = FALSE, recursive = FALSE)
-SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures))]
-SEAK2017Mixtures_SampSizes <- sapply(SEAK2017Mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix)))[1]} )
-names(SEAK2017Mixtures_SampSizes) <- sapply(names(SEAK2017Mixtures_SampSizes), function(mix) {unlist(strsplit(x = mix, split = ".mix"))[1]})
-
-
-# Create fully formatted spreadsheat
-EstimatesStats <- TBR_2017_5RG_EstimatesStats_Formatted
-SampSizes <- SEAK2017Mixtures_SampSizes
-PubNames <- TBR2017_5RG_PubNames
-
-# dir.create("Estimates tables")
-
-for(mix in names(EstimatesStats)) {
-  
-  nRG <- dim(EstimatesStats[[1]])[1]
-  TableX <- matrix(data = "", nrow = nRG + 3, ncol = 7)
-  TableX[1, 3] <- paste(PubNames[mix], "(n=", SampSizes[mix], ")")
-  TableX[2, 6] <- "90% CI"
-  TableX[3, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
-  TableX[seq(nRG) + 3, 1] <- seq(nRG)
-  TableX[seq(nRG) + 3, 2] <- rownames(EstimatesStats[[mix]])
-  TableX[seq(nRG) + 3, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
-  
-  write.xlsx(x = TableX, file = "Estimates tables/TBR2017_5RG_StratifiedEstimatesStats_FormattedPretty.xlsx",
-             col.names = FALSE, row.names = FALSE, sheetName = paste(mix, " Troll 4RG"), append = TRUE)
-  
-}
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~
 ## 3RG
 # Check GR
 any(sapply(TBR_2017_3RG_EstimatesStats, function(mix) {any(mix[, "GR"] > 1.2)}))
@@ -1660,74 +1641,118 @@ TBR_2017_3RG_EstimatesStats_Formatted <- sapply(TBR_2017_3RG_EstimatesStats, fun
 }, simplify = FALSE)
 dput(x = TBR_2017_3RG_EstimatesStats_Formatted, file = "Estimates objects/TBR_2017_3RG_EstimatesStats_Formatted.txt")
 
-SEAK2017Mixtures <- list.files(path = "BAYES/Mixture", full.names = FALSE, recursive = FALSE)
-SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures))]
-SEAK2017Mixtures_SampSizes <- sapply(SEAK2017Mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix)))[1]} )
-names(SEAK2017Mixtures_SampSizes) <- sapply(names(SEAK2017Mixtures_SampSizes), function(mix) {unlist(strsplit(x = mix, split = ".mix"))[1]})
-
-
-# Create fully formatted spreadsheat
-EstimatesStats <- TBR_2017_3RG_EstimatesStats_Formatted
-SampSizes <- SEAK2017Mixtures_SampSizes
-PubNames <- TBR2017_5RG_PubNames
-
-# dir.create("Estimates tables")
-
-for(mix in names(EstimatesStats)) {
-  
-  nRG <- dim(EstimatesStats[[1]])[1]
-  TableX <- matrix(data = "", nrow = nRG + 3, ncol = 7)
-  TableX[1, 3] <- paste(PubNames[mix], "(n=", SampSizes[mix], ")")
-  TableX[2, 6] <- "90% CI"
-  TableX[3, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
-  TableX[seq(nRG) + 3, 1] <- seq(nRG)
-  TableX[seq(nRG) + 3, 2] <- rownames(EstimatesStats[[mix]])
-  TableX[seq(nRG) + 3, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
-  
-  write.xlsx(x = TableX, file = "Estimates tables/TBR2017_3RG_StratifiedEstimatesStats_FormattedPretty.xlsx",
-             col.names = FALSE, row.names = FALSE, sheetName = paste(mix, " Troll 4RG"), append = TRUE)
-  
-}
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~
 ## 2RG
 # Check GR
 any(sapply(TBR_2017_2RG_EstimatesStats, function(mix) {any(mix[, "GR"] > 1.2)}))
 
-
+#~~~~~~~~~~~~~~~~~~
 # Reformat estimates stats
 TBR_2017_2RG_EstimatesStats_Formatted <- sapply(TBR_2017_2RG_EstimatesStats, function(yr) {
   matrix(data = yr[, 1:5], nrow = 2, ncol = 5, dimnames = list(GroupNames2, c("Mean", "SD", "Median", "5%", "95%")))
 }, simplify = FALSE)
 dput(x = TBR_2017_2RG_EstimatesStats_Formatted, file = "Estimates objects/TBR_2017_2RG_EstimatesStats_Formatted.txt")
 
+
+
+TBR2017_5RG_PubNames <- setNames(object = c("District 108 Gillnet",
+                                            "District 111 Gillnet",
+                                            "District 108 Sport",
+                                            "District 111 Sport"), 
+                                 nm = names(TBR_2017_5RG_EstimatesStats_Formatted))
+dput(x = TBR2017_5RG_PubNames, file = "Objects/TBR2017_5RG_PubNames.txt")
+
 SEAK2017Mixtures <- list.files(path = "BAYES/Mixture", full.names = FALSE, recursive = FALSE)
-SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures))]
+SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_ATTRIBUTES", x = SEAK2017Mixtures))]
 SEAK2017Mixtures_SampSizes <- sapply(SEAK2017Mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix)))[1]} )
 names(SEAK2017Mixtures_SampSizes) <- sapply(names(SEAK2017Mixtures_SampSizes), function(mix) {unlist(strsplit(x = mix, split = ".mix"))[1]})
 
-
+#~~~~~~~~~~~~~~~~~~
 # Create fully formatted spreadsheat
-EstimatesStats <- TBR_2017_2RG_EstimatesStats_Formatted
 SampSizes <- SEAK2017Mixtures_SampSizes
 PubNames <- TBR2017_5RG_PubNames
 
 # dir.create("Estimates tables")
 
-for(mix in names(EstimatesStats)) {
+for(mix in TBR_Mixtures) {
   
+  EstimatesStats <- TBR_2017_5RG_EstimatesStats_Formatted
   nRG <- dim(EstimatesStats[[1]])[1]
-  TableX <- matrix(data = "", nrow = nRG + 3, ncol = 7)
-  TableX[1, 3] <- paste(PubNames[mix], "(n=", SampSizes[mix], ")")
-  TableX[2, 6] <- "90% CI"
-  TableX[3, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
-  TableX[seq(nRG) + 3, 1] <- seq(nRG)
-  TableX[seq(nRG) + 3, 2] <- rownames(EstimatesStats[[mix]])
-  TableX[seq(nRG) + 3, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
+  Table1 <- matrix(data = "", nrow = nRG + 7, ncol = 7)
+  Table1[1, 1] <- paste(nRG, "reporting groups")
+  Table1[2, 1] <- PubNames[mix]
+  Table1[3, 1] <- paste0("N = ", SampSizes[mix])
+  Table1[3, 3] <- "Relative Contribution"
+  Table1[4, 6] <- "90% CI"
+  Table1[5, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
+  Table1[seq(nRG) + 5, 1] <- seq(nRG)
+  Table1[seq(nRG) + 5, 2] <- rownames(EstimatesStats[[mix]])
+  Table1[seq(nRG) + 5, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
   
-  write.xlsx(x = TableX, file = "Estimates tables/TBR2017_2RG_StratifiedEstimatesStats_FormattedPretty.xlsx",
-             col.names = FALSE, row.names = FALSE, sheetName = paste(mix, " Troll 4RG"), append = TRUE)
+  EstimatesStats <- TBR_2017_3RG_EstimatesStats_Formatted
+  nRG <- dim(EstimatesStats[[1]])[1]
+  Table2 <- matrix(data = "", nrow = nRG + 7, ncol = 7)
+  Table2[1, 1] <- paste(nRG, "reporting groups")
+  Table2[2, 1] <- PubNames[mix]
+  Table2[3, 1] <- paste0("N = ", SampSizes[mix])
+  Table2[3, 3] <- "Relative Contribution"
+  Table2[4, 6] <- "90% CI"
+  Table2[5, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
+  Table2[seq(nRG) + 5, 1] <- seq(nRG)
+  Table2[seq(nRG) + 5, 2] <- rownames(EstimatesStats[[mix]])
+  Table2[seq(nRG) + 5, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
+  
+  EstimatesStats <- TBR_2017_2RG_EstimatesStats_Formatted
+  nRG <- dim(EstimatesStats[[1]])[1]
+  Table3 <- matrix(data = "", nrow = nRG + 7, ncol = 7)
+  Table3[1, 1] <- paste(nRG, "reporting groups")
+  Table3[2, 1] <- PubNames[mix]
+  Table3[3, 1] <- paste0("N = ", SampSizes[mix])
+  Table3[3, 3] <- "Relative Contribution"
+  Table3[4, 6] <- "90% CI"
+  Table3[5, 2:7] <- c("Reporting Group", colnames(EstimatesStats[[mix]]))
+  Table3[seq(nRG) + 5, 1] <- seq(nRG)
+  Table3[seq(nRG) + 5, 2] <- rownames(EstimatesStats[[mix]])
+  Table3[seq(nRG) + 5, 3:7] <- formatC(x = EstimatesStats[[mix]], digits = 3, format = "f")
+  
+  write.xlsx(x = rbind(Table1, Table2, Table3), file = "Estimates tables/TBR2017_StratifiedEstimatesStats.xlsx",
+             col.names = FALSE, row.names = FALSE, sheetName = PubNames[mix], append = TRUE)
   
 }
 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### TBR Metadata ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# load("Extraction Lists/K120ExtractionLists.RData")
+
+# Create Key
+D108Gill_2017.gcl$attributes$DNA_FISH_ID <- sapply(as.character(D108Gill_2017.gcl$attributes$SillySource), function(i) {unlist(strsplit(x = i, split = "_"))[2]} )
+D111Gill_2017.gcl$attributes$DNA_FISH_ID <- sapply(as.character(D111Gill_2017.gcl$attributes$SillySource), function(i) {unlist(strsplit(x = i, split = "_"))[2]} )
+
+str(Drift_ASL_Gen_D108.dat)
+
+all(D108Gill_2017.gcl$attributes$DNA_FISH_ID %in% Drift_ASL_Gen_D108.dat$Dna.Specimen.No)
+all(D111Gill_2017.gcl$attributes$DNA_FISH_ID %in% Drift_ASL_Gen_D111.dat$Dna.Specimen.No)
+
+# Write metadata with only mixture fish
+require(xlsx)
+write.xlsx(x = rbind(Drift_ASL_Gen_D108.dat[Drift_ASL_Gen_D108.dat$Dna.Specimen.No %in% D108Gill_2017.gcl$attributes$DNA_FISH_ID, ],
+                     Drift_ASL_Gen_D111.dat[Drift_ASL_Gen_D111.dat$Dna.Specimen.No %in% D111Gill_2017.gcl$attributes$DNA_FISH_ID, ]),
+           file = "V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17/D8&11 Estimates 2017.xlsx", sheetName = "Gillnet_Metadata", append = TRUE, row.names = FALSE)
+
+# Create Key
+D108Sport_2017.gcl$attributes$DNA_FISH_ID <- paste0(as.numeric(D108Sport_2017.gcl$attributes$DNA_TRAY_CODE), D108Sport_2017.gcl$attributes$DNA_TRAY_WELL_CODE)
+D111Sport_2017.gcl$attributes$DNA_FISH_ID <- paste0(as.numeric(D111Sport_2017.gcl$attributes$DNA_TRAY_CODE), D111Sport_2017.gcl$attributes$DNA_TRAY_WELL_CODE)
+
+Sport_ASL_Gen_D108_allCards.dat$DNA_FISH_ID <- paste0(Sport_ASL_Gen_D108_allCards.dat$GSI_CARD, Sport_ASL_Gen_D108_allCards.dat$GsiCardRow)
+Sport_ASL_Gen_D111_allCards.dat$DNA_FISH_ID <- paste0(Sport_ASL_Gen_D111_allCards.dat$GSI_CARD, Sport_ASL_Gen_D111_allCards.dat$GsiCardRow)
+
+all(D108Sport_2017.gcl$attributes$DNA_FISH_ID %in% Sport_ASL_Gen_D108_allCards.dat$DNA_FISH_ID)
+all(D111Sport_2017.gcl$attributes$DNA_FISH_ID %in% Sport_ASL_Gen_D111_allCards.dat$DNA_FISH_ID)
+
+# Write metadata with only mixture fish
+write.xlsx(x = rbind(Sport_ASL_Gen_D108_allCards.dat[Sport_ASL_Gen_D108_allCards.dat$DNA_FISH_ID %in% D108Sport_2017.gcl$attributes$DNA_FISH_ID, ],
+                     Sport_ASL_Gen_D111_allCards.dat[Sport_ASL_Gen_D111_allCards.dat$DNA_FISH_ID %in% D111Sport_2017.gcl$attributes$DNA_FISH_ID, ]),
+           file = "V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17/D8&11 Estimates 2017.xlsx", sheetName = "Sport_Metadata", append = TRUE, row.names = FALSE)
