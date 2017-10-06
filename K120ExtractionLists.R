@@ -58,12 +58,12 @@ str(Drift_ASL_Gen_D111.dat)  # 51
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Extraction list for D108
-write.xlsx(x = Drift_ASL_Gen_D108.dat[, c("WGC", "WGC_FishID")], file = "Extraction Lists/K120 Winter Spring Troll Extraction.xlsx", 
+write.xlsx(x = Drift_ASL_Gen_D108.dat[, c("WGC", "WGC_FishID")], file = "Extraction Lists/K120 Sport Gillnet TBR Extraction.xlsx", 
            sheetName = "KGILL17D8 Extraction List", append = TRUE, row.names = FALSE)
 length(Drift_ASL_Gen_D108.dat$WGC_FishID); length(unique(Drift_ASL_Gen_D108.dat$WGC))
 
 # Extraction list for D111
-write.xlsx(x = Drift_ASL_Gen_D111.dat[, c("WGC", "WGC_FishID")], file = "Extraction Lists/K120 Winter Spring Troll Extraction.xlsx", 
+write.xlsx(x = Drift_ASL_Gen_D111.dat[, c("WGC", "WGC_FishID")], file = "Extraction Lists/K120 Sport Gillnet TBR Extraction.xlsx", 
            sheetName = "KGILL17D11 Extraction List", append = TRUE, row.names = FALSE)
 length(Drift_ASL_Gen_D111.dat$WGC_FishID); length(unique(Drift_ASL_Gen_D111.dat$WGC))
 
@@ -162,7 +162,7 @@ table(Sport_ASL_Gen_D111_allCards.dat$SITE)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Extraction list for D108 and D111 Sport
 write.xlsx(x = unique(rbind(Sport_ASL_Gen_D108_allCards.dat[, "GSI_CARD", drop = FALSE], Sport_ASL_Gen_D111_allCards.dat[, "GSI_CARD", drop = FALSE])),
-                        file = "Extraction Lists/K120 Winter Spring Troll Extraction.xlsx", 
+                        file = "Extraction Lists/K120 Sport Gillnet TBR Extraction.xlsx", 
            sheetName = "KSPORT17 Extraction List", append = TRUE, row.names = FALSE)
 length(c(Sport_ASL_Gen_D108_allCards.dat$GsiCardRow, Sport_ASL_Gen_D111_allCards.dat$GsiCardRow))
 length(unique(c(Sport_ASL_Gen_D108_allCards.dat$GSI_CARD, Sport_ASL_Gen_D111_allCards.dat$GSI_CARD)))
@@ -246,12 +246,12 @@ table(MSF_2016_ASL_Gen.dat$District, MSF_2016_ASL_Gen.dat$Size)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Extraction list for 2017 Troll MSF
-write.xlsx(x = unique(MSF_2017_ASL_Gen.dat[, "WGC", drop = FALSE]), file = "Extraction Lists/K120 Winter Spring Troll Extraction.xlsx", 
+write.xlsx(x = unique(MSF_2017_ASL_Gen.dat[, "WGC", drop = FALSE]), file = "Extraction Lists/K120 Sport Gillnet TBR Extraction.xlsx", 
            sheetName = "KTROL17MS Extraction List", append = TRUE, row.names = FALSE)
 length(MSF_2017_ASL_Gen.dat$WGC_FishID); length(unique(MSF_2017_ASL_Gen.dat$WGC))
 
 # Extraction list for 2016 Troll MSF
-write.xlsx(x = unique(MSF_2016_ASL_Gen.dat[, "WGC", drop = FALSE]), file = "Extraction Lists/K120 Winter Spring Troll Extraction.xlsx", 
+write.xlsx(x = unique(MSF_2016_ASL_Gen.dat[, "WGC", drop = FALSE]), file = "Extraction Lists/K120 Sport Gillnet TBR Extraction.xlsx", 
            sheetName = "KTROL16MS Extraction List", append = TRUE, row.names = FALSE)
 length(MSF_2016_ASL_Gen.dat$WGC_FishID); length(unique(MSF_2016_ASL_Gen.dat$WGC))
 
@@ -297,7 +297,7 @@ Drift_ASL_Gen_D108.dat$WGC <-
                                                            WGC,
                                                            paste0(paste(rep("0", 10 - nchar(WGC)), collapse = ''), WGC))})
 # Write new output
-write.xlsx(x = Drift_ASL_Gen_D108.dat[, c("WGC", "WGC_FishID")], file = "Extraction Lists/K120 Winter Spring Troll Extraction.xlsx", 
+write.xlsx(x = Drift_ASL_Gen_D108.dat[, c("WGC", "WGC_FishID")], file = "Extraction Lists/K120 Sport Gillnet TBR Extraction.xlsx", 
            sheetName = "KGILL17D8 Extraction List", append = TRUE, row.names = FALSE)
 
 
@@ -324,7 +324,7 @@ Drift_ASL_Gen_D111.dat$WGC <-
                                                            WGC,
                                                            paste0(paste(rep("0", 10 - nchar(WGC)), collapse = ''), WGC))})
 # Write new output
-write.xlsx(x = Drift_ASL_Gen_D111.dat[, c("WGC", "WGC_FishID")], file = "Extraction Lists/K120 Winter Spring Troll Extraction.xlsx", 
+write.xlsx(x = Drift_ASL_Gen_D111.dat[, c("WGC", "WGC_FishID")], file = "Extraction Lists/K120 Sport Gillnet TBR Extraction.xlsx", 
            sheetName = "KGILL17D11 Extraction List", append = TRUE, row.names = FALSE)
 
 
@@ -340,7 +340,7 @@ Sport_TBR_WGC <-
                                                            WGC,
                                                            paste0(paste(rep("0", 10 - nchar(WGC)), collapse = ''), WGC))})
 # Write new output
-write.xlsx(x = Sport_TBR_WGC, file = "Extraction Lists/K120 Winter Spring Troll Extraction.xlsx", 
+write.xlsx(x = Sport_TBR_WGC, file = "Extraction Lists/K120 Sport Gillnet TBR Extraction.xlsx", 
            sheetName = "KSPORT17 Extraction List", append = TRUE, row.names = FALSE)
 
 
@@ -355,7 +355,7 @@ MSF_2016_ASL_Gen.dat$WGC <-
                                                          WGC,
                                                          paste0(paste(rep("0", 10 - nchar(WGC)), collapse = ''), WGC))})
 # Write new output
-write.xlsx(x = unique(MSF_2016_ASL_Gen.dat[, "WGC", drop = FALSE]), file = "Extraction Lists/K120 Winter Spring Troll Extraction.xlsx", 
+write.xlsx(x = unique(MSF_2016_ASL_Gen.dat[, "WGC", drop = FALSE]), file = "Extraction Lists/K120 Sport Gillnet TBR Extraction.xlsx", 
            sheetName = "KTROL16MS Extraction List", append = TRUE, row.names = FALSE)
 
 
@@ -383,7 +383,7 @@ MSF_2017_ASL_Gen.dat$WGC <-
                                                          WGC,
                                                          paste0(paste(rep("0", 10 - nchar(WGC)), collapse = ''), WGC))})
 # Write new output
-write.xlsx(x = unique(MSF_2017_ASL_Gen.dat[, "WGC", drop = FALSE]), file = "Extraction Lists/K120 Winter Spring Troll Extraction.xlsx", 
+write.xlsx(x = unique(MSF_2017_ASL_Gen.dat[, "WGC", drop = FALSE]), file = "Extraction Lists/K120 Sport Gillnet TBR Extraction.xlsx", 
            sheetName = "KTROL17MS Extraction List", append = TRUE, row.names = FALSE)
 
 # save.image("Extraction Lists/K120ExtractionLists.RData")
