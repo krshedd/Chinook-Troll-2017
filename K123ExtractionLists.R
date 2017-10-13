@@ -163,3 +163,20 @@ write.xlsx(x = Sport_ASL_2Run_ordered.dat, file = "Extraction Lists/K123 Summer 
            sheetName = "Sport Extraction Data", append = TRUE, row.names = FALSE)
 
 save.image("Extraction Lists/K123ExtractionLists.RData")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Where are missing fish from? ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
+
+x_miss <- readClipboard()
+
+require(xlsx)
+Sport_ASL_2Run.dat <- read.xlsx(file = "Extraction Lists/K123 Summer Troll Sport Extraction.xlsx", sheetName = "Sport Extraction Data", stringsAsFactors = FALSE)
+str(Sport_ASL_2Run.dat)
+
+table(Sport_ASL_2Run.dat$FISH_ID %in% x_miss)
+
+Sport_ASL_2Run_miss.dat <- Sport_ASL_2Run.dat[Sport_ASL_2Run.dat$FISH_ID %in% x_miss, ]
+
+table(Sport_ASL_2Run_miss.dat$Biweek, Sport_ASL_2Run_miss.dat$SITE)
