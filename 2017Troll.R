@@ -1194,6 +1194,14 @@ SEAK17estimatesobjects
 # Dget all estimates stats
 invisible(sapply(SEAK17estimatesobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Estimates objects", objct, sep = "/")), pos = 1) })); beep(2)
 
+
+Troll2017_8RG_StratifiedEstimatesStats <- list("EWintAllQuad_2017" = EWint_2017_8RG_StratifiedEstimatesStats,
+                                               "LWintAllQuad_2017" = LWint_2017_8RG_StratifiedEstimatesStats,
+                                               "SpringAllQuad_2017" = Spring_2017_8RG_StratifiedEstimatesStats)
+dput(x = Troll2017_8RG_StratifiedEstimatesStats, file = "Estimates objects/Troll2017_8RG_StratifiedEstimatesStats.txt")
+
+
+
 SEAK17estimatesobjects <- unlist(lapply(SEAK17estimatesobjects, function(objct) {unlist(strsplit(x = objct, split = ".txt"))}))
 
 Troll2017_8RG_EstimatesStats <- list(
