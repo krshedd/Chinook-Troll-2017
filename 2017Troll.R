@@ -1764,3 +1764,59 @@ all(D111Sport_2017.gcl$attributes$DNA_FISH_ID %in% Sport_ASL_Gen_D111_allCards.d
 write.xlsx(x = rbind(Sport_ASL_Gen_D108_allCards.dat[Sport_ASL_Gen_D108_allCards.dat$DNA_FISH_ID %in% D108Sport_2017.gcl$attributes$DNA_FISH_ID, ],
                      Sport_ASL_Gen_D111_allCards.dat[Sport_ASL_Gen_D111_allCards.dat$DNA_FISH_ID %in% D111Sport_2017.gcl$attributes$DNA_FISH_ID, ]),
            file = "V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17/D8&11 Estimates 2017.xlsx", sheetName = "Sport_Metadata", append = TRUE, row.names = FALSE)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Add TBR Data to Summary Sheet ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add data to summary sheet
+
+# Get samples sizes from mixture files
+sapply(list.files(path = "BAYES/Mixture", pattern = "D1", full.names = TRUE), function(mix) {dim(read.table(file = mix, header = FALSE))[1]} )
+
+
+## Get objects
+SEAK17estimatesobjects <- list.files(path = "Estimates objects", recursive = FALSE, pattern = "TBR")
+# SEAK17estimatesobjects <- SEAK17estimatesobjects[-c(grep(pattern = "AllYearTroll", x = SEAK17estimatesobjects), 10)]
+SEAK17estimatesobjects
+
+# Check GR
+sapply(SEAK17estimatesobjects[c(1, 3, 5)], function(est) {
+  sapply(get(est), function(mix) {
+    mix[, "GR"] > 1.2
+  })
+})
+
+# Dget all estimates stats
+invisible(sapply(SEAK17estimatesobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Estimates objects", objct, sep = "/")), pos = 1) }))
+
+SEAK17estimatesobjects <- unlist(lapply(SEAK17estimatesobjects, function(objct) {unlist(strsplit(x = objct, split = ".txt"))}))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Estimates
+# D108Gill
+write.table(x = cbind(t(TBR_2017_5RG_EstimatesStats$D108Gill_2017[GroupNames5, c("mean", "sd", "5%", "95%")]), "", 
+      t(TBR_2017_3RG_EstimatesStats$D108Gill_2017[GroupNames3, c("mean", "sd", "5%", "95%")]), "", 
+      t(TBR_2017_2RG_EstimatesStats$D108Gill_2017[GroupNames2, c("mean", "sd", "5%", "95%")])
+), file = 'clipboard', row.names = FALSE, col.names = FALSE, sep = "\t")
+
+# D111Gill
+write.table(x = cbind(t(TBR_2017_2RG_EstimatesStats$D108Gill_2017[GroupNames2, c("mean", "sd", "5%", "95%")])
+), file = 'clipboard', row.names = FALSE, col.names = FALSE, sep = "\t")
+
+# D108Sport
+write.table(x = cbind(t(TBR_2017_5RG_EstimatesStats$D108Sport_2017[GroupNames5, c("mean", "sd", "5%", "95%")]), "", 
+                      t(TBR_2017_3RG_EstimatesStats$D108Sport_2017[GroupNames3, c("mean", "sd", "5%", "95%")]), "", 
+                      t(TBR_2017_2RG_EstimatesStats$D108Sport_2017[GroupNames2, c("mean", "sd", "5%", "95%")])
+), file = 'clipboard', row.names = FALSE, col.names = FALSE, sep = "\t")
+
+# D111Sport
+write.table(x = cbind(t(TBR_2017_5RG_EstimatesStats$D111Sport_2017[GroupNames5, c("mean", "sd", "5%", "95%")]), "", 
+                      t(TBR_2017_3RG_EstimatesStats$D111Sport_2017[GroupNames3, c("mean", "sd", "5%", "95%")]), "", 
+                      t(TBR_2017_2RG_EstimatesStats$D111Sport_2017[GroupNames2, c("mean", "sd", "5%", "95%")])
+), file = 'clipboard', row.names = FALSE, col.names = FALSE, sep = "\t")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Metadata
+# Gillnet
+Gillnet.df <- read.table(file = 'clipboard', header = TRUE, stringsAsFactors = FALSE)
