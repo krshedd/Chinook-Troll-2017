@@ -1820,3 +1820,350 @@ write.table(x = cbind(t(TBR_2017_5RG_EstimatesStats$D111Sport_2017[GroupNames5, 
 ## Metadata
 # Gillnet
 Gillnet.df <- read.table(file = 'clipboard', header = TRUE, stringsAsFactors = FALSE)
+
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Clean workspace; dget .gcl objects and Locus Control ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+rm(list = ls(all = TRUE))
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
+# This sources all of the new GCL functions to this workspace
+source("C:/Users/krshedd/Documents/R/Functions.GCL.R")
+source("H:/R Source Scripts/Functions.GCL_KS.R")
+
+## Get objects
+SEAKobjects <- list.files(path = "Objects", recursive = FALSE)
+SEAKobjects <- SEAKobjects[-which(SEAKobjects == "Vials" | SEAKobjects == "OLD_BAD_LOCUSCONTROL")]
+SEAKobjects
+
+invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Objects", objct, sep = "/")), pos = 1) })); beep(2)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Read in K123 Genotypes: Summer + Sport ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Pull all data for each silly code and create .gcl objects for each
+K123Mixtures <- c("KTROL17SU", "KSPORT17")
+
+LOKI2R_GAPS.GCL(sillyvec = K123Mixtures, username = username, password = password)
+
+rm(username, password)
+objects(pattern = "\\.gcl")
+
+## Save unaltered .gcl's as back-up:
+invisible(sapply(K123Mixtures, function(silly) {dput(x = get(paste0(silly, ".gcl")), file = paste0("Raw genotypes/OriginalCollections/" , silly, ".txt"))} )); beep(8)
+
+## Original sample sizes by SILLY
+collection.size.original <- sapply(K123Mixtures, function(silly) get(paste0(silly, ".gcl"))$n)
+collection.size.original
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Save Objects
+dput(x = K123Mixtures, file = "Objects/K123Mixtures.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Add District and StatWeek Info ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+require(xlsx)
+require(dplyr)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Summer 1 Mixtures
+# Read in fish data
+Summer17.dat <- read.xlsx(file = "Extraction Lists/K123 Summer Troll Sport Extraction.xlsx", 
+                          sheetName = "SU1 Extraction Data", stringsAsFactors = FALSE)
+str(Summer17.dat)
+aggregate(X..Tissues ~ Dist.Quad, data = Summer17.dat, sum)
+#   Dist.Quad X..Tissues
+# 1       171        380
+# 2       172        380
+# 3       173        340
+# 4       174        182
+
+KTROL17SU.gcl <- dget("Raw genotypes/OriginalCollections/KTROL17SU.txt")
+KTROL17SU.gcl$n  # 
+str(KTROL17SU.gcl$attributes)
+
+# Merge with attributues table
+KTROL17SU.gcl$attributes <- KTROL17SU.gcl$attributes %>% 
+  left_join(Summer17.dat, by = c("DNA_TRAY_CODE" = "WGC"))
+rownames(KTROL17SU.gcl$attributes) <- KTROL17SU.gcl$attributes$FK_FISH_ID
+
+table(KTROL17SU.gcl$attributes$Dist.Quad, useNA = 'always')
+# 171  172  173  174 <NA> 
+# 378  379  340  181    0 
+
+# Verify order is correct
+all.equal(rownames(KTROL17SU.gcl$counts), as.character(KTROL17SU.gcl$attributes$FK_FISH_ID))
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Sport Mixtures
+# Read in fish data
+Sport17.dat <- read.xlsx(file = "Associated Data/Sport All/_2017_SEAK_SF_Whatman_AWL_25SEP17.xlsx",
+                              sheetName = "SEAK Sport", header = TRUE, stringsAsFactors = FALSE)
+str(Sport17.dat)
+table(Sport17.dat$SITE, Sport17.dat$Biweek)
+
+KSPORT17.gcl <- dget("Raw genotypes/OriginalCollections/KSPORT17.txt")
+str(KSPORT17.gcl)
+
+#~~~~~~~~~~~~~~~~~~
+# Create data key for merging
+KSPORT17.gcl$attributes <- KSPORT17.gcl$attributes %>% 
+  mutate(DNA_FISH_ID = paste(as.numeric(DNA_TRAY_CODE), DNA_TRAY_WELL_CODE, sep = "_")) 
+
+Sport17.dat <- Sport17.dat %>% 
+  mutate(DNA_FISH_ID = paste(GSI_CARD, GsiCardRow, sep = "_"))
+
+# Verify only on entry per fish
+Sport17.dups.log <- duplicated(Sport17.dat$DNA_FISH_ID)
+table(Sport17.dups.log)  # 9 duplicates
+Sport17.dups.ind <- Sport17.dat$DNA_FISH_ID[Sport17.dups.log]
+
+# Verify that each WGC only has one site
+Sport17.dat %>% 
+  group_by(GSI_CARD) %>% 
+  summarise(nsite = length(unique(SITE))) %>% 
+  group_by(nsite) %>% 
+  summarise(n())
+
+# Rename GsiCardRow sequentially by the number of fish per WGC
+for(ind in Sport17.dups.ind) {
+  gsicard <- unique(Sport17.dat$GSI_CARD[Sport17.dat$DNA_FISH_ID %in% ind])
+  nind <- sum(Sport17.dat$GSI_CARD %in% gsicard)
+  Sport17.dat$GsiCardRow[Sport17.dat$GSI_CARD == gsicard] <- seq(nind)
+}
+
+# Redefine DNA_FISH_ID
+Sport17.dat <- Sport17.dat %>% 
+  mutate(DNA_FISH_ID = paste(GSI_CARD, GsiCardRow, sep = "_"))
+str(Sport17.dat)
+
+# Verify only on entry per fish
+table(duplicated(Sport17.dat$DNA_FISH_ID))
+
+# Merge with attributes table
+KSPORT17.gcl$attributes <- KSPORT17.gcl$attributes %>% 
+  left_join(Sport17.dat, by = c("DNA_FISH_ID" = "DNA_FISH_ID"))
+rownames(KSPORT17.gcl$attributes) <- KSPORT17.gcl$attributes$FK_FISH_ID
+
+str(KSPORT17.gcl)
+addmargins(table(KSPORT17.gcl$attributes$Biweek, KSPORT17.gcl$attributes$SITE, useNA = "always"))
+#      CRAIG_KLAWOCK ELFIN_COVE GUSTAVUS JUNEAU KETCHIKAN PETERSBURG SITKA WRANGELL YAKUTAT <NA>  Sum
+# 9                0          0        0      0         3          3     0        2       0    0    8
+# 10              24          1        0      4        15          4    84       32       6    0  170
+# 11              53          7        1     16        24        133   213       31      12    0  490
+# 12             142         23        3     34       105         33   305       42      14    0  701
+# 13             157         28        3     91        88         21   293       17       4    0  702
+# 14             147         13        3     90        85          8   182        5       2    0  535
+# 15             110         13        1     16        38          3   151        1       3    0  336
+# 16             101         19        3     19        28          0   103        1       2    0  276
+# 17               0          0        0      1         0          0     0        0       0    0    1
+# <NA>             0          0        0      0         0          0     0        0       0    1    1
+# Sum            734        104       14    271       386        205  1331      131      43    1 3220
+
+all.equal(rownames(KSPORT17.gcl$scores), as.character(KSPORT17.gcl$attributes$FK_FISH_ID))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Save .gcl's with additional attributes data as back-up:
+# dir.create("Raw genotypes/OriginalCollections_Attributes")
+invisible(sapply(K123Mixtures, function(silly) {
+  dput(x = get(paste0(silly, ".gcl")), file = paste0("Raw genotypes/OriginalCollections_Attributes/" , silly, ".txt"))
+} )); beep(2)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Define Strata ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Summer Ret 1 Troll
+# Create Mixtures for each quadrant for each "retention period" (4 total mixtures) 1) NO, 2) NI, 3) SI, and 4) SO quadrants
+table(KTROL17SU.gcl$attributes$Dist.Quad)
+# 171 172 173 174 
+# 378 379 340 181 
+
+SummerRet1NI_2017.vials <- setNames(object = list(AttributesToIDs.GCL(silly = "KTROL17SU", attribute = "Dist.Quad", matching = 173)), nm = "KTROL17SU")
+PoolCollections.GCL(collections = "KTROL17SU", loci = GAPSLoci_reordered, IDs = SummerRet1NI_2017.vials, newname = "SummerRet1NI_2017")
+
+SummerRet1NO_2017.vials <- setNames(object = list(AttributesToIDs.GCL(silly = "KTROL17SU", attribute = "Dist.Quad", matching = 171)), nm = "KTROL17SU")
+PoolCollections.GCL(collections = "KTROL17SU", loci = GAPSLoci_reordered, IDs = SummerRet1NO_2017.vials, newname = "SummerRet1NO_2017")
+
+SummerRet1SI_2017.vials <- setNames(object = list(AttributesToIDs.GCL(silly = "KTROL17SU", attribute = "Dist.Quad", matching = 174)), nm = "KTROL17SU")
+PoolCollections.GCL(collections = "KTROL17SU", loci = GAPSLoci_reordered, IDs = SummerRet1SI_2017.vials, newname = "SummerRet1SI_2017")
+
+SummerRet1SO_2017.vials <- setNames(object = list(AttributesToIDs.GCL(silly = "KTROL17SU", attribute = "Dist.Quad", matching = 172)), nm = "KTROL17SU")
+PoolCollections.GCL(collections = "KTROL17SU", loci = GAPSLoci_reordered, IDs = SummerRet1SO_2017.vials, newname = "SummerRet1SO_2017")
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Sport
+# Create Mixtures for 
+# 1) Craig (all, to find WCVI for individual ID for origins)
+# 2) Sitka (all, to find WCVI for individual ID for origins)
+# 3) Ketchikan (proportional to harvest)
+# 4) Petersburg/Wrangell (proportional to harvest)
+# 5) Inside (proportional to harvest)
+# 6) Outside Period 1 (thru biweek 13, proportional to harvest)
+# 7) Outside Period 2 (after biweek 13, proportional to harvest)
+
+addmargins(table(KSPORT17.gcl$attributes$Biweek, KSPORT17.gcl$attributes$SITE, useNA = "always"))
+#      CRAIG_KLAWOCK ELFIN_COVE GUSTAVUS JUNEAU KETCHIKAN PETERSBURG SITKA WRANGELL YAKUTAT <NA>  Sum
+# 9                0          0        0      0         3          3     0        2       0    0    8
+# 10              24          1        0      4        15          4    84       32       6    0  170
+# 11              53          7        1     16        24        133   213       31      12    0  490
+# 12             142         23        3     34       105         33   305       42      14    0  701
+# 13             157         28        3     91        88         21   293       17       4    0  702
+# 14             147         13        3     90        85          8   182        5       2    0  535
+# 15             110         13        1     16        38          3   151        1       3    0  336
+# 16             101         19        3     19        28          0   103        1       2    0  276
+# 17               0          0        0      1         0          0     0        0       0    0    1
+# <NA>             0          0        0      0         0          0     0        0       0    1    1
+# Sum            734        104       14    271       386        205  1331      131      43    1 3220
+
+#~~~~~~~~~~~~~~~~~~
+# Craig
+CRGSport_2017.vials <- setNames(object = list(na.omit(AttributesToIDs.GCL(silly = "KSPORT17", attribute = "SITE", matching = "CRAIG_KLAWOCK"))), nm = "KSPORT17")
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% CRGSport_2017.vials[[1]]])
+PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = CRGSport_2017.vials, newname = "CRGSport_2017")
+table(CRGSport_2017.gcl$attributes$Biweek, CRGSport_2017.gcl$attributes$SITE)
+
+#~~~~~~~~~~~~~~~~~~
+# Sitka
+SITSport_2017.vials <- setNames(object = list(na.omit(AttributesToIDs.GCL(silly = "KSPORT17", attribute = "SITE", matching = "SITKA"))), nm = "KSPORT17")
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% SITSport_2017.vials[[1]]])
+PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = SITSport_2017.vials, newname = "SITSport_2017")
+table(SITSport_2017.gcl$attributes$Biweek, SITSport_2017.gcl$attributes$SITE)
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SummerRet1_Mixtures <- paste0("SummerRet1", c("NI", "NO", "SI", "SO"), "_2017")
+Sport_Mixtures <- paste0(c("CRG", "SIT", "KTN", "PBGWRN", "Inside", "OutsidePer1", "OutsidePer2"), "Sport_2017")
+
+sapply(c(SummerRet1_Mixtures, Sport_Mixtures), function(mix) {
+  get(paste0(mix, ".gcl"))$n
+} )
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Dput all .vials objects
+# dir.create("Objects/Vials")
+invisible(sapply(objects(pattern = ".vials"), function(obj) {
+  dput(x = get(obj), file = paste0("Objects/Vials/", obj, ".txt"))
+} ))
+
+invisible(sapply(objects(pattern = "Mixtures"), function(obj) {
+  dput(x = get(obj), file = paste0("Objects/", obj, ".txt"))
+} ))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Save .gcl's with additional attributes data as back-up:
+# dir.create("Raw genotypes/OriginalCollections_Attributes_Strata")
+invisible(sapply(c(SummerRet1_Mixtures, Sport_Mixtures), function(silly) {
+  dput(x = get(paste0(silly, ".gcl")), file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata/" , silly, ".txt"))
+} )); beep(2)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Data QC/Massage ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+require(xlsx)
+
+K123_Strata <- c(SummerRet1_Mixtures, Sport_Mixtures)
+dput(x = K123_Strata, file = "Objects/K123_Strata.txt")
+
+K123_Strata_SampleSizes <- matrix(data = NA, nrow = length(K123_Strata), ncol = 4, 
+                                  dimnames = list(K123_Strata, c("Genotyped", "Missing", "Duplicate", "Final")))
+
+#### Check loci
+## Get sample size by locus
+Original_K123_Strata_SampleSizebyLocus <- SampSizeByLocus.GCL(sillyvec = K123_Strata, loci = GAPSLoci_reordered)
+min(Original_K123_Strata_SampleSizebyLocus)  ## 40
+apply(Original_K123_Strata_SampleSizebyLocus, 1, min) / apply(Original_K123_Strata_SampleSizebyLocus, 1, max)  ## Good, 0.935
+
+Original_K123_Strata_PercentbyLocus <- apply(Original_K123_Strata_SampleSizebyLocus, 1, function(row) {row / max(row)} )
+which(apply(Original_K123_Strata_PercentbyLocus, 2, min) < 0.8)  # no re-runs!
+
+require(lattice)
+new.colors <- colorRampPalette(c("black", "white"))
+levelplot(t(Original_K123_Strata_PercentbyLocus), 
+          col.regions = new.colors, 
+          at = seq(from = 0, to = 1, length.out = 100), 
+          main = "% Genotyped", xlab = "SILLY", ylab = "Locus", 
+          scales = list(x = list(rot = 90)), 
+          aspect = "fill")  # aspect = "iso" will make squares
+
+#### Check individuals
+### Initial
+## Get number of individuals per silly before removing missing loci individuals
+Original_K123_Strata_ColSize <- sapply(paste0(K123_Strata, ".gcl"), function(x) get(x)$n)
+K123_Strata_SampleSizes[, "Genotyped"] <- Original_K123_Strata_ColSize
+
+### Missing
+## Remove individuals with >20% missing data
+K123_Strata_MissLoci <- RemoveIndMissLoci.GCL(sillyvec = K123_Strata, proportion = 0.8)
+dput(x = K123_Strata_MissLoci, file = "Objects/K123_Strata_MissLoci.txt")
+
+## Get number of individuals per silly after removing missing loci individuals
+ColSize_K123_Strata_PostMissLoci <- sapply(paste0(K123_Strata, ".gcl"), function(x) get(x)$n)
+K123_Strata_SampleSizes[, "Missing"] <- Original_K123_Strata_ColSize - ColSize_K123_Strata_PostMissLoci
+
+### Duplicate
+## Check within collections for duplicate individuals.
+K123_Strata_DuplicateCheck95MinProportion <- CheckDupWithinSilly.GCL(sillyvec = K123_Strata, loci = GAPSLoci_reordered, quantile = NULL, minproportion = 0.95)
+K123_Strata_DuplicateCheckReportSummary <- sapply(K123_Strata, function(x) K123_Strata_DuplicateCheck95MinProportion[[x]]$report)
+K123_Strata_DuplicateCheckReportSummary
+dput(x = K123_Strata_DuplicateCheckReportSummary, file = "Objects/K123_Strata_DuplicateCheckReportSummary.txt")
+
+## Remove duplicate individuals
+K123_Strata_RemovedDups <- RemoveDups.GCL(K123_Strata_DuplicateCheck95MinProportion)
+
+## Get number of individuals per silly after removing duplicate individuals
+ColSize_K123_Strata_PostDuplicate <- sapply(paste0(K123_Strata, ".gcl"), function(x) get(x)$n)
+K123_Strata_SampleSizes[, "Duplicate"] <- ColSize_K123_Strata_PostMissLoci-ColSize_K123_Strata_PostDuplicate
+
+### Final
+K123_Strata_SampleSizes[, "Final"] <- ColSize_K123_Strata_PostDuplicate
+K123_Strata_SampleSizes
+
+# dir.create("Output")
+write.xlsx(K123_Strata_SampleSizes, file = "Output/K123_Strata_SampleSizes.xlsx")
+dput(x = K123_Strata_SampleSizes, file = "Objects/K123_Strata_SampleSizes.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Save PostQC .gcl's as back-up:
+# dir.create("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC")
+invisible(sapply(K123_Strata, function(silly) {
+  dput(x = get(paste(silly, ".gcl", sep = '')), file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/" , silly, ".txt"))
+} )); beep(8)
+dput(x = D108Sport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/D108Sport_2017.txt")
+dput(x = D111Sport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/D111Sport_2017.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Clean workspace; dget .gcl objects and Locus Control ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+rm(list = ls(all = TRUE))
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
+# This sources all of the new GCL functions to this workspace
+source("C:/Users/krshedd/Documents/R/Functions.GCL.R")
+source("H:/R Source Scripts/Functions.GCL_KS.R")
+
+## Get objects
+SEAKobjects <- list.files(path = "Objects", recursive = FALSE)
+SEAKobjects <- SEAKobjects[-which(SEAKobjects == "Vials" | SEAKobjects == "OLD_BAD_LOCUSCONTROL")]
+SEAKobjects
+
+invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Objects", objct, sep = "/")), pos = 1) })); beep(2)
+
+## Get un-altered mixtures
+invisible(sapply(K123_Strata, function(silly) {assign(x = paste0(silly, ".gcl"), value = dget(file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/", silly, ".txt")), pos = 1)} )); beep(2)
+objects(pattern = "\\.gcl")
