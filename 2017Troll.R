@@ -2042,10 +2042,30 @@ table(SITSport_2017.gcl$attributes$Biweek, SITSport_2017.gcl$attributes$SITE)
 
 
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+###### This is where I stopped #####
+save.image("Summer Troll + Sport Mixtures.RData")
+# You will need to create mixtures for the other sport
+# See V:\Analysis\1_SEAK\Chinook\Mixture\SEAK17\Associated Data\Sport Extractions - Origins.xlsx; sheetname = "Prelim Harvest Detail"
+# For the correct proportions of fish to run for the remaining "KTN", "PBGWRN", "Inside", "OutsidePer1", "OutsidePer2" mixtures
+# I was intending to create separate silly's for each mixture prior to running Data QC/Massage so that we get accurate sample size info for each mixture
+# Once you great all the mixture silly's and perform Data QC/Massage (double check that code before running!), you can create the mixutre files and run BAYES
+# You should be good to go from there, but feel free to recycle my code from above if you want to keep the same format that I've been using
+# Good luck!!! Thanks so much for your help
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SummerRet1_Mixtures <- paste0("SummerRet1", c("NI", "NO", "SI", "SO"), "_2017")
 Sport_Mixtures <- paste0(c("CRG", "SIT", "KTN", "PBGWRN", "Inside", "OutsidePer1", "OutsidePer2"), "Sport_2017")
 
+# Confirm sample sizes
 sapply(c(SummerRet1_Mixtures, Sport_Mixtures), function(mix) {
   get(paste0(mix, ".gcl"))$n
 } )
