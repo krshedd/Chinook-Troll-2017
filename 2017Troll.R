@@ -2052,6 +2052,7 @@ table(SITSport_2017.gcl$attributes$Biweek, SITSport_2017.gcl$attributes$SITE)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ###### This is where I stopped #####
 save.image("Summer Troll + Sport Mixtures.RData")
+
 # You will need to create mixtures for the other sport
 # See V:\Analysis\1_SEAK\Chinook\Mixture\SEAK17\Associated Data\Sport Extractions - Origins.xlsx; sheetname = "Prelim Harvest Detail"
 # For the correct proportions of fish to run for the remaining "KTN", "PBGWRN", "Inside", "OutsidePer1", "OutsidePer2" mixtures
@@ -2059,6 +2060,242 @@ save.image("Summer Troll + Sport Mixtures.RData")
 # Once you great all the mixture silly's and perform Data QC/Massage (double check that code before running!), you can create the mixutre files and run BAYES
 # You should be good to go from there, but feel free to recycle my code from above if you want to keep the same format that I've been using
 # Good luck!!! Thanks so much for your help
+
+
+############# Serena picking up from this point forward
+## I was initially worried when mixture totals did not add up to what Kyle had requested to be run, however, I figured out that 
+## the msat importer does not pull in zeros. This project had somewhere aroun 244 fish that completely failed and that is what 
+## happened to the missing fish in the mixtures
+load("Summer Troll + Sport Mixtures.RData")
+
+
+#~~~~~~~~~~~~~~~~~~
+# Ketchikan
+KTNSport_2017.vials <- setNames(object = list(na.omit(AttributesToIDs.GCL(silly = "KSPORT17", attribute = "SITE", matching = "KETCHIKAN"))), nm = "KSPORT17")
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% KTNSport_2017.vials[[1]]]) #386, with 397 expected
+PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = KTNSport_2017.vials, newname = "KTNSport_2017")
+table(KTNSport_2017.gcl$attributes$Biweek, KTNSport_2017.gcl$attributes$SITE)
+
+#    KETCHIKAN
+# 9          3
+# 10        15
+# 11        24
+# 12       105
+# 13        88
+# 14        85
+# 15        38
+# 16        28
+
+#~~~~~~~~~~~~~~~~~~
+# Petersburg/Wrangell
+PBGWRNSport_2017.vials <- setNames(object = list(na.omit(AttributesToIDs.GCL(silly = "KSPORT17", attribute = "SITE", matching = c("PETERSBURG","WRANGELL")))), nm = "KSPORT17")
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% PBGWRNSport_2017.vials[[1]]]) # pbg 205, WRN 131 (total 336), 344 expected
+PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = PBGWRNSport_2017.vials, newname = "PBGWRNSport_2017")
+table(PBGWRNSport_2017.gcl$attributes$Biweek, PBGWRNSport_2017.gcl$attributes$SITE)
+
+#      PETERSBURG WRANGELL
+#9           3        2
+#10          4       32
+#11        133       31
+#12         33       42
+#13         21       17
+#14          8        5
+#15          3        1
+#16          0        1
+
+
+#~~~~~~~~~~~~~~~~~~
+# Outside Period 1 (YAK, GUS, ELF, SIT, CRG through BW 13)
+Per1Biweeks <- c("10","11","12","13")
+OutsidePorts <- c("YAKUTAT","GUSTAVUS","ELFIN_COVE","SITKA","CRAIG_KLAWOCK")
+attributes <- KSPORT17.gcl$attributes
+
+# when I count how many OutsidePer1 samples were selected for extraction, I get a higher number than what is found on the "Prelim Harvest
+# Detail" tab. 1474 vs 1273 and I have now ended up with 100 extra in this mixture. I will NOT run this one until Kyle gets back to verify.
+
+# after talking with Sara, we figured out that the TOTAL number of samples were bumped up for some of the full season estimates,
+# but we need to stick with the reduced set for the outside estimates, so that is what I have done below. The same goes for
+# Period 2
+
+
+# These are the total number of samples available for Biweek10
+Biweek10All <- as.character(subset(attributes,Biweek %in% Per1Biweeks[1]&SITE %in% OutsidePorts)$FK_FISH_ID)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek10All]) 
+
+# CRAIG_KLAWOCK    ELFIN_COVE         SITKA       YAKUTAT 
+#      24             1            84             6 
+# all are good, except I need to select 74 for Sitka
+
+Biweek10Sitka <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[1]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 74)
+dput(Biweek10Sitka,"Objects/Biweek10Sitka.vials.txt")
+Biweek10All <- c(as.character(subset(attributes,Biweek %in% Per1Biweeks[1]&SITE %in% OutsidePorts[-4])$FK_FISH_ID),Biweek10Sitka)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek10All]) 
+# CRAIG_KLAWOCK    ELFIN_COVE         SITKA       YAKUTAT 
+#      24             1            74             6 
+
+
+# These are the total number of samples available for Biweek11
+Biweek11All <- as.character(subset(attributes,Biweek %in% Per1Biweeks[2]&SITE %in% OutsidePorts)$FK_FISH_ID)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek11All]) 
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#     53             7             1           213            12
+# This time, Sitka and Craig need sample size reductions
+
+Biweek11Sitka <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[2]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 181)
+dput(Biweek11Sitka,"Objects/Biweek11Sitka.Per1.vials.txt")
+
+Biweek11Craig <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[2]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 40)
+dput(Biweek11Craig,"Objects/Biweek11Craig.Per1.vials.txt")
+
+Biweek11All <- c(as.character(subset(attributes,Biweek %in% Per1Biweeks[2]&SITE %in% OutsidePorts[-c(4,5)])$FK_FISH_ID),Biweek11Sitka,Biweek11Craig)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek11All]) 
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#      40             7             1           181            12
+
+# These are the total number of samples available for Biweek12
+Biweek12All <- as.character(subset(attributes,Biweek %in% Per1Biweeks[3]&SITE %in% OutsidePorts)$FK_FISH_ID)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek12All]) 
+# CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#      142            23             3           305            14 
+# Again, Craig and Klawock need reductions
+
+Biweek12Sitka <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[3]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 298)
+dput(Biweek12Sitka,"Objects/Biweek12Sitka.Per1.vials.txt")
+
+Biweek12Craig <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[3]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 112)
+dput(Biweek12Craig,"Objects/Biweek12Craig.Per1.vials.txt")
+
+Biweek12All <- c(as.character(subset(attributes,Biweek %in% Per1Biweeks[3]&SITE %in% OutsidePorts [-c(4,5)])$FK_FISH_ID),Biweek12Sitka,Biweek12Craig)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek12All]) 
+
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#       112            23             3           298            14 
+
+
+Biweek13All <- as.character(subset(attributes,Biweek %in% Per1Biweeks[4]&SITE %in% OutsidePorts)$FK_FISH_ID)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek13All]) 
+# CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#      157            28             3           293             4
+# This time, only Craig needs to be reduced. The total expected for Sitka is 296
+
+Biweek13Craig <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[4]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 140)
+dput(Biweek13Craig,"Objects/Biweek13Craig.Per1.vials.txt")
+
+Biweek13All <- c(as.character(subset(attributes,Biweek %in% Per1Biweeks[4]&SITE %in% OutsidePorts [-5])$FK_FISH_ID),Biweek13Craig)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek13All]) 
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#     140            28             3           293             4
+
+
+OutsidePer1Sport_2017.vials <- c(Biweek10All,Biweek11All,Biweek12All,Biweek13All)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% OutsidePer1Sport_2017.vials]) # looks good
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#    316            59             7           846            36
+
+
+PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = list(OutsidePer1Sport_2017.vials), newname = "OutsidePer1Sport_2017")
+table(OutsidePer1Sport_2017.gcl$attributes$Biweek,OutsidePer1Sport_2017.gcl$attributes$SITE)
+
+#      CRAIG_KLAWOCK ELFIN_COVE GUSTAVUS SITKA YAKUTAT
+#10            24          1        0    74       6
+#11            40          7        1   181      12
+#12           112         23        3   298      14
+#13           140         28        3   293       4
+
+
+
+#~~~~~~~~~~~~~~~~~~
+# Outside Period 2 (YAK, GUS, ELF, SIT, CRG after BW 13)
+Per2Biweeks <- c(14:18)
+
+# These are the total number of samples available for Biweek14 
+Biweek14All <- as.character(subset(attributes,Biweek %in% Per2Biweeks[1]&SITE %in% OutsidePorts)$FK_FISH_ID)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek14All]) 
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#     147            13             3           182             2
+# Sitka and Craig both need sample reduction
+
+Biweek14Sitka <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[1]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 166)
+dput(Biweek14Sitka,"Objects/Biweek14Sitka.Per1.vials.txt")
+
+Biweek14Craig <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[1]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 115)
+dput(Biweek14Craig,"Objects/Biweek14Craig.Per1.vials.txt")
+
+Biweek14All <- c(as.character(subset(attributes,Biweek %in% Per2Biweeks[1]&SITE %in% OutsidePorts [-c(4,5)])$FK_FISH_ID),Biweek14Sitka,Biweek14Craig)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek14All]) 
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#       115            13             3           166             2
+
+# These are the total number of samples available for Biweek15 
+Biweek15All <- as.character(subset(attributes,Biweek %in% Per2Biweeks[2]&SITE %in% OutsidePorts)$FK_FISH_ID)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek15All]) 
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#       110            13             1           151             3
+# Sitka and Craig both need sample reduction
+
+Biweek15Sitka <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[2]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 134)
+dput(Biweek15Sitka,"Objects/Biweek15Sitka.Per1.vials.txt")
+
+Biweek15Craig <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[2]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 97)
+dput(Biweek15Craig,"Objects/Biweek15Craig.Per1.vials.txt")
+
+Biweek15All <- c(as.character(subset(attributes,Biweek %in% Per2Biweeks[2]&SITE %in% OutsidePorts [-c(4,5)])$FK_FISH_ID),Biweek15Sitka,Biweek15Craig)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek15All]) 
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#       97            13             1           134             3
+
+
+# These are the total number of samples available for Biweek16
+Biweek16All <- as.character(subset(attributes,Biweek %in% Per2Biweeks[3]&SITE %in% OutsidePorts)$FK_FISH_ID)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek16All]) 
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#      101            19             3           103             23
+# Sitka and Craig both need sample reduction
+
+Biweek16Sitka <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[3]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 93)
+dput(Biweek16Sitka,"Objects/Biweek16Sitka.Per1.vials.txt")
+
+Biweek16Craig <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[3]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 79)
+dput(Biweek16Craig,"Objects/Biweek16Craig.Per1.vials.txt")
+
+Biweek16All <- c(as.character(subset(attributes,Biweek %in% Per2Biweeks[3]&SITE %in% OutsidePorts [-c(4,5)])$FK_FISH_ID),Biweek16Sitka,Biweek16Craig)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek16All]) 
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#       79            19             3            93             2
+
+OutsidePer2Sport_2017.vials <- c(Biweek14All,Biweek15All,Biweek16All)
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% OutsidePer2Sport_2017.vials]) # looks good
+#CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
+#       291            45             7           393             7
+
+
+PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = list(OutsidePer2Sport_2017.vials), newname = "OutsidePer2Sport_2017")
+table(OutsidePer2Sport_2017.gcl$attributes$Biweek,OutsidePer2Sport_2017.gcl$attributes$SITE)
+#      CRAIG_KLAWOCK ELFIN_COVE GUSTAVUS SITKA YAKUTAT
+#14           115         13        3   166       2
+#15            97         13        1   134       3
+#16            79         19        3    93       2
+
+
+
+#~~~~~~~~~~~~~~~~~~
+# Inside (I verified with Sara and this is ONLY JNU)
+InsideSport_2017.vials <- setNames(object = list(na.omit(AttributesToIDs.GCL(silly = "KSPORT17", attribute = "SITE", matching = "JUNEAU"))), nm = "KSPORT17")
+table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% InsideSport_2017.vials[[1]]]) # 271, 274 expected
+PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = InsideSport_2017.vials, newname = "InsideSport_2017")
+table(InsideSport_2017.gcl$attributes$Biweek, InsideSport_2017.gcl$attributes$SITE)
+
+#     JUNEAU
+#10      4
+#11     16
+#12     34
+#13     91
+#14     90
+#15     16
+#16     19
+#17      1
+
+
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2070,6 +2307,10 @@ sapply(c(SummerRet1_Mixtures, Sport_Mixtures), function(mix) {
   get(paste0(mix, ".gcl"))$n
 } )
 
+#SummerRet1NI_2017     SummerRet1NO_2017     SummerRet1SI_2017     SummerRet1SO_2017         CRGSport_2017         SITSport_2017         KTNSport_2017 
+#340                   378                   181                   379                   734                  1331                   386 
+#PBGWRNSport_2017      InsideSport_2017 OutsidePer1Sport_2017 OutsidePer2Sport_2017 
+#336                   271                  1264                   743
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Dput all .vials objects
@@ -2104,8 +2345,8 @@ K123_Strata_SampleSizes <- matrix(data = NA, nrow = length(K123_Strata), ncol = 
 #### Check loci
 ## Get sample size by locus
 Original_K123_Strata_SampleSizebyLocus <- SampSizeByLocus.GCL(sillyvec = K123_Strata, loci = GAPSLoci_reordered)
-min(Original_K123_Strata_SampleSizebyLocus)  ## 40
-apply(Original_K123_Strata_SampleSizebyLocus, 1, min) / apply(Original_K123_Strata_SampleSizebyLocus, 1, max)  ## Good, 0.935
+min(Original_K123_Strata_SampleSizebyLocus)  ## 177
+apply(Original_K123_Strata_SampleSizebyLocus, 1, min) / apply(Original_K123_Strata_SampleSizebyLocus, 1, max)  
 
 Original_K123_Strata_PercentbyLocus <- apply(Original_K123_Strata_SampleSizebyLocus, 1, function(row) {row / max(row)} )
 which(apply(Original_K123_Strata_PercentbyLocus, 2, min) < 0.8)  # no re-runs!
@@ -2128,6 +2369,8 @@ K123_Strata_SampleSizes[, "Genotyped"] <- Original_K123_Strata_ColSize
 ### Missing
 ## Remove individuals with >20% missing data
 K123_Strata_MissLoci <- RemoveIndMissLoci.GCL(sillyvec = K123_Strata, proportion = 0.8)
+# all of these will be in addition to those that were never read in to R because they received
+# all zeros during genotyping.
 dput(x = K123_Strata_MissLoci, file = "Objects/K123_Strata_MissLoci.txt")
 
 ## Get number of individuals per silly after removing missing loci individuals
@@ -2160,13 +2403,19 @@ dput(x = K123_Strata_SampleSizes, file = "Objects/K123_Strata_SampleSizes.txt")
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Save PostQC .gcl's as back-up:
 # dir.create("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC")
-invisible(sapply(K123_Strata, function(silly) {
-  dput(x = get(paste(silly, ".gcl", sep = '')), file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/" , silly, ".txt"))
-} )); beep(8)
-dput(x = D108Sport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/D108Sport_2017.txt")
-dput(x = D111Sport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/D111Sport_2017.txt")
+#invisible(sapply(K123_Strata, function(silly) {
+#  dput(x = get(paste(silly, ".gcl", sep = '')), file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/" , silly, ".txt"))
+#} )); beep(8)
+dput(x = SummerRet1NI_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/SummerRet1NI_2017.txt")
+dput(x = SummerRet1NO_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/SummerRet1NO_2017.txt")
+dput(x = SummerRet1SI_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/SummerRet1SI_2017.txt")
+dput(x = SummerRet1SO_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/SummerRet1SO_2017.txt")
 
+invisible(sapply(K123_Strata[-c(1:4)], function(silly) {
+ dput(x = get(paste(silly, ".gcl", sep = '')), file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/" , silly, ".txt"))
+} ))
 
+save.image("Summer Troll + Sport Mixtures_SRO.RData")
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Clean workspace; dget .gcl objects and Locus Control ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2174,8 +2423,8 @@ dput(x = D111Sport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attribute
 rm(list = ls(all = TRUE))
 setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
 # This sources all of the new GCL functions to this workspace
-source("C:/Users/krshedd/Documents/R/Functions.GCL.R")
-source("H:/R Source Scripts/Functions.GCL_KS.R")
+source("H:\\Desktop\\R\\Functions.GCL.r")
+
 
 ## Get objects
 SEAKobjects <- list.files(path = "Objects", recursive = FALSE)
@@ -2187,3 +2436,313 @@ invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = ob
 ## Get un-altered mixtures
 invisible(sapply(K123_Strata, function(silly) {assign(x = paste0(silly, ".gcl"), value = dget(file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/", silly, ".txt")), pos = 1)} )); beep(2)
 objects(pattern = "\\.gcl")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Get/Create MSA Objects ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# dir.create(path = "BAYES")
+# sapply(c("Control", "Mixture", "Output"), function(folder) {dir.create(path = paste("BAYES", folder, sep = "/"))} )
+
+#file.copy(from = "V:/Analysis/1_SEAK/Chinook/Baseline/GAPS3.0/Objects/SEAKPops357.txt", to = "Objects")
+#file.copy(from = "V:/Analysis/1_SEAK/Chinook/Baseline/GAPS3.0/Objects/bayesfortran_357.txt", to = "Objects")
+# dir.create("BAYES/Baseline")
+#file.copy(from = "V:/Analysis/1_SEAK/Chinook/Baseline/GAPS3.0/BAYES/Baseline/GAPS357pops13loci.bse", to = "BAYES/Baseline")
+#file.copy(from = "V:/Analysis/4_Westward/Sockeye/KMA Commercial Harvest 2014-2016/Mixtures/Objects/WASSIPSockeyeSeeds.txt", to = "Objects")
+#GAPS357PopsInits <- MultiChainInits.GCL(npops = 357, nchains = 5, prop = 0.9)
+#dput(x = GAPS357PopsInits, file = "Objects/GAPS357PopsInits.txt")
+GAPS357PopsInits <- dget("Objects/GAPS357PopsInits.txt")
+GroupNames5 <- c("Taku", "Andrew", "Stikine", "SSEAK", "Other")
+#dput(x = GroupNames5, file = "Objects/GroupNames5.txt")
+#GroupVec5RG_357 <- as.numeric(readClipboard())
+#dput(x = GroupVec5RG_357, file = "Objects/GroupVec5RG_357.txt")
+GroupVec5RG_357 <- dget("Objects/GroupVec5RG_357.txt")
+GroupNames3 <- c("TakuStikine", "Andrew", "Other")
+#dput(x = GroupNames3, file = "Objects/GroupNames3.txt")
+GroupVec3 <- c(1, 2, 1, 3, 3)
+#dput(x = GroupVec3, file = "Objects/GroupVec3.txt")
+GroupNames2 <- c("TakuStikine", "Other")
+#dput(x = GroupNames2, file = "Objects/GroupNames2.txt")
+GroupVec2 <- c(1, 2, 1, 2, 2)
+#dput(x = GroupVec2, file = "Objects/GroupVec2.txt")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Dumping Mixture Files. I am doing the summer retention mixtures separately, because I am not ready to dump the sport mixtures yet.
+# Sara asked that I prioritize getting the summer retention estimates done asap per email from Ed and Randy. 12/21 SRO
+mixfortran <- CreateMixture.GCL(sillys = "SummerRet1NI_2017", loci = GAPSLoci_reordered, IDs = NULL, mixname = "SummerRet1NI_2017", dir = "BAYES/Mixture", type = "BAYES", PT = FALSE)
+#dput(x = mixfortran, file = "Objects/mixfortran.txt")
+mixfortran <- CreateMixture.GCL(sillys = "SummerRet1NO_2017", loci = GAPSLoci_reordered, IDs = NULL, mixname = "SummerRet1NO_2017", dir = "BAYES/Mixture", type = "BAYES", PT = FALSE)
+
+mixfortran <- CreateMixture.GCL(sillys = "SummerRet1SI_2017", loci = GAPSLoci_reordered, IDs = NULL, mixname = "SummerRet1SI_2017", dir = "BAYES/Mixture", type = "BAYES", PT = FALSE)
+
+mixfortran <- CreateMixture.GCL(sillys = "SummerRet1SO_2017", loci = GAPSLoci_reordered, IDs = NULL, mixname = "SummerRet1SO_2017", dir = "BAYES/Mixture", type = "BAYES", PT = FALSE)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Create Priors
+## First get 2016 Summer Ret1 Estimates
+Summer1NI_2016.26RGs <- as.numeric(readClipboard())
+dput(Summer1NI_2016.26RGs, "Associated Data/Summer1NI_2016.26RGsEstimates.txt")
+
+Summer1NO_2016.26RGs <- as.numeric(readClipboard())
+dput(Summer1NO_2016.26RGs, "Associated Data/Summer1NO_2016.26RGsEstimates.txt")
+
+Summer1SI_2016.26RGs <- as.numeric(readClipboard())
+dput(Summer1SI_2016.26RGs, "Associated Data/Summer1SI_2016.26RGsEstimates.txt")
+
+Summer1SO_2016.26RGs <- as.numeric(readClipboard())
+dput(Summer1SO_2016.26RGs, "Associated Data/Summer1SO_2016.26RGsEstimates.txt")
+
+# Now create the priors for each
+Prior.Summer1NI_2017.26RGs <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = Summer1NI_2016.26RGs, minval = 0.01)
+dput(x = Prior.Summer1NI_2017.26RGs, file = "Objects/Prior.Summer1NI_2017.26RGs.txt")
+
+Prior.Summer1NO_2017.26RGs <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = Summer1NO_2016.26RGs, minval = 0.01)
+dput(x = Prior.Summer1NO_2017.26RGs, file = "Objects/Prior.Summer1NO_2017.26RGs.txt")
+
+Prior.Summer1SI_2017.26RGs <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = Summer1SI_2016.26RGs, minval = 0.01)
+dput(x = Prior.Summer1SI_2017.26RGs, file = "Objects/Prior.Summer1SI_2017.26RGs.txt")
+
+Prior.Summer1SO_2017.26RGs <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = Summer1SO_2016.26RGs, minval = 0.01)
+dput(x = Prior.Summer1SO_2017.26RGs, file = "Objects/Prior.Summer1SO_2017.26RGs.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Dumping Control files summer ret1 only
+CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname = "SummerRet1NI_2017", basename = "GAPS357pops13loci", suffix = "", 
+                        nreps = 40000, nchains = 5, groupvec = GroupVec26RG_357, priorvec = Prior.Summer1NI_2017.26RGs, initmat = 
+                        GAPS357PopsInits, dir = "BAYES/Control", seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), mixfortran = mixfortran, 
+                        basefortran = bayesfortran_357, switches = "F T F T T T F")
+
+CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname = "SummerRet1NO_2017", basename = "GAPS357pops13loci", suffix = "", 
+                      nreps = 40000, nchains = 5, groupvec = GroupVec26RG_357, priorvec = Prior.Summer1NO_2017.26RGs, initmat = 
+                      GAPS357PopsInits, dir = "BAYES/Control", seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), mixfortran = mixfortran, 
+                      basefortran = bayesfortran_357, switches = "F T F T T T F")
+
+CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname = "SummerRet1SI_2017", basename = "GAPS357pops13loci", suffix = "", 
+                      nreps = 40000, nchains = 5, groupvec = GroupVec26RG_357, priorvec = Prior.Summer1SI_2017.26RGs, initmat = 
+                      GAPS357PopsInits, dir = "BAYES/Control", seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), mixfortran = mixfortran, 
+                      basefortran = bayesfortran_357, switches = "F T F T T T F")
+
+CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname = "SummerRet1SO_2017", basename = "GAPS357pops13loci", suffix = "", 
+                      nreps = 40000, nchains = 5, groupvec = GroupVec26RG_357, priorvec = Prior.Summer1SO_2017.26RGs, initmat = 
+                      GAPS357PopsInits, dir = "BAYES/Control", seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), mixfortran = mixfortran, 
+                      basefortran = bayesfortran_357, switches = "F T F T T T F")
+
+#sapply(TBR_Mixtures, function(Mix) {
+#  CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname = Mix, basename = "GAPS357pops13loci", suffix = "", nreps = 40000, nchains = 5,
+ #                       groupvec = GroupVec5RG_357, priorvec = TBR_Strata_Priors[, Mix], initmat = GAPS357PopsInits, dir = "BAYES/Control",
+  #                      seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), mixfortran = mixfortran, basefortran = bayesfortran_357, switches = "F T F T T T F")
+#} )
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Create output directories
+sapply(K123_Strata[1:4], function(Mix) {dir.create(paste0("BAYES//Output/", Mix))} )
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Summarize BAYES 26RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SummerRet1_2017_26RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", mixvec = SummerRet1_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dput EstimatesStats
+# dir.create("Estimates objects")
+invisible(sapply(objects(pattern = "RG_EstimatesStats"), function(obj) {
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, ".txt"))
+} ))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Check Gelman-Rubin
+sapply(objects(pattern = "RG_EstimatesStats"), function(obj) {
+  sapply(get(obj), function(Mix) {
+    table(Mix[, "GR"] > 1.2)
+  } )
+} )
+
+# No GR issues
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Summarize BAYES 4RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SummerRet1_2017_4RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", mixvec = SummerRet1_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dput EstimatesStats
+# dir.create("Estimates objects")
+invisible(sapply(objects(pattern = "4RG_EstimatesStats"), function(obj) {
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, ".txt"))
+} ))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SummerRet1_2017_4RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = SummerRet1_Mixtures, catchvec = c(10020, 40721, 4037, 9551), 
+                          newname = "Stratified_SpringRet1_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+SummerRet1_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = SummerRet1_Mixtures, catchvec = c(10020, 40721, 4037, 9551), 
+                          newname = "Stratified_SpringRet1_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+
+AllTrollnoSummer_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = c(EWint_Mixtures,LWint_Mixtures,SpringRet1_Mixtures,SpringRet2_Mixtures), 
+                          catchvec = c(4989, 1599, 22509, 14782, 807, 2241, 1700, 283, 1471, 8507, 1819, 482),  newname = "Stratified_AllTrollnoSummer_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+dput(AllTrollnoSummer_2017_8RG_StratifiedEstimates$Stats, "Estimates objects/AllTrollnoSummer_2017_8RG_StratifiedEstimates.txt")
+
+AllTroll_2017_8RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = c(EWint_Mixtures,LWint_Mixtures,SpringRet1_Mixtures,SpringRet2_Mixtures, SummerRet1_Mixtures), 
+                          catchvec = c(4989, 1599, 22509, 14782, 807, 2241, 1700, 283, 1471, 8507, 1819, 482, 10020, 40721, 4037, 9551),  newname = "Stratified_AllTroll_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+dput(AllTroll_2017_8RG_StratifiedEstimates$Stats, "Estimates objects/AllTroll_2017_8RG_StratifiedEstimates.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Now I will dump mixtures for sport 2017
+rm(list = ls(all = TRUE))
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
+# This sources all of the new GCL functions to this workspace
+source("H:\\Desktop\\R\\Functions.GCL.r")
+
+
+## Get objects
+SEAKobjects <- list.files(path = "Objects", recursive = FALSE)
+SEAKobjects <- SEAKobjects[-which(SEAKobjects == "Vials" | SEAKobjects == "OLD_BAD_LOCUSCONTROL")]
+SEAKobjects
+
+invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Objects", objct, sep = "/")), pos = 1) })); beep(2)
+
+## Get un-altered mixtures
+invisible(sapply(K123_Strata[-c(1:4)], function(silly) {assign(x = paste0(silly, ".gcl"), value = dget(file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/", silly, ".txt")), pos = 1)} )); beep(2)
+objects(pattern = "\\.gcl")
+
+## Create mixtures 
+sapply(K123_Strata[-c(1:4)], function(Mix) {
+  CreateMixture.GCL(sillys = Mix, loci = GAPSLoci_reordered, IDs = NULL, mixname = Mix, dir = "BAYES//Mixture", type = "BAYES", PT = FALSE)
+} )
+
+## Create Priors
+## First get 2016 Estimates
+SITSport_2016.26RGs <- as.numeric(readClipboard())
+dput(SITSport_2016.26RGs, "Associated Data/SITSport_2016.26RGsEstimates.txt")
+SITSport_2016.26RGs <- dget("Associated Data/SITSport_2016.26RGsEstimates.txt")
+
+CRGSport_2016.26RGs <- as.numeric(readClipboard())
+dput(CRGSport_2016.26RGs, "Associated Data/CRGSport_2016.26RGsEstimates.txt")
+CRGSport_2016.26RGs <- dget("Associated Data/CRGSport_2016.26RGsEstimates.txt")
+
+KTNSport_2016.26RGs <- as.numeric(readClipboard())
+dput(KTNSport_2016.26RGs, "Associated Data/KTNSport_2016.26RGsEstimates.txt")
+KTNSport_2016.26RGs <- dget("Associated Data/KTNSport_2016.26RGsEstimates.txt")
+
+PBGWRNSport_2016.26RGs <- as.numeric(readClipboard())
+dput(PBGWRNSport_2016.26RGs, "Associated Data/PBGWRNSport_2016.26RGsEstimates.txt")
+PBGWRNSport_2016.26RGs <- dget("Associated Data/PBGWRNSport_2016.26RGsEstimates.txt")
+
+InsideSport_2016.26RGs <- as.numeric(readClipboard())
+dput(InsideSport_2016.26RGs, "Associated Data/InsideSport_2016.26RGsEstimates.txt")
+InsideSport_2016.26RGs <- dget( "Associated Data/InsideSport_2016.26RGsEstimates.txt")
+
+OutsidePer1Sport_2016.26RGs <- as.numeric(readClipboard())
+dput(OutsidePer1Sport_2016.26RGs, "Associated Data/OutsidePer1Sport_2016.26RGsEstimates.txt")
+OutsidePer1Sport_2016.26RGs <- dget( "Associated Data/OutsidePer1Sport_2016.26RGsEstimates.txt")
+
+OutsidePer2Sport_2016.26RGs <- as.numeric(readClipboard())
+dput(OutsidePer2Sport_2016.26RGs, "Associated Data/OutsidePer2Sport_2016.26RGsEstimates.txt")
+OutsidePer2Sport_2016.26RGs <- dget("Associated Data/OutsidePer2Sport_2016.26RGsEstimates.txt")
+
+
+# Now create the priors for each
+Prior.SITSport_2017.26RGs <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = SITSport_2016.26RGs, minval = 0.01)
+dput(x = Prior.SITSport_2017.26RGs, file = "Objects/Prior.SITSport_2017.26RGs.txt")
+
+Prior.CRGSport_2017.26RGs <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = CRGSport_2016.26RGs, minval = 0.01)
+dput(x = Prior.CRGSport_2017.26RGs, file = "Objects/Prior.CRGSport_2017.26RGs.txt")
+
+Prior.KTNSport_2017.26RGs <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = KTNSport_2016.26RGs, minval = 0.01)
+dput(x = Prior.KTNSport_2017.26RGs, file = "Objects/Prior.KTNSport_2017.26RGs.txt")
+
+Prior.PBGWRNSport_2017.26RGs <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = PBGWRNSport_2016.26RGs, minval = 0.01)
+dput(x = Prior.PBGWRNSport_2017.26RGs, file = "Objects/Prior.PBGWRNSport_2017.26RGs.txt")
+
+Prior.InsideSport_2017.26RGs <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = InsideSport_2016.26RGs, minval = 0.01)
+dput(x = Prior.InsideSport_2017.26RGs, file = "Objects/Prior.InsideSport_2017.26RGs.txt")
+
+Prior.OutsidePer1Sport_2017.26RGs <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = OutsidePer1Sport_2016.26RGs, minval = 0.01)
+dput(x = Prior.OutsidePer1Sport_2017.26RGs, file = "ObjectsPrior.OutsidePer1Sport_2017.26RGs.txt")
+
+Prior.OutsidePer2Sport_2017.26RGs <- Prior.GCL(groupvec = GroupVec26RG_357, groupweights = OutsidePer2Sport_2016.26RGs, minval = 0.01)
+dput(x = Prior.OutsidePer2Sport_2017.26RGs, file = "ObjectsPrior.OutsidePer2Sport_2017.26RGs.txt")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dumping Control Files for sport only
+CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname =  "SITSport_2017", basename = "GAPS357pops13loci", 
+                      suffix = "", nreps = 40000, nchains = 5,groupvec = GroupVec26RG_357, priorvec = Prior.SITSport_2017.26RGs, 
+                      initmat = GAPS357PopsInits,  dir = "BAYES/Control", seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), 
+                      mixfortran = mixfortran, basefortran = bayesfortran_357, switches = "F T F T T T F")
+
+CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname =  "CRGSport_2017", basename = "GAPS357pops13loci", 
+                      suffix = "", nreps = 40000, nchains = 5,groupvec = GroupVec26RG_357, priorvec = Prior.CRGSport_2017.26RGs, 
+                      initmat = GAPS357PopsInits,  dir = "BAYES/Control", seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), 
+                      mixfortran = mixfortran, basefortran = bayesfortran_357, switches = "F T F T T T F")
+
+CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname =  "KTNSport_2017", basename = "GAPS357pops13loci", 
+                      suffix = "", nreps = 40000, nchains = 5,groupvec = GroupVec26RG_357, priorvec = Prior.KTNSport_2017.26RGs, 
+                      initmat = GAPS357PopsInits,  dir = "BAYES/Control", seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), 
+                      mixfortran = mixfortran, basefortran = bayesfortran_357, switches = "F T F T T T F")
+
+CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname =  "PBGWRNSport_2017", basename = "GAPS357pops13loci", 
+                      suffix = "", nreps = 40000, nchains = 5,groupvec = GroupVec26RG_357, priorvec = Prior.PBGWRNSport_2017.26RGs, 
+                      initmat = GAPS357PopsInits,  dir = "BAYES/Control", seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), 
+                      mixfortran = mixfortran, basefortran = bayesfortran_357, switches = "F T F T T T F")
+
+CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname =  "InsideSport_2017", basename = "GAPS357pops13loci", 
+                      suffix = "", nreps = 40000, nchains = 5,groupvec = GroupVec26RG_357, priorvec = Prior.InsideSport_2017.26RGs, 
+                      initmat = GAPS357PopsInits,  dir = "BAYES/Control", seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), 
+                      mixfortran = mixfortran, basefortran = bayesfortran_357, switches = "F T F T T T F")
+
+CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname =  "OutsidePer1Sport_2017", basename = "GAPS357pops13loci", 
+                      suffix = "", nreps = 40000, nchains = 5,groupvec = GroupVec26RG_357, priorvec = Prior.OutsidePer1Sport_2017.26RGs, 
+                      initmat = GAPS357PopsInits,  dir = "BAYES/Control", seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), 
+                      mixfortran = mixfortran, basefortran = bayesfortran_357, switches = "F T F T T T F")
+
+CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname =  "OutsidePer2Sport_2017", basename = "GAPS357pops13loci", 
+                      suffix = "", nreps = 40000, nchains = 5,groupvec = GroupVec26RG_357, priorvec = Prior.OutsidePer2Sport_2017.26RGs, 
+                      initmat = GAPS357PopsInits,  dir = "BAYES/Control", seeds = WASSIPSockeyeSeeds, thin = c(1, 1, 100), 
+                      mixfortran = mixfortran, basefortran = bayesfortran_357, switches = "F T F T T T F")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Summarize BAYES 8RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sport_2017_8RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = Sport_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+# Summarizing 80K PGGWRN
+PBGWRNSport_2017_80Kestimates <- CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = "PBGWRNSport_2017_80K",
+                             prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+# Running longer chains did not remove the GR issues. 12/27/17 SRO
+
+dput(PBGWRNSport_2017_80Kestimates, file = "Estimates objects/PBGWRNSport_2017_80Kestimates.txt")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dput EstimatesStats
+# dir.create("Estimates objects")
+invisible(sapply(objects(pattern = "RG_EstimatesStats"), function(obj) {
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, ".txt"))
+} ))
+
+
+# Rerunning PBGWRN with 80K iterations as there were 2 groups with high GR. WACoast (GR = 5.0) and Other (GR = 2.9).
+# I do not think that extending the iterations will help, however it is protocol. We will likely need to combine
+# the chains that converge and drop those that don't for final estimates.
+
+
