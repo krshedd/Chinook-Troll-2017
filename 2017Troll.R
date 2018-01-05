@@ -2753,3 +2753,381 @@ invisible(sapply(objects(pattern = "RG_EstimatesStats"), function(obj) {
 # the chains that converge and drop those that don't for final estimates.
 
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Retro Troll Stratified Estimates 26RG ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### 2017
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
+
+
+EWintTroll2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = EWint_Mixtures, catchvec = c(4989, 1599), nchains = 5, xlxs = FALSE)
+
+LWintTroll2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = LWint_Mixtures, catchvec = c(22509, 14782), nchains = 5, xlxs = FALSE)
+
+SpringTroll2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = c(SpringRet1_Mixtures, SpringRet2_Mixtures), catchvec = c(807, 2241, 1700, 283, 1471, 8507, 1819, 482), 
+                          nchains = 5, xlxs = FALSE)
+
+SumRet1Troll2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = SummerRet1_Mixtures, catchvec = c(10020, 40721, 4037, 9551), nchains = 5, xlxs = FALSE)
+
+Troll2017_26RG_StratifiedEstimates <- list("EWintAllQuad_2017" = EWintTroll2017_26RG_StratifiedEstimates,
+                                               "LWintAllQuad_2017" = LWintTroll2017_26RG_StratifiedEstimates,
+                                               "SpringAllQuad_2017" = SpringTroll2017_26RG_StratifiedEstimates,
+                                               "SumRet1AllQuad_2017" = SumRet1Troll2017_26RG_StratifiedEstimates)
+dput(x = Troll2017_26RG_StratifiedEstimates, file = "Estimates objects/Troll2017_26RG_StratifiedEstimates.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### 2016
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK16")
+
+
+EWintTroll2016_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec33RG_to26RG, groupnames = GroupNames26, maindir = "BAYES/Output/33RG/EWint_2016", 
+                          mixvec = c("EWintNISISO_2016", "EWintNO_2016"), catchvec = c(4216, 25147), nchains = 5, xlxs = FALSE)
+
+LWintTroll2016_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec33RG_to26RG, groupnames = GroupNames26, maindir = "BAYES/Output/33RG/LWint_2016", 
+                          mixvec = c("LWintNISISO_2016", "LWintNO_2016"), catchvec = c(5248, 17680), nchains = 5, xlxs = FALSE)
+
+SpringTroll2016_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec33RG_to26RG, groupnames = GroupNames26, maindir = "BAYES/Output/33RG/Spring_2016", 
+                          mixvec = c("SpringNI_2016", "SpringNO_2016", "SpringSI_2016", "SpringSO_2016"), catchvec = c(9270, 17012, 15160, 1031), 
+                          nchains = 5, xlxs = FALSE)
+
+SumRet1Troll2016_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec33RG_to26RG, groupnames = GroupNames26, maindir = "BAYES/Output/33RG/SumRet1_2016", 
+                          mixvec = c("Summer1NI_2016", "Summer1NO_2016", "Summer1SI_2016", "Summer1SO_2016"), catchvec = c(3805, 80323, 3618, 18888), 
+                          nchains = 5, xlxs = FALSE)
+
+SumRet2Troll2016_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec33RG_to26RG, groupnames = GroupNames26, maindir = "BAYES/Output/33RG/SumRet2_2016", 
+                          mixvec = c("Summer2NI_2016", "Summer2NO_2016", "Summer2SI_2016", "Summer2SO_2016"), catchvec = c(2147, 56208, 1774, 14111), 
+                          nchains = 5, xlxs = FALSE)
+
+Troll2016_26RG_StratifiedEstimates <- list("EWintAllQuad_2016" = EWintTroll2016_26RG_StratifiedEstimates,
+                                           "LWintAllQuad_2016" = LWintTroll2016_26RG_StratifiedEstimates,
+                                           "SpringAllQuad_2016" = SpringTroll2016_26RG_StratifiedEstimates,
+                                           "SumRet1AllQuad_2016" = SumRet1Troll2016_26RG_StratifiedEstimates,
+                                           "SumRet2AllQuad_2016" = SumRet2Troll2016_26RG_StratifiedEstimates)
+dput(x = Troll2016_26RG_StratifiedEstimates, file = "Estimates objects/Troll2016_26RG_StratifiedEstimates.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### 2015
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK15")
+
+
+EWintTroll2015_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/EWint_2015",
+                          mixvec = c("EWintNISISO_2015", "EWintNO_2015"), catchvec = c(3297, 20841), nchains = 5, xlxs = FALSE)
+
+LWintTroll2015_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/LWint_2015",
+                          mixvec = c("LWintNISISO_2015", "LWintNO_2015"), catchvec = c(5417, 21113), nchains = 5, xlxs = FALSE)
+
+SpringTroll2015_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/Spring_2015",
+                          mixvec = c("SpringNI_2015", "SpringNO_2015", "SpringSI_2015", "SpringSO_2015"), catchvec = c(12780, 22464, 17769, 711), 
+                          nchains = 5, xlxs = FALSE)
+
+SumRet1Troll2015_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/SumRet1_2015",
+                          mixvec = c("SumRet1NISISO_2015", "SumRet1NO_2015"), catchvec = c(40157, 124454), nchains = 5, xlxs = FALSE)
+
+Troll2015_26RG_StratifiedEstimates <- list("EWintAllQuad_2015" = EWintTroll2015_26RG_StratifiedEstimates,
+                                           "LWintAllQuad_2015" = LWintTroll2015_26RG_StratifiedEstimates,
+                                           "SpringAllQuad_2015" = SpringTroll2015_26RG_StratifiedEstimates,
+                                           "SumRet1AllQuad_2015" = SumRet1Troll2015_26RG_StratifiedEstimates)
+dput(x = Troll2015_26RG_StratifiedEstimates, file = "Estimates objects/Troll2015_26RG_StratifiedEstimates.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### 2014
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK14")
+
+
+EWintTroll2014_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = c(1, 1:26), groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2014",
+                          mixvec = c("EWintNISISO.2014", "EWintNO.2014"), catchvec = c(3602, 10669), nchains = 5, xlxs = FALSE)
+
+LWintTroll2014_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = c(1, 1:26), groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2014",
+                          mixvec = c("LWintNISISO.2014", "LWintNO.2014"), catchvec = c(6974, 35289), nchains = 5, xlxs = FALSE)
+
+SpringTroll2014_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = c(1, 1:26), groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2014",
+                          mixvec = c("SpringNI.2014", "SpringNO.2014", "SpringSI.2014", "SpringSO.2014"), catchvec = c(7702, 22393, 11215, 1238),
+                          nchains = 5, xlxs = FALSE)
+
+SumRet1Troll2014_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = c(1, 1:26), groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2014",
+                          mixvec = c("SumRet1NISISO.2014", "SumRet1NO.2014"), catchvec = c(41323, 158108), nchains = 5, xlxs = FALSE)
+
+SumRet2Troll2014_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = c(1, 1:26), groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2014",
+                          mixvec = c("SumRet2NISISO.2014", "SumRet2NO.2014"), catchvec = c(24365, 31288), nchains = 5, xlxs = FALSE)
+
+
+Troll2014_26RG_StratifiedEstimates <- list("EWintAllQuad_2014" = EWintTroll2014_26RG_StratifiedEstimates,
+                                           "LWintAllQuad_2014" = LWintTroll2014_26RG_StratifiedEstimates,
+                                           "SpringAllQuad_2014" = SpringTroll2014_26RG_StratifiedEstimates,
+                                           "SumRet1AllQuad_2014" = SumRet1Troll2014_26RG_StratifiedEstimates,
+                                           "SumRet2AllQuad_2014" = SumRet2Troll2014_26RG_StratifiedEstimates)
+dput(x = Troll2014_26RG_StratifiedEstimates, file = "Estimates objects/Troll2014_26RG_StratifiedEstimates.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### 2013
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK13")
+
+
+EWintTroll2013_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2013",
+                          mixvec = c("EWintNISISO.2013", "EWintNO.2013"), catchvec = c(2569, 5619), nchains = 5, xlxs = FALSE)
+
+LWintTroll2013_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2013",
+                          mixvec = c("LWintNISISO.2013", "LWintNO.2013"), catchvec = c(7946, 10414), nchains = 5, xlxs = FALSE)
+
+SpringTroll2013_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2013",
+                          mixvec = c("SpringNI.2013", "SpringNO.2013", "SpringSI.2013"), catchvec = c(11073, 16502, 9733), 
+                          nchains = 5, xlxs = FALSE)
+
+SumRet1Troll2013_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2013",
+                          mixvec = c("SumRet1NISISO.2013", "SumRet1NO.2013"), catchvec = c(30361, 54289), nchains = 5, xlxs = FALSE)
+
+
+Troll2013_26RG_StratifiedEstimates <- list("EWintAllQuad_2013" = EWintTroll2013_26RG_StratifiedEstimates,
+                                           "LWintAllQuad_2013" = LWintTroll2013_26RG_StratifiedEstimates,
+                                           "SpringAllQuad_2013" = SpringTroll2013_26RG_StratifiedEstimates,
+                                           "SumRet1AllQuad_2013" = SumRet1Troll2013_26RG_StratifiedEstimates)
+dput(x = Troll2013_26RG_StratifiedEstimates, file = "Estimates objects/Troll2013_26RG_StratifiedEstimates.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### 2012
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK12")
+
+
+EWintTroll2012_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2012",
+                          mixvec = c("EWintNISISO.2012", "EWintNO.2012"), catchvec = c(4119, 6566), nchains = 5, xlxs = FALSE)
+
+LWintTroll2012_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2012",
+                          mixvec = c("LWintNISISO.2012", "LWintNO.2012"), catchvec = c(9005, 28212), nchains = 5, xlxs = FALSE)
+
+SpringTroll2012_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2012",
+                          mixvec = c("SpringNI.2012", "SpringNO.2012", "SpringSI.2012"), catchvec = c(6274, 11466, 7031), 
+                          nchains = 5, xlxs = FALSE)
+
+SumRet1Troll2012_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2012",
+                          mixvec = c("SumRet1NISISO.2012", "SumRet1NO.2012"), catchvec = c(27286, 34338), nchains = 5, xlxs = FALSE)
+
+SumRet2Troll2012_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Output/AllYearTroll_2012",
+                          mixvec = c("SumRet2NISISO.2012", "SumRet2NO.2012"), catchvec = c(20056, 53914), nchains = 5, xlxs = FALSE)
+
+
+Troll2012_26RG_StratifiedEstimates <- list("EWintAllQuad_2012" = EWintTroll2012_26RG_StratifiedEstimates,
+                                           "LWintAllQuad_2012" = LWintTroll2012_26RG_StratifiedEstimates,
+                                           "SpringAllQuad_2012" = SpringTroll2012_26RG_StratifiedEstimates,
+                                           "SumRet1AllQuad_2012" = SumRet1Troll2012_26RG_StratifiedEstimates,
+                                           "SumRet2AllQuad_2012" = SumRet2Troll2012_26RG_StratifiedEstimates)
+dput(x = Troll2012_26RG_StratifiedEstimates, file = "Estimates objects/Troll2012_26RG_StratifiedEstimates.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### 2011
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK11")
+
+
+EWintTroll2011_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2011",
+                          mixvec = c("EWintNISISO.2011", "EWintNO.2011"), catchvec = c(4890, 7977), nchains = 5, xlxs = FALSE)
+
+LWintTroll2011_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2011",
+                          mixvec = c("LWintNISISO.2011", "LWintNO.2011"), catchvec = c(9385, 28574), nchains = 5, xlxs = FALSE)
+
+SpringTroll2011_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2011",
+                          mixvec = c("SpringNI.2011", "SpringNO.2011", "SpringSI.2011"), catchvec = c(8859, 17531, 12546), 
+                          nchains = 5, xlxs = FALSE)
+
+SumRet1Troll2011_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2011",
+                          mixvec = c("SumRet1NISISO.2011", "SumRet1NO.2011"), catchvec = c(40714, 80202), nchains = 5, xlxs = FALSE)
+
+SumRet2Troll2011_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2011",
+                          mixvec = c("SumRet2NISISO.2011", "SumRet2NO.2011"), catchvec = c(13364, 16372), nchains = 5, xlxs = FALSE)
+
+
+Troll2011_26RG_StratifiedEstimates <- list("EWintAllQuad_2011" = EWintTroll2011_26RG_StratifiedEstimates,
+                                           "LWintAllQuad_2011" = LWintTroll2011_26RG_StratifiedEstimates,
+                                           "SpringAllQuad_2011" = SpringTroll2011_26RG_StratifiedEstimates,
+                                           "SumRet1AllQuad_2011" = SumRet1Troll2011_26RG_StratifiedEstimates,
+                                           "SumRet2AllQuad_2011" = SumRet2Troll2011_26RG_StratifiedEstimates)
+dput(x = Troll2011_26RG_StratifiedEstimates, file = "Estimates objects/Troll2011_26RG_StratifiedEstimates.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### 2010
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK10")
+
+
+EWintTroll2010_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2010",
+                          mixvec = c("EarlyWinterNISISO.2010", "EarlyWinterNO.2010"), catchvec = c(4255, 4460), nchains = 5, xlxs = FALSE)
+
+LWintTroll2010_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2010",
+                          mixvec = c("LateWinterNISISO.2010", "LateWinterNO.2010"), catchvec = c(6623, 27198), nchains = 5, xlxs = FALSE)
+
+SpringTroll2010_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2010",
+                          mixvec = c("SpringNI.2010", "SpringNO.2010", "SpringSI.2010"), catchvec = c(7517, 10258, 10789), 
+                          nchains = 5, xlxs = FALSE)
+
+SumRet1Troll2010_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2010",
+                          mixvec = c("SummerR1NISISO.2010", "SummerR1NO.2010"), catchvec = c(18643, 56069), nchains = 5, xlxs = FALSE)
+
+SumRet2Troll2010_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2010",
+                          mixvec = c("SummerR2NISISO.2010", "SummerR2NO.2010"), catchvec = c(22025, 26430), nchains = 5, xlxs = FALSE)
+
+
+Troll2010_26RG_StratifiedEstimates <- list("EWintAllQuad_2010" = EWintTroll2010_26RG_StratifiedEstimates,
+                                           "LWintAllQuad_2010" = LWintTroll2010_26RG_StratifiedEstimates,
+                                           "SpringAllQuad_2010" = SpringTroll2010_26RG_StratifiedEstimates,
+                                           "SumRet1AllQuad_2010" = SumRet1Troll2010_26RG_StratifiedEstimates,
+                                           "SumRet2AllQuad_2010" = SumRet2Troll2010_26RG_StratifiedEstimates)
+dput(x = Troll2010_26RG_StratifiedEstimates, file = "Estimates objects/Troll2010_26RG_StratifiedEstimates.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### 2009
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK09")
+
+
+EWintTroll2009_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2009",
+                          mixvec = c("EarlyWinterNISISO", "EarlyWinterNO"), catchvec = c(2711, 2800), nchains = 5, xlxs = FALSE)
+
+LWintTroll2009_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2009",
+                          mixvec = c("LateWinterNISISO", "LateWinterNO"), catchvec = c(3794, 15584), nchains = 5, xlxs = FALSE)
+
+SpringTroll2009_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2009",
+                          mixvec = c("SpringNI.2009", "SpringNO.2009", "SpringSI.2009"), catchvec = c(7790, 16629, 8162), 
+                          nchains = 5, xlxs = FALSE)
+
+SumRet1Troll2009_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2009",
+                          mixvec = c("SumRet1NISI_2009", "SumRet1NOSO_2009"), catchvec = c(4112, 80463), nchains = 5, xlxs = FALSE)
+
+SumRet2Troll2009_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir="BAYES/Troll/Output/AllYearTroll_2009",
+                          mixvec = c("SumRet2NISI_2009", "SumRet2NOSO_2009"), catchvec = c(1796, 31216), nchains = 5, xlxs = FALSE)
+
+
+Troll2009_26RG_StratifiedEstimates <- list("EWintAllQuad_2009" = EWintTroll2009_26RG_StratifiedEstimates,
+                                           "LWintAllQuad_2009" = LWintTroll2009_26RG_StratifiedEstimates,
+                                           "SpringAllQuad_2009" = SpringTroll2009_26RG_StratifiedEstimates,
+                                           "SumRet1AllQuad_2009" = SumRet1Troll2009_26RG_StratifiedEstimates,
+                                           "SumRet2AllQuad_2009" = SumRet2Troll2009_26RG_StratifiedEstimates)
+dput(x = Troll2009_26RG_StratifiedEstimates, file = "Estimates objects/Troll2009_26RG_StratifiedEstimates.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Double check 8RG vs. 26RG
+
+# setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
+# Troll2017_26RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2017_26RG_StratifiedEstimates.txt")
+# Troll2017_8RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2017_8RG_StratifiedEstimatesStats.txt")
+all.equal(sapply(GroupNames8, function(RG) {sum(Troll2017_26RG_StratifiedEstimates[[2]][which(GroupVec8 == which(GroupNames8 == RG)), "mean"])} ),
+          Troll2017_8RG_StratifiedEstimates[[2]][, "mean"])
+
+# setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK16")
+# Troll2016_26RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2016_26RG_StratifiedEstimates.txt")
+# Troll2016_8RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2016_8RG_StratifiedEstimatesStats.txt")
+all.equal(sapply(GroupNames8, function(RG) {sum(Troll2016_26RG_StratifiedEstimates[[2]][which(GroupVec8 == which(GroupNames8 == RG)), "mean"])} ),
+          Troll2016_8RG_StratifiedEstimates[[2]][, "mean"])
+
+# setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK15")
+# Troll2015_26RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2015_26RG_StratifiedEstimates.txt")
+# Troll2015_8RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2015_8RG_StratifiedEstimatesStats.txt")
+all.equal(sapply(GroupNames8, function(RG) {sum(Troll2015_26RG_StratifiedEstimates[[2]][which(GroupVec8 == which(GroupNames8 == RG)), "mean"])} ),
+          Troll2015_8RG_StratifiedEstimates[[2]][, "mean"])
+
+# setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK14")
+# Troll2014_26RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2014_26RG_StratifiedEstimates.txt")
+# Troll2014_8RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2014_8RG_StratifiedEstimatesStats.txt")
+all.equal(sapply(GroupNames8, function(RG) {sum(Troll2014_26RG_StratifiedEstimates[[2]][which(GroupVec8 == which(GroupNames8 == RG)), "mean"])} ),
+          Troll2014_8RG_StratifiedEstimates[[2]][, "mean"])
+
+# setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK13")
+# Troll2013_26RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2013_26RG_StratifiedEstimates.txt")
+# Troll2013_8RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2013_8RG_StratifiedEstimatesStats.txt")
+all.equal(sapply(GroupNames8, function(RG) {sum(Troll2013_26RG_StratifiedEstimates[[2]][which(GroupVec8 == which(GroupNames8 == RG)), "mean"])} ),
+          Troll2013_8RG_StratifiedEstimates[[2]][, "mean"])
+
+# setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK12")
+# Troll2012_26RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2012_26RG_StratifiedEstimates.txt")
+# Troll2012_8RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2012_8RG_StratifiedEstimatesStats.txt")
+all.equal(sapply(GroupNames8, function(RG) {sum(Troll2012_26RG_StratifiedEstimates[[2]][which(GroupVec8 == which(GroupNames8 == RG)), "mean"])} ),
+          Troll2012_8RG_StratifiedEstimates[[2]][, "mean"])
+
+# setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK11")
+# Troll2011_26RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2011_26RG_StratifiedEstimates.txt")
+# Troll2011_8RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2011_8RG_StratifiedEstimatesStats.txt")
+all.equal(sapply(GroupNames8, function(RG) {sum(Troll2011_26RG_StratifiedEstimates[[2]][which(GroupVec8 == which(GroupNames8 == RG)), "mean"])} ),
+          Troll2011_8RG_StratifiedEstimates[[2]][, "mean"])
+
+# setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK10")
+# Troll2010_26RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2010_26RG_StratifiedEstimates.txt")
+# Troll2010_8RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2010_8RG_StratifiedEstimatesStats.txt")
+all.equal(sapply(GroupNames8, function(RG) {sum(Troll2010_26RG_StratifiedEstimates[[2]][which(GroupVec8 == which(GroupNames8 == RG)), "mean"])} ),
+          Troll2010_8RG_StratifiedEstimates[[2]][, "mean"])
+
+# setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK09")
+# Troll2009_26RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2009_26RG_StratifiedEstimates.txt")
+# Troll2009_8RG_StratifiedEstimates <- dget(file = "Estimates objects/Troll2009_8RG_StratifiedEstimatesStats.txt")
+all.equal(sapply(GroupNames8, function(RG) {sum(Troll2009_26RG_StratifiedEstimates[[2]][which(GroupVec8 == which(GroupNames8 == RG)), "mean"])} ),
+          Troll2009_8RG_StratifiedEstimates[[2]][, "mean"])
+
+i = 3
+sapply(2009:2017, function(yr) {
+  all.equal(sapply(GroupNames8, function(RG) {sum(get(paste0("Troll", yr, "_26RG_StratifiedEstimates"))[[i]][which(GroupVec8 == which(GroupNames8 == RG)), "mean"])} ),
+            get(paste0("Troll", yr, "_8RG_StratifiedEstimates"))[[i]][, "mean"])
+} )
+
+
+Troll2009_2017_26RG_StratifiedEstimates <- 
+  c(Troll2009_26RG_StratifiedEstimates,
+  Troll2010_26RG_StratifiedEstimates,
+  Troll2011_26RG_StratifiedEstimates,
+  Troll2012_26RG_StratifiedEstimates,
+  Troll2013_26RG_StratifiedEstimates,
+  Troll2014_26RG_StratifiedEstimates,
+  Troll2015_26RG_StratifiedEstimates,
+  Troll2016_26RG_StratifiedEstimates,
+  Troll2017_26RG_StratifiedEstimates)
+dput(x = Troll2009_2017_26RG_StratifiedEstimates, file = "Estimates objects/Troll2009_2017_26RG_StratifiedEstimates.txt")
