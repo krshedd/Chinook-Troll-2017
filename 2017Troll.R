@@ -836,53 +836,53 @@ sort(SpringRet1_2017_26RG_EstimatesStats$SpringRet1SO_2017[, "GR"], decreasing =
 MSF_2017_26RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
                           mixvec = MSF_Mixtures[-1], catchvec = c(1957, 466, sum(118, 139)), 
-                          newname = "StratifiedMarkSelectFishery2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "StratifiedMarkSelectFishery2017_90percentCI_26RG", nchains = 5, xlxs = TRUE)
 
 EWint_2017_26RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
                           mixvec = EWint_Mixtures, catchvec = c(4989, 1599), 
-                          newname = "Stratified_EWint_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_EWint_2017_90percentCI_26RG", nchains = 5, xlxs = TRUE)
 
 LWint_2017_26RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
                           mixvec = LWint_Mixtures, catchvec = c(22509, 14782), 
-                          newname = "Stratified_LWint_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_LWint_2017_90percentCI_26RG", nchains = 5, xlxs = TRUE)
 
 SpringRet1_2017_26RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
                           mixvec = SpringRet1_Mixtures, catchvec = c(807, 2241, 1700, 283), 
-                          newname = "Stratified_SpringRet1_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringRet1_2017_90percentCI_26RG", nchains = 5, xlxs = TRUE)
 
 SpringRet2_2017_26RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
                           mixvec = SpringRet2_Mixtures, catchvec = c(1471, 8507, 1819, 482), 
-                          newname = "Stratified_SpringRet2_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringRet2_2017_90percentCI_26RG", nchains = 5, xlxs = TRUE)
 
 Spring_2017_26RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures, SpringRet2_Mixtures), catchvec = c(807, 2241, 1700, 283, 1471, 8507, 1819, 482), 
-                          newname = "Stratified_Spring_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_Spring_2017_90percentCI_26RG", nchains = 5, xlxs = TRUE)
 
 SpringNO_2017_26RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]), catchvec = c(2241, 8507), 
-                          newname = "Stratified_SpringNO_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringNO_2017_90percentCI_26RG", nchains = 5, xlxs = TRUE)
 
 SpringNI_2017_26RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[1], SpringRet2_Mixtures[1]), catchvec = c(807, 1471), 
-                          newname = "Stratified_SpringNI_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringNI_2017_90percentCI_26RG", nchains = 5, xlxs = TRUE)
 
 SpringSI_2017_26RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]), catchvec = c(1700, 1819), 
-                          newname = "Stratified_SpringSI_2017_90percentCI_26RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringSI_2017_90percentCI_26RG", nchains = 5, xlxs = TRUE)
 
 
-invisible(sapply(objects(pattern = "RG_StratifiedEstimates"), function(obj) {
-  dput(x = get(obj)$Stats, file = paste0("Estimates objects/", obj, "Stats.txt"))
+
+invisible(sapply(objects(pattern = "_2017_26RG_StratifiedEstimates"), function(obj) {
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, "Stats.txt"))
 } ))
-
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -937,51 +937,51 @@ sapply(objects(pattern = "18RG_EstimatesStats"), function(obj) {
 MSF_2017_18RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
                           mixvec = MSF_Mixtures[-1], catchvec = c(1957, 466, sum(118, 139)), 
-                          newname = "StratifiedMarkSelectFishery2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "StratifiedMarkSelectFishery2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
 
 EWint_2017_18RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
                           mixvec = EWint_Mixtures, catchvec = c(4989, 1599), 
-                          newname = "Stratified_EWint_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_EWint_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
 
 LWint_2017_18RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
                           mixvec = LWint_Mixtures, catchvec = c(22509, 14782), 
-                          newname = "Stratified_LWint_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_LWint_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
 
 SpringRet1_2017_18RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
                           mixvec = SpringRet1_Mixtures, catchvec = c(807, 2241, 1700, 283), 
-                          newname = "Stratified_SpringRet1_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringRet1_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
 
 SpringRet2_2017_18RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
                           mixvec = SpringRet2_Mixtures, catchvec = c(1471, 8507, 1819, 482), 
-                          newname = "Stratified_SpringRet2_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringRet2_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
 
 Spring_2017_18RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures, SpringRet2_Mixtures), catchvec = c(807, 2241, 1700, 283, 1471, 8507, 1819, 482), 
-                          newname = "Stratified_Spring_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_Spring_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
 
 SpringNO_2017_18RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]), catchvec = c(2241, 8507), 
-                          newname = "Stratified_SpringNO_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringNO_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
 
 SpringNI_2017_18RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[1], SpringRet2_Mixtures[1]), catchvec = c(807, 1471), 
-                          newname = "Stratified_SpringNI_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringNI_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
 
 SpringSI_2017_18RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]), catchvec = c(1700, 1819), 
-                          newname = "Stratified_SpringSI_2017_90percentCI_18RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringSI_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
 
 
 invisible(sapply(objects(pattern = "18RG_StratifiedEstimates"), function(obj) {
-  dput(x = get(obj)$Stats, file = paste0("Estimates objects/", obj, "Stats.txt"))
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, "Stats.txt"))
 } ))
 
 
@@ -1037,51 +1037,51 @@ sapply(objects(pattern = "_8RG_EstimatesStats"), function(obj) {
 MSF_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = MSF_Mixtures[-1], catchvec = c(1957, 466, sum(118, 139)), 
-                          newname = "StratifiedMarkSelectFishery2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "StratifiedMarkSelectFishery2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 
 EWint_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = EWint_Mixtures, catchvec = c(4989, 1599), 
-                          newname = "Stratified_EWint_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_EWint_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 
 LWint_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = LWint_Mixtures, catchvec = c(22509, 14782), 
-                          newname = "Stratified_LWint_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_LWint_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 
 SpringRet1_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = SpringRet1_Mixtures, catchvec = c(807, 2241, 1700, 283), 
-                          newname = "Stratified_SpringRet1_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringRet1_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 
 SpringRet2_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = SpringRet2_Mixtures, catchvec = c(1471, 8507, 1819, 482), 
-                          newname = "Stratified_SpringRet2_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringRet2_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 
 Spring_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures, SpringRet2_Mixtures), catchvec = c(807, 2241, 1700, 283, 1471, 8507, 1819, 482), 
-                          newname = "Stratified_Spring_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_Spring_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 
 SpringNO_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]), catchvec = c(2241, 8507), 
-                          newname = "Stratified_SpringNO_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringNO_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 
 SpringNI_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[1], SpringRet2_Mixtures[1]), catchvec = c(807, 1471), 
-                          newname = "Stratified_SpringNI_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringNI_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 
 SpringSI_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]), catchvec = c(1700, 1819), 
-                          newname = "Stratified_SpringSI_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringSI_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 
 
-invisible(sapply(objects(pattern = "8RG_StratifiedEstimates"), function(obj) {
-  dput(x = get(obj)$Stats, file = paste0("Estimates objects/", obj, "Stats.txt"))
+invisible(sapply(objects(pattern = "_8RG_StratifiedEstimates"), function(obj) {
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, "Stats.txt"))
 } ))
 
 
@@ -1129,55 +1129,55 @@ sapply(objects(pattern = "_4RG_EstimatesStats"), function(obj) {
 MSF_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = MSF_Mixtures[-1], catchvec = c(1957, 466, sum(118, 139)), 
-                          newname = "StratifiedMarkSelectFishery2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "StratifiedMarkSelectFishery2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
 
 EWint_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = EWint_Mixtures, catchvec = c(4989, 1599), 
-                          newname = "Stratified_EWint_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_EWint_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
 
 LWint_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = LWint_Mixtures, catchvec = c(22509, 14782), 
-                          newname = "Stratified_LWint_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_LWint_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
 
 SpringRet1_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = SpringRet1_Mixtures, catchvec = c(807, 2241, 1700, 283), 
-                          newname = "Stratified_SpringRet1_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringRet1_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
 
 SpringRet2_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = SpringRet2_Mixtures, catchvec = c(1471, 8507, 1819, 482), 
-                          newname = "Stratified_SpringRet2_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringRet2_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
 
 Spring_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures, SpringRet2_Mixtures), catchvec = c(807, 2241, 1700, 283, 1471, 8507, 1819, 482), 
-                          newname = "Stratified_Spring_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_Spring_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
 
 SpringNO_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]), catchvec = c(2241, 8507), 
-                          newname = "Stratified_SpringNO_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringNO_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
 
 SpringNI_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[1], SpringRet2_Mixtures[1]), catchvec = c(807, 1471), 
-                          newname = "Stratified_SpringNI_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringNI_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
 
 SpringSI_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]), catchvec = c(1700, 1819), 
-                          newname = "Stratified_SpringSI_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringSI_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
 
 SpringSO_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = c(SpringRet1_Mixtures[4], SpringRet2_Mixtures[4]), catchvec = c(283, 482), 
-                          newname = "Stratified_SpringSO_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SpringSO_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
 
 invisible(sapply(objects(pattern = "4RG_StratifiedEstimates"), function(obj) {
-  dput(x = get(obj)$Stats, file = paste0("Estimates objects/", obj, "Stats.txt"))
+  dput(x = get(obj), file = paste0("Estimates objects/", obj, "Stats.txt"))
 } ))
 
 
@@ -1247,8 +1247,8 @@ Troll2017_8RG_PubNames <- setNames(object = c("Northern Outside Quadrant",
                                    nm = names(Troll2017_8RG_EstimatesStats_Formatted))
 dput(x = Troll2017_8RG_PubNames, file = "Objects/Troll2017_8RG_PubNames.txt")
 
-SEAK2017Mixtures <- list.files(path = "BAYES/Mixture", full.names = FALSE, recursive = FALSE)
-SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures))]
+SEAK2017Mixtures <- list.files(path = "BAYES/Mixture", pattern = ".mix", full.names = FALSE, recursive = FALSE)
+# SEAK2017Mixtures <- SEAK2017Mixtures[-c(grep(pattern = "Done", x = SEAK2017Mixtures), grep(pattern = "OLD_BAD_LOCUSCONTROL", x = SEAK2017Mixtures))]
 SEAK2017Mixtures_SampSizes <- sapply(SEAK2017Mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix)))[1]} )
 names(SEAK2017Mixtures_SampSizes) <- sapply(names(SEAK2017Mixtures_SampSizes), function(mix) {unlist(strsplit(x = mix, split = ".mix"))[1]})
 
@@ -2088,7 +2088,7 @@ table(KTNSport_2017.gcl$attributes$Biweek, KTNSport_2017.gcl$attributes$SITE)
 
 #~~~~~~~~~~~~~~~~~~
 # Petersburg/Wrangell
-PBGWRNSport_2017.vials <- setNames(object = list(na.omit(AttributesToIDs.GCL(silly = "KSPORT17", attribute = "SITE", matching = c("PETERSBURG","WRANGELL")))), nm = "KSPORT17")
+PBGWRNSport_2017.vials <- setNames(object = list(na.omit(AttributesToIDs.GCL(silly = "KSPORT17", attribute = "SITE", matching = c("PETERSBURG", "WRANGELL")))), nm = "KSPORT17")
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% PBGWRNSport_2017.vials[[1]]]) # pbg 205, WRN 131 (total 336), 344 expected
 PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = PBGWRNSport_2017.vials, newname = "PBGWRNSport_2017")
 table(PBGWRNSport_2017.gcl$attributes$Biweek, PBGWRNSport_2017.gcl$attributes$SITE)
@@ -2582,27 +2582,34 @@ invisible(sapply(objects(pattern = "4RG_EstimatesStats"), function(obj) {
 } ))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SummerRet1_2017_26RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = SummerRet1_Mixtures, catchvec = c(10020, 40721, 4037, 9551), 
+                          newname = "Stratified_SummerRet1_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
+
 SummerRet1_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = SummerRet1_Mixtures, catchvec = c(10020, 40721, 4037, 9551), 
-                          newname = "Stratified_SpringRet1_2017_90percentCI_4RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SummerRet1_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
 
 SummerRet1_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = SummerRet1_Mixtures, catchvec = c(10020, 40721, 4037, 9551), 
-                          newname = "Stratified_SpringRet1_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          newname = "Stratified_SummerRet1_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
+dput(x = SummerRet1_2017_8RG_StratifiedEstimates, file = "Estimates objects/SummerRet1_2017_8RG_StratifiedEstimates.txt")
 
 AllTrollnoSummer_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = c(EWint_Mixtures,LWint_Mixtures,SpringRet1_Mixtures,SpringRet2_Mixtures), 
-                          catchvec = c(4989, 1599, 22509, 14782, 807, 2241, 1700, 283, 1471, 8507, 1819, 482),  newname = "Stratified_AllTrollnoSummer_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          catchvec = c(4989, 1599, 22509, 14782, 807, 2241, 1700, 283, 1471, 8507, 1819, 482),  newname = "Stratified_AllTrollnoSummer_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 dput(AllTrollnoSummer_2017_8RG_StratifiedEstimates$Stats, "Estimates objects/AllTrollnoSummer_2017_8RG_StratifiedEstimates.txt")
 
 AllTroll_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = c(EWint_Mixtures,LWint_Mixtures,SpringRet1_Mixtures,SpringRet2_Mixtures, SummerRet1_Mixtures), 
-                          catchvec = c(4989, 1599, 22509, 14782, 807, 2241, 1700, 283, 1471, 8507, 1819, 482, 10020, 40721, 4037, 9551),  newname = "Stratified_AllTroll_2017_90percentCI_8RG", nchains = 5, burn = 0.1, xlxs = TRUE)
+                          catchvec = c(4989, 1599, 22509, 14782, 807, 2241, 1700, 283, 1471, 8507, 1819, 482, 10020, 40721, 4037, 9551),  newname = "Stratified_AllTroll_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 dput(AllTroll_2017_8RG_StratifiedEstimates$Stats, "Estimates objects/AllTroll_2017_8RG_StratifiedEstimates.txt")
+AllTroll_2017_8RG_StratifiedEstimates <- dget("Estimates objects/AllTroll_2017_8RG_StratifiedEstimates.txt")
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
