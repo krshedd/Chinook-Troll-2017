@@ -1982,7 +1982,8 @@ invisible(sapply(K123Mixtures, function(silly) {
 #### Define Strata ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Summer Ret 1 Troll
-# Create Mixtures for each quadrant for each "retention period" (4 total mixtures) 1) NO, 2) NI, 3) SI, and 4) SO quadrants
+# Create Mixtures for each quadrant for each "retention period" (4 total mixtures since only 1 retention period in 2017)
+# 1) NO, 2) NI, 3) SI, and 4) SO quadrants
 table(KTROL17SU.gcl$attributes$Dist.Quad)
 # 171 172 173 174 
 # 378 379 340 181 
@@ -2004,13 +2005,13 @@ PoolCollections.GCL(collections = "KTROL17SU", loci = GAPSLoci_reordered, IDs = 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Sport
 # Create Mixtures for 
-# 1) Craig (all, to find WCVI for individual ID for origins)
-# 2) Sitka (all, to find WCVI for individual ID for origins)
-# 3) Ketchikan (proportional to harvest)
-# 4) Petersburg/Wrangell (proportional to harvest)
-# 5) Inside (proportional to harvest)
-# 6) Outside Period 1 (thru biweek 13, proportional to harvest)
-# 7) Outside Period 2 (after biweek 13, proportional to harvest)
+# 1) Craig (all, already proportional to harvest, to find WCVI for individual ID for origins)
+# 2) Sitka (all, already proportional to harvest, to find WCVI for individual ID for origins)
+# 3) Ketchikan (all, already proportional to harvest)
+# 4) Petersburg/Wrangell (subsample, proportional to harvest)
+# 5) Inside (subsample, proportional to harvest)
+# 6) Outside Period 1 (thru biweek 13, subsample, proportional to harvest)
+# 7) Outside Period 2 (after biweek 13, subsample, proportional to harvest)
 
 addmargins(table(KSPORT17.gcl$attributes$Biweek, KSPORT17.gcl$attributes$SITE, useNA = "always"))
 #      CRAIG_KLAWOCK ELFIN_COVE GUSTAVUS JUNEAU KETCHIKAN PETERSBURG SITKA WRANGELL YAKUTAT <NA>  Sum
@@ -2042,15 +2043,10 @@ table(SITSport_2017.gcl$attributes$Biweek, SITSport_2017.gcl$attributes$SITE)
 
 
 
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### This is where KS stopped due to P/L ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-###### This is where I stopped #####
 save.image("Summer Troll + Sport Mixtures.RData")
 
 # You will need to create mixtures for the other sport
@@ -2062,11 +2058,19 @@ save.image("Summer Troll + Sport Mixtures.RData")
 # Good luck!!! Thanks so much for your help
 
 
-############# Serena picking up from this point forward
-## I was initially worried when mixture totals did not add up to what Kyle had requested to be run, however, I figured out that 
-## the msat importer does not pull in zeros. This project had somewhere aroun 244 fish that completely failed and that is what 
-## happened to the missing fish in the mixtures
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Serena picking up from this point forward ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# I was initially worried when mixture totals did not add up to what Kyle had requested to be run, however, I figured out that 
+# the msat importer does not pull in zeros. This project had somewhere aroun 244 fish that completely failed and that is what 
+# happened to the missing fish in the mixtures
 load("Summer Troll + Sport Mixtures.RData")
+
+### Read in Vials objects created by Serena to double check
+## Get objects
+SEAKobjects <- list.files(path = "Objects/Vials", pattern = ".txt", recursive = FALSE)
+invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Objects/Vials", objct, sep = "/")), pos = 1) })); beep(2)
+
 
 
 #~~~~~~~~~~~~~~~~~~
@@ -2088,20 +2092,51 @@ table(KTNSport_2017.gcl$attributes$Biweek, KTNSport_2017.gcl$attributes$SITE)
 
 #~~~~~~~~~~~~~~~~~~
 # Petersburg/Wrangell
-PBGWRNSport_2017.vials <- setNames(object = list(na.omit(AttributesToIDs.GCL(silly = "KSPORT17", attribute = "SITE", matching = c("PETERSBURG", "WRANGELL")))), nm = "KSPORT17")
+# PBGWRNSport_2017.vials <- setNames(object = list(na.omit(AttributesToIDs.GCL(silly = "KSPORT17", attribute = "SITE", matching = c("PETERSBURG", "WRANGELL")))), nm = "KSPORT17")
+
+## KS Tue Jan 09 13:34:11 2018
+## Redoing Serena's mixture here, because we need to subsample by port and week to accurately represent harvest
+## We have "more" genotypes than we need, so need to randomly subsample to get accurate picture of harvest
+
+# Proportional harvest data from 'V:\Analysis\1_SEAK\Chinook\Mixture\SEAK17\Associated Data\Sport Extractions - Origins.xlsx'; tab Prelim Harvest Detail; H54:G64
+PBGWRNSport_2017_Run <- read.table('clipboard', header = TRUE, stringsAsFactors = FALSE, colClasses = rep('numeric', 2))
+PBGWRNSport_2017_Run$biweek <- 9:18
+
+# Convert to tall format
+require(tidyr)
+PBGWRN_Run.df <- PBGWRNSport_2017_Run %>% 
+  gather(site, samples, -biweek)
+
+# Subsample by SITE (Port) and Biweek
+PBGWRNSport_2017.vials <- list("KSPORT17" = sort(unlist(
+  sapply(seq(nrow(PBGWRN_Run.df)), function(row) {
+    my.df <- PBGWRN_Run.df[row, ]
+    SITE <- ifelse(my.df$site == "PBG", "PETERSBURG", "WRANGELL")
+    potential_samples <- na.omit(intersect(AttributesToIDs.GCL(silly = "KSPORT17", attribute = "SITE", matching = SITE),
+                                           AttributesToIDs.GCL(silly = "KSPORT17", attribute = "Biweek", matching = my.df$biweek)))
+    n_samples <- min(length(potential_samples), my.df$samples)
+    if(n_samples > 0) {
+      sample(x = potential_samples, size = n_samples, replace = FALSE)  
+    }
+  } )
+)))
+
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% PBGWRNSport_2017.vials[[1]]]) # pbg 205, WRN 131 (total 336), 344 expected
 PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = PBGWRNSport_2017.vials, newname = "PBGWRNSport_2017")
 table(PBGWRNSport_2017.gcl$attributes$Biweek, PBGWRNSport_2017.gcl$attributes$SITE)
 
-#      PETERSBURG WRANGELL
-#9           3        2
-#10          4       32
-#11        133       31
-#12         33       42
-#13         21       17
-#14          8        5
-#15          3        1
-#16          0        1
+# PETERSBURG WRANGELL
+# 9           3        2
+# 10          4       32
+# 11         33       31
+# 12         33       39
+# 13         21       17
+# 14          8        5
+# 15          3        1
+# 16          0        1
+
+dput(x = PBGWRNSport_2017.vials, file = "Objects/Vials/PBGWRNSport_2017.vials.txt")
+
 
 
 #~~~~~~~~~~~~~~~~~~
@@ -2119,82 +2154,82 @@ attributes <- KSPORT17.gcl$attributes
 
 
 # These are the total number of samples available for Biweek10
-Biweek10All <- as.character(subset(attributes,Biweek %in% Per1Biweeks[1]&SITE %in% OutsidePorts)$FK_FISH_ID)
+Biweek10All <- as.character(subset(attributes, Biweek %in% Per1Biweeks[1] & SITE %in% OutsidePorts)$FK_FISH_ID)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek10All]) 
 
 # CRAIG_KLAWOCK    ELFIN_COVE         SITKA       YAKUTAT 
 #      24             1            84             6 
 # all are good, except I need to select 74 for Sitka
 
-Biweek10Sitka <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[1]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 74)
-dput(Biweek10Sitka,"Objects/Biweek10Sitka.vials.txt")
-Biweek10All <- c(as.character(subset(attributes,Biweek %in% Per1Biweeks[1]&SITE %in% OutsidePorts[-4])$FK_FISH_ID),Biweek10Sitka)
+Biweek10Sitka.vials <- sample(as.character(subset(attributes, Biweek %in% Per1Biweeks[1] & SITE %in% OutsidePorts[4])$FK_FISH_ID), size = 74)
+dput(Biweek10Sitka.vials, "Objects/Biweek10Sitka.vials.txt")
+Biweek10All <- c(as.character(subset(attributes, Biweek %in% Per1Biweeks[1] & SITE %in% OutsidePorts[-4])$FK_FISH_ID), Biweek10Sitka.vials)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek10All]) 
 # CRAIG_KLAWOCK    ELFIN_COVE         SITKA       YAKUTAT 
 #      24             1            74             6 
 
 
 # These are the total number of samples available for Biweek11
-Biweek11All <- as.character(subset(attributes,Biweek %in% Per1Biweeks[2]&SITE %in% OutsidePorts)$FK_FISH_ID)
+Biweek11All <- as.character(subset(attributes, Biweek %in% Per1Biweeks[2] & SITE %in% OutsidePorts)$FK_FISH_ID)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek11All]) 
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #     53             7             1           213            12
 # This time, Sitka and Craig need sample size reductions
 
-Biweek11Sitka <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[2]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 181)
-dput(Biweek11Sitka,"Objects/Biweek11Sitka.Per1.vials.txt")
+Biweek11Sitka.vials <- sample(as.character(subset(attributes, Biweek %in% Per1Biweeks[2] & SITE %in% OutsidePorts[4])$FK_FISH_ID), size = 181)
+dput(Biweek11Sitka.vials, "Objects/Biweek11Sitka.vials.txt")
 
-Biweek11Craig <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[2]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 40)
-dput(Biweek11Craig,"Objects/Biweek11Craig.Per1.vials.txt")
+Biweek11Craig.vials <- sample(as.character(subset(attributes, Biweek %in% Per1Biweeks[2] & SITE %in% OutsidePorts[5])$FK_FISH_ID), size = 40)
+dput(Biweek11Craig.vials, "Objects/Biweek11Craig.vials.txt")
 
-Biweek11All <- c(as.character(subset(attributes,Biweek %in% Per1Biweeks[2]&SITE %in% OutsidePorts[-c(4,5)])$FK_FISH_ID),Biweek11Sitka,Biweek11Craig)
+Biweek11All <- c(as.character(subset(attributes, Biweek %in% Per1Biweeks[2] & SITE %in% OutsidePorts[-c(4, 5)])$FK_FISH_ID), Biweek11Sitka.vials, Biweek11Craig.vials)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek11All]) 
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #      40             7             1           181            12
 
 # These are the total number of samples available for Biweek12
-Biweek12All <- as.character(subset(attributes,Biweek %in% Per1Biweeks[3]&SITE %in% OutsidePorts)$FK_FISH_ID)
+Biweek12All <- as.character(subset(attributes, Biweek %in% Per1Biweeks[3] & SITE %in% OutsidePorts)$FK_FISH_ID)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek12All]) 
 # CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #      142            23             3           305            14 
 # Again, Craig and Klawock need reductions
 
-Biweek12Sitka <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[3]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 298)
-dput(Biweek12Sitka,"Objects/Biweek12Sitka.Per1.vials.txt")
+Biweek12Sitka.vials <- sample(as.character(subset(attributes, Biweek %in% Per1Biweeks[3] & SITE %in% OutsidePorts[4])$FK_FISH_ID), size = 298)
+dput(Biweek12Sitka.vials, "Objects/Biweek12Sitka.vials.txt")
 
-Biweek12Craig <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[3]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 112)
-dput(Biweek12Craig,"Objects/Biweek12Craig.Per1.vials.txt")
+Biweek12Craig.vials <- sample(as.character(subset(attributes, Biweek %in% Per1Biweeks[3] & SITE %in% OutsidePorts[5])$FK_FISH_ID), size = 112)
+dput(Biweek12Craig.vials, "Objects/Biweek12Craig.vials.txt")
 
-Biweek12All <- c(as.character(subset(attributes,Biweek %in% Per1Biweeks[3]&SITE %in% OutsidePorts [-c(4,5)])$FK_FISH_ID),Biweek12Sitka,Biweek12Craig)
+Biweek12All <- c(as.character(subset(attributes, Biweek %in% Per1Biweeks[3] & SITE %in% OutsidePorts [-c(4, 5)])$FK_FISH_ID), Biweek12Sitka.vials, Biweek12Craig.vials)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek12All]) 
 
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #       112            23             3           298            14 
 
 
-Biweek13All <- as.character(subset(attributes,Biweek %in% Per1Biweeks[4]&SITE %in% OutsidePorts)$FK_FISH_ID)
+Biweek13All <- as.character(subset(attributes, Biweek %in% Per1Biweeks[4] & SITE %in% OutsidePorts)$FK_FISH_ID)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek13All]) 
 # CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #      157            28             3           293             4
 # This time, only Craig needs to be reduced. The total expected for Sitka is 296
 
-Biweek13Craig <- sample(as.character(subset(attributes,Biweek %in% Per1Biweeks[4]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 140)
-dput(Biweek13Craig,"Objects/Biweek13Craig.Per1.vials.txt")
+Biweek13Craig.vials <- sample(as.character(subset(attributes, Biweek %in% Per1Biweeks[4] & SITE %in% OutsidePorts[5])$FK_FISH_ID), size = 140)
+dput(Biweek13Craig.vials, "Objects/Biweek13Craig.vials.txt")
 
-Biweek13All <- c(as.character(subset(attributes,Biweek %in% Per1Biweeks[4]&SITE %in% OutsidePorts [-5])$FK_FISH_ID),Biweek13Craig)
+Biweek13All <- c(as.character(subset(attributes, Biweek %in% Per1Biweeks[4] & SITE %in% OutsidePorts [-5])$FK_FISH_ID), Biweek13Craig.vials)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek13All]) 
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #     140            28             3           293             4
 
 
-OutsidePer1Sport_2017.vials <- c(Biweek10All,Biweek11All,Biweek12All,Biweek13All)
+OutsidePer1Sport_2017.vials <- c(Biweek10All, Biweek11All, Biweek12All, Biweek13All)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% OutsidePer1Sport_2017.vials]) # looks good
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #    316            59             7           846            36
 
 
 PoolCollections.GCL(collections = "KSPORT17", loci = GAPSLoci_reordered, IDs = list(OutsidePer1Sport_2017.vials), newname = "OutsidePer1Sport_2017")
-table(OutsidePer1Sport_2017.gcl$attributes$Biweek,OutsidePer1Sport_2017.gcl$attributes$SITE)
+table(OutsidePer1Sport_2017.gcl$attributes$Biweek, OutsidePer1Sport_2017.gcl$attributes$SITE)
 
 #      CRAIG_KLAWOCK ELFIN_COVE GUSTAVUS SITKA YAKUTAT
 #10            24          1        0    74       6
@@ -2209,61 +2244,61 @@ table(OutsidePer1Sport_2017.gcl$attributes$Biweek,OutsidePer1Sport_2017.gcl$attr
 Per2Biweeks <- c(14:18)
 
 # These are the total number of samples available for Biweek14 
-Biweek14All <- as.character(subset(attributes,Biweek %in% Per2Biweeks[1]&SITE %in% OutsidePorts)$FK_FISH_ID)
+Biweek14All <- as.character(subset(attributes, Biweek %in% Per2Biweeks[1] & SITE %in% OutsidePorts)$FK_FISH_ID)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek14All]) 
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #     147            13             3           182             2
 # Sitka and Craig both need sample reduction
 
-Biweek14Sitka <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[1]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 166)
-dput(Biweek14Sitka,"Objects/Biweek14Sitka.Per1.vials.txt")
+Biweek14Sitka.vials <- sample(as.character(subset(attributes, Biweek %in% Per2Biweeks[1] & SITE %in% OutsidePorts[4])$FK_FISH_ID), size = 166)
+dput(Biweek14Sitka.vials, "Objects/Biweek14Sitka.vials.txt")
 
-Biweek14Craig <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[1]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 115)
-dput(Biweek14Craig,"Objects/Biweek14Craig.Per1.vials.txt")
+Biweek14Craig.vials <- sample(as.character(subset(attributes, Biweek %in% Per2Biweeks[1] & SITE %in% OutsidePorts[5])$FK_FISH_ID), size = 115)
+dput(Biweek14Craig.vials, "Objects/Biweek14Craig.vials.txt")
 
-Biweek14All <- c(as.character(subset(attributes,Biweek %in% Per2Biweeks[1]&SITE %in% OutsidePorts [-c(4,5)])$FK_FISH_ID),Biweek14Sitka,Biweek14Craig)
+Biweek14All <- c(as.character(subset(attributes, Biweek %in% Per2Biweeks[1] & SITE %in% OutsidePorts [-c(4, 5)])$FK_FISH_ID), Biweek14Sitka.vials, Biweek14Craig.vials)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek14All]) 
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #       115            13             3           166             2
 
 # These are the total number of samples available for Biweek15 
-Biweek15All <- as.character(subset(attributes,Biweek %in% Per2Biweeks[2]&SITE %in% OutsidePorts)$FK_FISH_ID)
+Biweek15All <- as.character(subset(attributes, Biweek %in% Per2Biweeks[2] & SITE %in% OutsidePorts)$FK_FISH_ID)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek15All]) 
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #       110            13             1           151             3
 # Sitka and Craig both need sample reduction
 
-Biweek15Sitka <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[2]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 134)
-dput(Biweek15Sitka,"Objects/Biweek15Sitka.Per1.vials.txt")
+Biweek15Sitka.vials <- sample(as.character(subset(attributes, Biweek %in% Per2Biweeks[2] & SITE %in% OutsidePorts[4])$FK_FISH_ID), size = 134)
+dput(Biweek15Sitka.vials, "Objects/Biweek15Sitka.vials.txt")
 
-Biweek15Craig <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[2]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 97)
-dput(Biweek15Craig,"Objects/Biweek15Craig.Per1.vials.txt")
+Biweek15Craig.vials <- sample(as.character(subset(attributes, Biweek %in% Per2Biweeks[2] & SITE %in% OutsidePorts[5])$FK_FISH_ID), size = 97)
+dput(Biweek15Craig.vials, "Objects/Biweek15Craig.vials.txt")
 
-Biweek15All <- c(as.character(subset(attributes,Biweek %in% Per2Biweeks[2]&SITE %in% OutsidePorts [-c(4,5)])$FK_FISH_ID),Biweek15Sitka,Biweek15Craig)
+Biweek15All <- c(as.character(subset(attributes, Biweek %in% Per2Biweeks[2] & SITE %in% OutsidePorts [-c(4, 5)])$FK_FISH_ID), Biweek15Sitka.vials, Biweek15Craig.vials)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek15All]) 
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #       97            13             1           134             3
 
 
 # These are the total number of samples available for Biweek16
-Biweek16All <- as.character(subset(attributes,Biweek %in% Per2Biweeks[3]&SITE %in% OutsidePorts)$FK_FISH_ID)
+Biweek16All <- as.character(subset(attributes, Biweek %in% Per2Biweeks[3] & SITE %in% OutsidePorts)$FK_FISH_ID)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek16All]) 
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #      101            19             3           103             23
 # Sitka and Craig both need sample reduction
 
-Biweek16Sitka <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[3]&SITE %in% OutsidePorts[4])$FK_FISH_ID),size = 93)
-dput(Biweek16Sitka,"Objects/Biweek16Sitka.Per1.vials.txt")
+Biweek16Sitka.vials <- sample(as.character(subset(attributes, Biweek %in% Per2Biweeks[3] & SITE %in% OutsidePorts[4])$FK_FISH_ID), size = 93)
+dput(Biweek16Sitka.vials,"Objects/Biweek16Sitka.vials.txt")
 
-Biweek16Craig <- sample(as.character(subset(attributes,Biweek %in% Per2Biweeks[3]&SITE %in% OutsidePorts[5])$FK_FISH_ID),size = 79)
-dput(Biweek16Craig,"Objects/Biweek16Craig.Per1.vials.txt")
+Biweek16Craig.vials <- sample(as.character(subset(attributes, Biweek %in% Per2Biweeks[3] & SITE %in% OutsidePorts[5])$FK_FISH_ID), size = 79)
+dput(Biweek16Craig.vials,"Objects/Biweek16Craig.vials.txt")
 
-Biweek16All <- c(as.character(subset(attributes,Biweek %in% Per2Biweeks[3]&SITE %in% OutsidePorts [-c(4,5)])$FK_FISH_ID),Biweek16Sitka,Biweek16Craig)
+Biweek16All <- c(as.character(subset(attributes, Biweek %in% Per2Biweeks[3] & SITE %in% OutsidePorts [-c(4, 5)])$FK_FISH_ID), Biweek16Sitka.vials, Biweek16Craig.vials)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% Biweek16All]) 
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #       79            19             3            93             2
 
-OutsidePer2Sport_2017.vials <- c(Biweek14All,Biweek15All,Biweek16All)
+OutsidePer2Sport_2017.vials <- c(Biweek14All, Biweek15All, Biweek16All)
 table(KSPORT17.gcl$attributes$SITE[KSPORT17.gcl$attributes$FK_FISH_ID %in% OutsidePer2Sport_2017.vials]) # looks good
 #CRAIG_KLAWOCK    ELFIN_COVE      GUSTAVUS         SITKA       YAKUTAT 
 #       291            45             7           393             7
@@ -2310,7 +2345,7 @@ sapply(c(SummerRet1_Mixtures, Sport_Mixtures), function(mix) {
 #SummerRet1NI_2017     SummerRet1NO_2017     SummerRet1SI_2017     SummerRet1SO_2017         CRGSport_2017         SITSport_2017         KTNSport_2017 
 #340                   378                   181                   379                   734                  1331                   386 
 #PBGWRNSport_2017      InsideSport_2017 OutsidePer1Sport_2017 OutsidePer2Sport_2017 
-#336                   271                  1264                   743
+#233                   271                  1264                   743
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Dput all .vials objects
@@ -2330,6 +2365,8 @@ invisible(sapply(c(SummerRet1_Mixtures, Sport_Mixtures), function(silly) {
   dput(x = get(paste0(silly, ".gcl")), file = paste0("Raw genotypes/OriginalCollections_Attributes_Strata/" , silly, ".txt"))
 } )); beep(2)
 
+# Saving new PNGWRN
+dput(x = PBGWRNSport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata/PBGWRNSport_2017.gcl.txt")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Data QC/Massage ####
@@ -2416,6 +2453,11 @@ invisible(sapply(K123_Strata[-c(1:4)], function(silly) {
 } ))
 
 save.image("Summer Troll + Sport Mixtures_SRO.RData")
+
+# Saving new PNGWRN
+dput(x = PBGWRNSport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attributes_Strata_PostQC/PBGWRNSport_2017.gcl.txt")
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Clean workspace; dget .gcl objects and Locus Control ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2439,7 +2481,7 @@ invisible(sapply(K123_Strata, function(silly) {assign(x = paste0(silly, ".gcl"),
 objects(pattern = "\\.gcl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#### Get/Create MSA Objects ####
+#### Get/Create MSA Objects Summer Troll ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # dir.create(path = "BAYES")
 # sapply(c("Control", "Mixture", "Output"), function(folder) {dir.create(path = paste("BAYES", folder, sep = "/"))} )
@@ -2645,7 +2687,9 @@ write.table(x = cbind("Mixture" = c(EWint_Mixtures,LWint_Mixtures,SpringRet1_Mix
             'clipboard', row.names = FALSE)
 
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Get/Create MSA Objects Sport ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Now I will dump mixtures for sport 2017
 rm(list = ls(all = TRUE))
 setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
@@ -2669,35 +2713,39 @@ sapply(K123_Strata[-c(1:4)], function(Mix) {
   CreateMixture.GCL(sillys = Mix, loci = GAPSLoci_reordered, IDs = NULL, mixname = Mix, dir = "BAYES//Mixture", type = "BAYES", PT = FALSE)
 } )
 
+## Re-do PNGWRN
+CreateMixture.GCL(sillys = "PBGWRNSport_2017", loci = GAPSLoci_reordered, IDs = NULL, mixname = "PBGWRNSport_2017", dir = "BAYES/Mixture", type = "BAYES", PT = FALSE)
+
+
 ## Create Priors
 ## First get 2016 Estimates
 SITSport_2016.26RGs <- as.numeric(readClipboard())
-dput(SITSport_2016.26RGs, "Associated Data/SITSport_2016.26RGsEstimates.txt")
-SITSport_2016.26RGs <- dget("Associated Data/SITSport_2016.26RGsEstimates.txt")
+dput(SITSport_2016.26RGs, "Objects/SITSport_2016.26RGsEstimates.txt")
+SITSport_2016.26RGs <- dget("Objects/SITSport_2016.26RGsEstimates.txt")
 
 CRGSport_2016.26RGs <- as.numeric(readClipboard())
-dput(CRGSport_2016.26RGs, "Associated Data/CRGSport_2016.26RGsEstimates.txt")
-CRGSport_2016.26RGs <- dget("Associated Data/CRGSport_2016.26RGsEstimates.txt")
+dput(CRGSport_2016.26RGs, "Objects/CRGSport_2016.26RGsEstimates.txt")
+CRGSport_2016.26RGs <- dget("Objects/CRGSport_2016.26RGsEstimates.txt")
 
 KTNSport_2016.26RGs <- as.numeric(readClipboard())
-dput(KTNSport_2016.26RGs, "Associated Data/KTNSport_2016.26RGsEstimates.txt")
-KTNSport_2016.26RGs <- dget("Associated Data/KTNSport_2016.26RGsEstimates.txt")
+dput(KTNSport_2016.26RGs, "Objects/KTNSport_2016.26RGsEstimates.txt")
+KTNSport_2016.26RGs <- dget("Objects/KTNSport_2016.26RGsEstimates.txt")
 
 PBGWRNSport_2016.26RGs <- as.numeric(readClipboard())
-dput(PBGWRNSport_2016.26RGs, "Associated Data/PBGWRNSport_2016.26RGsEstimates.txt")
-PBGWRNSport_2016.26RGs <- dget("Associated Data/PBGWRNSport_2016.26RGsEstimates.txt")
+dput(PBGWRNSport_2016.26RGs, "Objects/PBGWRNSport_2016.26RGsEstimates.txt")
+PBGWRNSport_2016.26RGs <- dget("Objects/PBGWRNSport_2016.26RGsEstimates.txt")
 
 InsideSport_2016.26RGs <- as.numeric(readClipboard())
-dput(InsideSport_2016.26RGs, "Associated Data/InsideSport_2016.26RGsEstimates.txt")
-InsideSport_2016.26RGs <- dget( "Associated Data/InsideSport_2016.26RGsEstimates.txt")
+dput(InsideSport_2016.26RGs, "Objects/InsideSport_2016.26RGsEstimates.txt")
+InsideSport_2016.26RGs <- dget( "Objects/InsideSport_2016.26RGsEstimates.txt")
 
 OutsidePer1Sport_2016.26RGs <- as.numeric(readClipboard())
-dput(OutsidePer1Sport_2016.26RGs, "Associated Data/OutsidePer1Sport_2016.26RGsEstimates.txt")
-OutsidePer1Sport_2016.26RGs <- dget( "Associated Data/OutsidePer1Sport_2016.26RGsEstimates.txt")
+dput(OutsidePer1Sport_2016.26RGs, "Objects/OutsidePer1Sport_2016.26RGsEstimates.txt")
+OutsidePer1Sport_2016.26RGs <- dget( "Objects/OutsidePer1Sport_2016.26RGsEstimates.txt")
 
 OutsidePer2Sport_2016.26RGs <- as.numeric(readClipboard())
-dput(OutsidePer2Sport_2016.26RGs, "Associated Data/OutsidePer2Sport_2016.26RGsEstimates.txt")
-OutsidePer2Sport_2016.26RGs <- dget("Associated Data/OutsidePer2Sport_2016.26RGsEstimates.txt")
+dput(OutsidePer2Sport_2016.26RGs, "Objects/OutsidePer2Sport_2016.26RGsEstimates.txt")
+OutsidePer2Sport_2016.26RGs <- dget("Objects/OutsidePer2Sport_2016.26RGsEstimates.txt")
 
 
 # Now create the priors for each
@@ -2763,9 +2811,23 @@ CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Summarize BAYES 8RG ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sport_2017_26RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", mixvec = Sport_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+round(Sport_2017_26RG_EstimatesStats$PBGWRNSport_2017, 2)
+
+
+
 Sport_2017_8RG_EstimatesStats <- 
   CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = Sport_Mixtures,
                                prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+sapply(Sport_2017_8RG_EstimatesStats, function(mix) {
+  all(mix[, "GR"] < 1.2)
+} )
+round(Sport_2017_8RG_EstimatesStats$PBGWRNSport_2017, 2)
+
 # Summarizing 80K PGGWRN
 PBGWRNSport_2017_80Kestimates <- CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = "PBGWRNSport_2017_80K",
                              prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
@@ -2775,7 +2837,6 @@ dput(PBGWRNSport_2017_80Kestimates, file = "Estimates objects/PBGWRNSport_2017_8
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Dput EstimatesStats
-# dir.create("Estimates objects")
 invisible(sapply(objects(pattern = "RG_EstimatesStats"), function(obj) {
   dput(x = get(obj), file = paste0("Estimates objects/", obj, ".txt"))
 } ))
