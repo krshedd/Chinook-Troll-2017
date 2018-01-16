@@ -2590,6 +2590,7 @@ sapply(K123_Strata[1:4], function(Mix) {dir.create(paste0("BAYES//Output/", Mix)
 SummerRet1_2017_26RG_EstimatesStats <- 
   CustomCombineBAYESOutput.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", mixvec = SummerRet1_Mixtures,
                                prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+dput(x = SummerRet1_2017_26RG_EstimatesStats, file = "Estimates objects/SummerRet1_2017_26RG_EstimatesStats.txt")
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2635,6 +2636,7 @@ SummerRet1_2017_26RG_StratifiedEstimates <-
   StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
                           mixvec = SummerRet1_Mixtures, catchvec = c(10020, 40721, 4037, 9551), 
                           newname = "Stratified_SummerRet1_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
+dput(x = SummerRet1_2017_26RG_StratifiedEstimates, file = "Estimates objects/SummerRet1_2017_26RG_StratifiedEstimates.txt")
 
 SummerRet1_2017_4RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
@@ -3871,4 +3873,26 @@ Troll2017_4RG_EstimatesStats_Report <-
        "SpringSO_2017" = SpringSO_2017_4RG_StratifiedEstimatesStats,
        "SpringSI_2017" = SpringSI_2017_4RG_StratifiedEstimatesStats,
        "SummerRet1AllQuad_2017" = SummerRet1_2017_4RG_StratifiedEstimates,
-       "SummerRet1NO_2017" = SummerRet1_2017_4RG_EstimatesStats)
+       "SummerRet1NO_2017" = SummerRet1_2017_4RG_EstimatesStats$SummerRet1NO_2017)
+
+
+Troll2017_8RG_EstimatesStats_Report <- 
+  list("EWintAllQuad_2017" = EWint_2017_8RG_StratifiedEstimatesStats,
+       "EWintNO_2017" = EWint_2017_8RG_EstimatesStats$EWintNO_2017,
+       "LWintAllQuad_2017" = LWint_2017_8RG_StratifiedEstimatesStats,
+       "LWintNO_2017" = LWint_2017_8RG_EstimatesStats$LWintNO_2017,
+       "SpringNO_2017" = SpringNO_2017_8RG_StratifiedEstimatesStats,
+       "SpringSI_2017" = SpringSI_2017_8RG_StratifiedEstimatesStats,
+       "SummerRet1AllQuad_2017" = SummerRet1_2017_8RG_StratifiedEstimates,
+       "SummerRet1NO_2017" = SummerRet1_2017_8RG_EstimatesStats$SummerRet1NO_2017)
+
+
+Troll2017_26RG_EstimatesStats_Report <- 
+  list("EWintAllQuad_2017" = EWint_2017_26RG_StratifiedEstimatesStats,
+       "EWintNO_2017" = EWint_2017_26RG_EstimatesStats$EWintNO_2017,
+       "LWintAllQuad_2017" = LWint_2017_26RG_StratifiedEstimatesStats,
+       "LWintNO_2017" = LWint_2017_26RG_EstimatesStats$LWintNO_2017,
+       "SpringNO_2017" = SpringNO_2017_26RG_StratifiedEstimatesStats,
+       "SpringSI_2017" = SpringSI_2017_26RG_StratifiedEstimatesStats,
+       "SummerRet1AllQuad_2017" = SummerRet1_2017_26RG_StratifiedEstimates,
+       "SummerRet1NO_2017" = SummerRet1_2017_26RG_EstimatesStats$SummerRet1NO_2017)
