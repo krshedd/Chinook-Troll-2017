@@ -2652,12 +2652,20 @@ AllTrollnoSummer_2017_8RG_StratifiedEstimates <-
                           catchvec = c(4989, 1599, 22509, 14782, 807, 2241, 1700, 283, 1471, 8507, 1819, 482),  newname = "Stratified_AllTrollnoSummer_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 dput(AllTrollnoSummer_2017_8RG_StratifiedEstimates$Stats, "Estimates objects/AllTrollnoSummer_2017_8RG_StratifiedEstimates.txt")
 
-AllTroll_2017_8RG_StratifiedEstimates <- 
+AllYearTroll2017_8RG_StratifiedEstimatesStats <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = c(EWint_Mixtures,LWint_Mixtures,SpringRet1_Mixtures,SpringRet2_Mixtures, SummerRet1_Mixtures), 
                           catchvec = c(4989, 1599, 22509, 14782, 807, 2241, 1700, 283, 1471, 8507, 1819, 482, 10020, 40721, 4037, 9551),  newname = "Stratified_AllTroll_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
-dput(AllTroll_2017_8RG_StratifiedEstimates$Stats, "Estimates objects/AllTroll_2017_8RG_StratifiedEstimates.txt")
-AllTroll_2017_8RG_StratifiedEstimates <- dget("Estimates objects/AllTroll_2017_8RG_StratifiedEstimates.txt")
+dput(AllYearTroll2017_8RG_StratifiedEstimatesStats, "Estimates objects/AllYearTroll2017_8RG_StratifiedEstimatesStats.txt")
+AllYearTroll2017_8RG_StratifiedEstimatesStats <- dget("Estimates objects/AllYearTroll2017_8RG_StratifiedEstimatesStats.txt")
+
+
+AllYearTroll2017_18RG_StratifiedEstimatesStats <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = c(EWint_Mixtures,LWint_Mixtures,SpringRet1_Mixtures,SpringRet2_Mixtures, SummerRet1_Mixtures), 
+                          catchvec = c(4989, 1599, 22509, 14782, 807, 2241, 1700, 283, 1471, 8507, 1819, 482, 10020, 40721, 4037, 9551),  newname = "Stratified_AllTroll_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
+dput(AllYearTroll2017_18RG_StratifiedEstimatesStats, "Estimates objects/AllYearTroll2017_18RG_StratifiedEstimatesStats.txt")
+AllYearTroll2017_18RG_StratifiedEstimatesStats <- dget("Estimates objects/AllYearTroll2017_18RG_StratifiedEstimatesStats.txt")
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2850,6 +2858,25 @@ invisible(sapply(objects(pattern = "RG_EstimatesStats"), function(obj) {
 # Rerunning PBGWRN with 80K iterations as there were 2 groups with high GR. WACoast (GR = 5.0) and Other (GR = 2.9).
 # I do not think that extending the iterations will help, however it is protocol. We will likely need to combine
 # the chains that converge and drop those that don't for final estimates.
+
+# All Year Sport
+Sport_Mixtures
+
+AllYearSport2017_8RG_StratifiedEstimatesStats <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = Sport_Mixtures[-c(1:2)], 
+                          catchvec = c(),  newname = "Stratified_AllSport_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
+dput(AllYearSport2017_8RG_StratifiedEstimatesStats, "Estimates objects/AllYearSport2017_8RG_StratifiedEstimatesStats.txt")
+AllYearSport2017_8RG_StratifiedEstimatesStats <- dget("Estimates objects/AllYearSport2017_8RG_StratifiedEstimatesStats.txt")
+
+
+AllYearSport2017_18RG_StratifiedEstimatesStats <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = Sport_Mixtures[-c(1:2)], 
+                          catchvec = c(),  newname = "Stratified_AllSport_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
+dput(AllYearSport2017_18RG_StratifiedEstimatesStats, "Estimates objects/AllYearSport2017_18RG_StratifiedEstimatesStats.txt")
+AllYearSport2017_18RG_StratifiedEstimatesStats <- dget("Estimates objects/AllYearSport2017_18RG_StratifiedEstimatesStats.txt")
+
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3629,10 +3656,10 @@ dput(x = Troll2009_2017_33RG_StratifiedEstimates, file = "Estimates objects/Trol
 
 EstimatesStats <- c(dget("Estimates objects/Troll2017_8RG_StratifiedEstimatesStats.txt"),
                     list("SumRet1AllQuad_2017" = dget("Estimates objects/SummerRet1_2017_8RG_StratifiedEstimates.txt")),
-                    "EWintNO_2017" = dget(file = "Estimates objects/EWint_2017_8RG_EstimatesStats.txt")["EWintNO_2017"],
-                    "LWintNO_2017" = dget(file = "Estimates objects/LWint_2017_8RG_EstimatesStats.txt")["LWintNO_2017"],
-                    "SpringNO_2017" = dget(file = "Estimates objects/Troll2017_8RG_EstimatesStats_Formatted.txt")["SpringNO_2017"],
-                    "SumRet1NO_2017" = dget(file = "Estimates objects/SummerRet1_2017_8RG_StratifiedEstimates.txt"))
+                    dget(file = "Estimates objects/EWint_2017_8RG_EstimatesStats.txt")["EWintNO_2017"],
+                    dget(file = "Estimates objects/LWint_2017_8RG_EstimatesStats.txt")["LWintNO_2017"],
+                    dget(file = "Estimates objects/Troll2017_8RG_EstimatesStats.txt")["SpringNO_2017"],
+                    dget(file = "Estimates objects/SummerRet1_2017_8RG_EstimatesStats.txt")["SummerRet1NO_2017"])
 str(EstimatesStats)
 
 # Create layout
@@ -3650,16 +3677,16 @@ WhiteRedColPalette <- colorRampPalette(colors=c("white","red"))
 WhiteRedcol <- level.colors(x=seq(from=0,to=1,by=0.01), at = seq(from=0,to=1,by=0.01), col.regions = WhiteRedColPalette(100))
 
 # Mixture names
-mixnames <- names(EstimatesStats)
+mixnames <- names(EstimatesStats)[c(5, 1, 6, 2, 7, 3, 8, 4)]
 
 # Create list object with by RG stock comps
-HeatmapEstimates <- sapply(GroupNames8Pub, function(RG) {
-  matrix(data = sapply(mixnames, function(mix) {EstimatesStats[[mix]][RG, "Mean"] }),
+HeatmapEstimates <- sapply(GroupNames8, function(RG) {
+  matrix(data = sapply(mixnames, function(mix) {EstimatesStats[[mix]][RG, "mean"] }),
          nrow = 2, ncol = 4, dimnames = list(c("NO", "AllQuad"), c("EWint", "LWint", "Spring", "SumRet1"))
   )
 }, simplify = FALSE)
 zmax <- max(sapply(HeatmapEstimates, max))
-zmax <- 0.85  # Standardize with Sport Heatmap
+zmax <- 0.91  # Standardize with Sport Heatmap
 
 Testing <- matrix(c(seq(from = 0, to = zmax, length.out = 102), seq(from = 0, to = zmax, length.out = 102)), nrow = 2, ncol = 102, byrow = T)
 
@@ -3667,20 +3694,22 @@ Testing <- matrix(c(seq(from = 0, to = zmax, length.out = 102), seq(from = 0, to
 ## Plot: Can't do a nested layout, writing out as pdf then pasting in other pdf
 
 GroupNames8Pub2 <- c(GroupNames8Pub[1:2], "West Vancouver",GroupNames8Pub[4:8])
-names(GroupNames8Pub2) <- GroupNames8Pub
+names(GroupNames8Pub2) <- GroupNames8
 
 # pdf("Figures/2016TrollByFisheryQuadrant.pdf", family = "Times", width = 6.5, height = 6.5, title = "2016 Troll By Fishery and Quadrant")
-png("Figures/2016TrollByFisheryQuadrant.png", family = "Times", width = 6.5, height = 6.5, units = "in", res = 300)
+png("Figures/2017TrollByFisheryQuadrant.png", family = "Times", width = 6.5, height = 6.5, units = "in", res = 300)
 # x11(width = 6.5, height = 6.5)
 par(xaxt = "n", yaxt = "n", omi = rep(0.1, 4), mar = rep(0.1, 4), family = 'serif')
 layout(layoutmat,widths=c(0.3,1,1,0.25),heights=c(1,1,1,1,0.4))
 
 ## Loop through Reporting Group plots
-sapply(GroupNames8Pub, function(RG) {
+sapply(GroupNames8, function(RG) {
   image(t(HeatmapEstimates[[RG]])[, c("AllQuad", "NO")], zlim = c(0, zmax), col = WhiteRedcol, xlab = "", ylab = "", breaks = seq(from = 0, to = zmax, length.out = 102), useRaster = TRUE)
   abline(h = 0.5, lwd = 2, col = 'grey')
-  abline(v = c(0.135, 0.38, 0.63, 0.875), lwd= 2 , col = 'grey')
-  abline(h = c(-0.5, 1.5), v = c(-0.125, 1.125),lwd = 5, col = 'black')
+  abline(v = c(0.175, 0.5, 0.83), lwd= 2 , col = 'grey')
+  abline(h = c(-0.5, 1.5), v = c(-0.17, 1.17),lwd = 5, col = 'black')
+  # abline(v = c(0.135, 0.38, 0.63, 0.875), lwd= 2 , col = 'grey')
+  # abline(h = c(-0.5, 1.5), v = c(-0.125, 1.125),lwd = 5, col = 'black')
   text(labels = substitute(expr = italic(x), env = list(x = GroupNames8Pub2[RG])), cex = 2, adj = c(0, 0.5), x = -0.1, y = 1)
 })
 
@@ -3693,16 +3722,101 @@ text(labels = "All", cex = 2, x = 0.99, y = c(0.97, 0.7, 0.43, 0.16) - 0.135, ad
 ## Plot 11 - X-axis label
 plot.new()
 text(labels = "Fishery", cex = 3, adj = c(0.5, 0.5), x = 0.5, y = 0.35)
-text(labels = "EW", cex = 2, adj = c(0.5, 0.5), x = c(0.02, 0.56), y = 0.8)
-text(labels = "LW", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.115, 0.56 + 0.115), y = 0.8)
-text(labels = "SP", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.22, 0.56 + 0.22), y = 0.8)
-text(labels = "SU1", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.33, 0.56 + 0.33), y = 0.8)
-text(labels = "SU2", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.43, 0.56 + 0.43), y = 0.8)
+text(labels = "EW", cex = 2, adj = c(0.5, 0.5), x = c(0.04, 0.57), y = 0.8)
+text(labels = "LW", cex = 2, adj = c(0.5, 0.5), x = c(0.04 + 0.125, 0.57 + 0.13), y = 0.8)
+text(labels = "SP", cex = 2, adj = c(0.5, 0.5), x = c(0.04 + 0.255, 0.57 + 0.27), y = 0.8)
+text(labels = "SU1", cex = 2, adj = c(0.5, 0.5), x = c(0.04 + 0.385, 0.57 + 0.4), y = 0.8)
+# text(labels = "Fishery", cex = 3, adj = c(0.5, 0.5), x = 0.5, y = 0.35)
+# text(labels = "EW", cex = 2, adj = c(0.5, 0.5), x = c(0.02, 0.56), y = 0.8)
+# text(labels = "LW", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.115, 0.56 + 0.115), y = 0.8)
+# text(labels = "SP", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.22, 0.56 + 0.22), y = 0.8)
+# text(labels = "SU1", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.33, 0.56 + 0.33), y = 0.8)
+# text(labels = "SU2", cex = 2, adj = c(0.5, 0.5), x = c(0.02 + 0.43, 0.56 + 0.43), y = 0.8)
 
 ## Plot 13 - Legend
 image(Testing, col = WhiteRedcol, xlab = "", ylab = "", breaks = seq(from = 0, to = zmax, length.out = 102))
 text(labels = "0%", cex = 2.8, adj = c(0.5, 0.5), x = 0.5, y = 0.03)
-text(labels = "85%", cex = 2.8, adj = c(0.5, 0.5), x = 0.5, y = 0.98)  # formerly 50%
+text(labels = paste0(round(zmax * 100), "%"), cex = 2.8, adj = c(0.5, 0.5), x = 0.5, y = 0.98)  # formerly 50%
+abline(h = c(-0.005,  1.005),  v  =  c(-0.5,  1.5), lwd = 5, col = 'black')
+dev.off()
+dev.off()
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Create 2017 Sport HeatMaps ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+EstimatesStats <- dget(file = "Estimates objects/Sport_2017_8RG_EstimatesStats.txt")
+
+# Create layout
+layoutmat <- matrix(c(9,1,2,11,
+                      9,3,4,11,
+                      9,5,6,11,
+                      9,7,8,11,
+                      12,10,10,13), ncol=4,nrow=5,byrow=T)
+SEAKTrollLayout <- layout(layoutmat,widths=c(0.25,1,1,0.25),heights=c(1,1,1,1,0.25))
+layout.show(SEAKTrollLayout)
+
+# Set color ramp
+library('lattice')
+WhiteRedColPalette <- colorRampPalette(colors=c("white","red"))
+WhiteRedcol <- level.colors(x=seq(from=0,to=1,by=0.01), at = seq(from=0,to=1,by=0.01), col.regions = WhiteRedColPalette(100))
+
+# Mixture names
+mixnames <- c(rep(x = names(EstimatesStats)[3:5], each = 2), names(EstimatesStats)[6:7])
+
+# Create list object with by RG stock comps
+HeatmapEstimates <- sapply(GroupNames8, function(RG) {
+  matrix(data = sapply(mixnames, function(mix) {EstimatesStats[[mix]][RG, "mean"] }),
+         nrow = 2, ncol = 4, dimnames = list(c("Early", "Late"), c("KTN", "PBGWRN", "Inside", "Outside"))
+  )
+}, simplify = FALSE)
+zmax <- max(sapply(HeatmapEstimates, max))
+zmax <- 0.91
+
+Testing <- matrix(c(seq(from = 0, to = zmax, length.out = 102), seq(from = 0, to = zmax, length.out = 102)), nrow = 2, ncol = 102, byrow = T)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Plot: Can't do a nested layout, writing out as pdf then pasting in other pdf
+
+GroupNames8Pub2 <- c(GroupNames8Pub[1:2], "West Vancouver",GroupNames8Pub[4:8])
+names(GroupNames8Pub2) <- GroupNames8
+
+# pdf("Figures/2017SportByFishery.pdf", family = "Times", width = 6.5, height = 6.5, title = "2016 Troll By Fishery and Quadrant")
+png("Figures/2017SportByArea.png", family = "Times", width = 6.5, height = 6.5, units = "in", res = 300)
+# x11(width = 6.5, height = 6.5)
+par(xaxt = "n", yaxt = "n", omi = rep(0.1, 4), mar = rep(0.1, 4), family = 'serif')
+layout(layoutmat,widths=c(0.3,1,1,0.25),heights=c(1,1,1,1,0.4))
+
+## Loop through Reporting Group plots
+sapply(GroupNames8, function(RG) {
+  image(t(HeatmapEstimates[[RG]])[, ], zlim = c(0, zmax), col = WhiteRedcol, xlab = "", ylab = "", breaks = seq(from = 0, to = zmax, length.out = 102), useRaster = TRUE)
+  # abline(h = 0.5, lwd = 2, col = 'grey')
+  segments(x0 = 0.835, x1 = 1.165, y0 = 0.5, y1 = 0.5, lwd = 2, col = 'grey')
+  abline(v = c(0.175, 0.5, 0.835), lwd= 2 , col = 'grey')
+  abline(h = c(-0.5, 1.5), v = c(-0.165, 1.165),lwd = 5, col = 'black')
+  text(labels = substitute(expr = italic(x), env = list(x = GroupNames8Pub2[RG])), cex = 2, adj = c(0, 0.5), x = -0.1, y = 1)
+})
+
+## Plot 10 - Y-axis label
+plot.new()
+text(labels = "Period", cex = 3, srt = 90, x = 0.3, y = 0.5, adj = c(0.5, 0))
+text(labels = "Early", cex = 2, x = 0.99, y = c(0.97, 0.7, 0.43, 0.16), adj = c(1, 0.5))
+text(labels = "Late", cex = 2, x = 0.99, y = c(0.97, 0.7, 0.43, 0.16) - 0.135, adj = c(1, 0.5))
+
+## Plot 11 - X-axis label
+plot.new()
+text(labels = "Area", cex = 3, adj = c(0.5, 0.5), x = 0.5, y = 0.35)
+text(labels = "KTN", cex = 1.5, adj = c(0.5, 0.5), x = c(0.03, 0.57), y = 0.8)
+text(labels = "PB-WR", cex = 1.5, adj = c(0.5, 0.5), x = c(0.03 + 0.14, 0.57 + 0.14), y = 0.8)
+text(labels = "Inside", cex = 1.5, adj = c(0.5, 0.5), x = c(0.03 + 0.27, 0.57 + 0.27), y = 0.8)
+text(labels = "Outside", cex = 1.5, adj = c(0.5, 0.5), x = c(0.03 + 0.40, 0.57 + 0.40), y = 0.8)
+
+## Plot 13 - Legend
+image(Testing, col = WhiteRedcol, xlab = "", ylab = "", breaks = seq(from = 0, to = zmax, length.out = 102))
+text(labels = "0%", cex = 2.8, adj = c(0.5, 0.5), x = 0.5, y = 0.03)
+text(labels = paste0(zmax * 100, "%"), cex = 2.8, adj = c(0.5, 0.5), x = 0.5, y = 0.98)
 abline(h = c(-0.005,  1.005),  v  =  c(-0.5,  1.5), lwd = 5, col = 'black')
 dev.off()
 dev.off()
