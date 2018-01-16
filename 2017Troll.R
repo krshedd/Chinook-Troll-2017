@@ -2616,6 +2616,7 @@ sapply(objects(pattern = "RG_EstimatesStats"), function(obj) {
 SummerRet1_2017_4RG_EstimatesStats <- 
   CustomCombineBAYESOutput.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", mixvec = SummerRet1_Mixtures,
                                prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+dput(x = SummerRet1_2017_4RG_EstimatesStats, file = "Estimates objects/SummerRet1_2017_4RG_EstimatesStats.txt")
 
 SummerRet1_2017_8RG_EstimatesStats <- 
   CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = SummerRet1_Mixtures,
@@ -2639,6 +2640,7 @@ SummerRet1_2017_4RG_StratifiedEstimates <-
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
                           mixvec = SummerRet1_Mixtures, catchvec = c(10020, 40721, 4037, 9551), 
                           newname = "Stratified_SummerRet1_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
+dput(x = SummerRet1_2017_4RG_StratifiedEstimates, file = "Estimates objects/SummerRet1_2017_4RG_StratifiedEstimates.txt")
 
 SummerRet1_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
@@ -3821,3 +3823,52 @@ abline(h = c(-0.005,  1.005),  v  =  c(-0.5,  1.5), lwd = 5, col = 'black')
 dev.off()
 dev.off()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Summary Tables ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+objects(pattern = "SampleSizes")
+FinalSampleSizes <- c(K119_K120_Strata_SampleSizes[, "Final"], K123_Strata_SampleSizes[, "Final"])
+FinalSampleSizes[FinalSampleSizes > 100]
+
+TrollMixtures <- list("EWintAllQuad_2017" = EWint_Mixtures,
+                      "EWintNO_2017" = EWint_Mixtures[1],
+                      "LWintAllQuad_2017" = LWint_Mixtures,
+                      "LWintNO_2017" = LWint_Mixtures[1],
+                      "SpringNO_2017" = c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]),
+                      "SpringNI_2017" = c(SpringRet1_Mixtures[1], SpringRet2_Mixtures[1]),
+                      "SpringSO_2017" = c(SpringRet1_Mixtures[4], SpringRet2_Mixtures[4]),
+                      "SpringSI_2017" = c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]),
+                      "SummerRet1AllQuad_2017" = SummerRet1_Mixtures,
+                      "SummerRet1NO_2017" = SummerRet1_Mixtures[2])
+
+SportMixtures <- list("KTNSport_2017" = Sport_Mixtures[3],
+                      "PBGWRNSport_2017" = Sport_Mixtures[4],
+                      "InsideSport_2017" = Sport_Mixtures[5],
+                      "OutsidePerSport_2017" = Sport_Mixtures[6:7],
+                      "OutsidePer1Sport_2017" = Sport_Mixtures[6],
+                      "OutsidePer2Sport_2017" = Sport_Mixtures[7])
+
+sapply(TrollMixtures, function(mix) {sum(FinalSampleSizes[mix])})
+sapply(SportMixtures, function(mix) {sum(FinalSampleSizes[mix])})
+
+
+
+## Get objects
+SEAKobjects <- list.files(path = "Estimates objects", pattern = "2017", recursive = FALSE)
+invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Estimates objects", objct, sep = "/")), pos = 1) } )); rm(SEAKobjects)#; beep(2)
+
+
+Troll2017_4RG_EstimatesStats_Report <- 
+  list("EWintAllQuad_2017" = EWint_2017_4RG_StratifiedEstimatesStats,
+       "EWintNO_2017" = EWint_2017_4RG_EstimatesStats$EWintNO_2017,
+       "LWintAllQuad_2017" = LWint_2017_4RG_StratifiedEstimatesStats,
+       "LWintNO_2017" = LWint_2017_4RG_EstimatesStats$LWintNO_2017,
+       "SpringNO_2017" = SpringNO_2017_4RG_StratifiedEstimatesStats,
+       "SpringNI_2017" = SpringNI_2017_4RG_StratifiedEstimatesStats,
+       "SpringSO_2017" = SpringSO_2017_4RG_StratifiedEstimatesStats,
+       "SpringSI_2017" = SpringSI_2017_4RG_StratifiedEstimatesStats,
+       "SummerRet1AllQuad_2017" = SummerRet1_2017_4RG_StratifiedEstimates,
+       "SummerRet1NO_2017" = SummerRet1_2017_4RG_EstimatesStats)
