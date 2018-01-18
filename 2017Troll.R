@@ -2872,12 +2872,18 @@ dput(OutsideSport_2017_26RG_StratifiedEstimatesStats, "Estimates objects/Outside
 OutsideSport_2017_26RG_StratifiedEstimatesStats <- dget("Estimates objects/OutsideSport_2017_26RG_StratifiedEstimatesStats.txt")
 
 OutsideSport_2017_8RG_StratifiedEstimatesStats <- 
-  StratifiedEstimator.GCL(groupvec = Groupvec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+  StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
                           mixvec = Sport_Mixtures[6:7], 
                           catchvec = c(20870, 12114),  newname = "Stratified_OutsideSport_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 dput(OutsideSport_2017_8RG_StratifiedEstimatesStats, "Estimates objects/OutsideSport_2017_8RG_StratifiedEstimatesStats.txt")
 OutsideSport_2017_8RG_StratifiedEstimatesStats <- dget("Estimates objects/OutsideSport_2017_8RG_StratifiedEstimatesStats.txt")
 
+OutsideSport_2017_4RG_StratifiedEstimatesStats <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
+                          mixvec = Sport_Mixtures[6:7], 
+                          catchvec = c(20870, 12114),  newname = "Stratified_OutsideSport_2017_90percentCI_4RG", nchains = 5, xlxs = TRUE)
+dput(OutsideSport_2017_4RG_StratifiedEstimatesStats, "Estimates objects/OutsideSport_2017_4RG_StratifiedEstimatesStats.txt")
+OutsideSport_2017_4RG_StratifiedEstimatesStats <- dget("Estimates objects/OutsideSport_2017_4RG_StratifiedEstimatesStats.txt")
 
 
 # All Year Sport
