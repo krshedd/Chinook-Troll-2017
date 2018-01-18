@@ -2863,6 +2863,23 @@ invisible(sapply(objects(pattern = "RG_EstimatesStats"), function(obj) {
 # I do not think that extending the iterations will help, however it is protocol. We will likely need to combine
 # the chains that converge and drop those that don't for final estimates.
 
+# Outside
+OutsideSport_2017_26RG_StratifiedEstimatesStats <- 
+  StratifiedEstimator.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", 
+                          mixvec = Sport_Mixtures[6:7], 
+                          catchvec = c(20870, 12114),  newname = "Stratified_OutsideSport_2017_90percentCI_26RG", nchains = 5, xlxs = TRUE)
+dput(OutsideSport_2017_26RG_StratifiedEstimatesStats, "Estimates objects/OutsideSport_2017_26RG_StratifiedEstimatesStats.txt")
+OutsideSport_2017_26RG_StratifiedEstimatesStats <- dget("Estimates objects/OutsideSport_2017_26RG_StratifiedEstimatesStats.txt")
+
+OutsideSport_2017_8RG_StratifiedEstimatesStats <- 
+  StratifiedEstimator.GCL(groupvec = Groupvec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
+                          mixvec = Sport_Mixtures[6:7], 
+                          catchvec = c(20870, 12114),  newname = "Stratified_OutsideSport_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
+dput(OutsideSport_2017_8RG_StratifiedEstimatesStats, "Estimates objects/OutsideSport_2017_8RG_StratifiedEstimatesStats.txt")
+OutsideSport_2017_8RG_StratifiedEstimatesStats <- dget("Estimates objects/OutsideSport_2017_8RG_StratifiedEstimatesStats.txt")
+
+
+
 # All Year Sport
 Sport_Mixtures
 
@@ -3853,8 +3870,8 @@ SportMixtures <- list("KTNSport_2017" = Sport_Mixtures[3],
                       "OutsidePer1Sport_2017" = Sport_Mixtures[6],
                       "OutsidePer2Sport_2017" = Sport_Mixtures[7])
 
-sapply(TrollMixtures, function(mix) {sum(FinalSampleSizes[mix])})
-sapply(SportMixtures, function(mix) {sum(FinalSampleSizes[mix])})
+TrollSampleSizes <- sapply(TrollMixtures, function(mix) {sum(FinalSampleSizes[mix])})
+SportSampleSizes <- sapply(SportMixtures, function(mix) {sum(FinalSampleSizes[mix])})
 
 
 
@@ -3896,3 +3913,11 @@ Troll2017_26RG_EstimatesStats_Report <-
        "SpringSI_2017" = SpringSI_2017_26RG_StratifiedEstimatesStats,
        "SummerRet1AllQuad_2017" = SummerRet1_2017_26RG_StratifiedEstimates,
        "SummerRet1NO_2017" = SummerRet1_2017_26RG_EstimatesStats$SummerRet1NO_2017)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sport2017_4RG_EstimatesStats_Report
+
+Sport2017_8RG_EstimatesStats_Report <- 
+  list("KTNSport_2017" = Sport_2017_8RG_EstimatesStats)
+
+Sport2017_26RG_EstimatesStats_Report
