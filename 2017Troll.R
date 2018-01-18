@@ -2840,6 +2840,11 @@ Sport_2017_8RG_EstimatesStats <-
   CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = Sport_Mixtures,
                                prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
 
+Sport_2017_4RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", mixvec = Sport_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+
 sapply(Sport_2017_8RG_EstimatesStats, function(mix) {
   all(mix[, "GR"] < 1.2)
 } )
@@ -3921,7 +3926,8 @@ Troll2017_26RG_EstimatesStats_Report <-
        "SummerRet1NO_2017" = SummerRet1_2017_26RG_EstimatesStats$SummerRet1NO_2017)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Sport2017_4RG_EstimatesStats_Report
+Sport2017_4RG_EstimatesStats_Report <- 
+  setNames(object = list())
 
 Sport2017_8RG_EstimatesStats_Report <- 
   list("KTNSport_2017" = Sport_2017_8RG_EstimatesStats)
