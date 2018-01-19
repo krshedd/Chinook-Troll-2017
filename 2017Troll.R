@@ -3877,13 +3877,13 @@ TrollMixtures <- list("EWintAllQuad_2017" = EWint_Mixtures,
 SportMixtures <- list("KTNSport_2017" = Sport_Mixtures[3],
                       "PBGWRNSport_2017" = Sport_Mixtures[4],
                       "InsideSport_2017" = Sport_Mixtures[5],
-                      "OutsidePerSport_2017" = Sport_Mixtures[6:7],
+                      "OutsideSport_2017" = Sport_Mixtures[6:7],
                       "OutsidePer1Sport_2017" = Sport_Mixtures[6],
                       "OutsidePer2Sport_2017" = Sport_Mixtures[7])
 
 TrollSampleSizes <- sapply(TrollMixtures, function(mix) {sum(FinalSampleSizes[mix])})
 SportSampleSizes <- sapply(SportMixtures, function(mix) {sum(FinalSampleSizes[mix])})
-
+AllSampleSizes <- c(TrollSampleSizes, SportSampleSizes)
 
 
 ## Get objects
@@ -3925,11 +3925,104 @@ Troll2017_26RG_EstimatesStats_Report <-
        "SummerRet1AllQuad_2017" = SummerRet1_2017_26RG_StratifiedEstimates,
        "SummerRet1NO_2017" = SummerRet1_2017_26RG_EstimatesStats$SummerRet1NO_2017)
 
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Sport2017_4RG_EstimatesStats_Report <- 
-  setNames(object = list())
+  c(Sport_2017_4RG_EstimatesStats[3:5],
+    list("OutsideSport_2017" = OutsideSport_2017_4RG_StratifiedEstimatesStats),
+    Sport_2017_4RG_EstimatesStats[6:7])
 
 Sport2017_8RG_EstimatesStats_Report <- 
-  list("KTNSport_2017" = Sport_2017_8RG_EstimatesStats)
+  c(Sport_2017_8RG_EstimatesStats[3:5],
+    list("OutsideSport_2017" = OutsideSport_2017_8RG_StratifiedEstimatesStats),
+    Sport_2017_8RG_EstimatesStats[6:7])
 
-Sport2017_26RG_EstimatesStats_Report
+Sport2017_26RG_EstimatesStats_Report <- 
+  c(Sport_2017_26RG_EstimatesStats[3:5],
+    list("OutsideSport_2017" = OutsideSport_2017_26RG_StratifiedEstimatesStats),
+    Sport_2017_26RG_EstimatesStats[6:7])
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+TrollMixPub2017 <- setNames(object = c("Early Winter All Quadrants",
+                                       "Early Winter Northern Outside Quadrant",
+                                       "Late Winter All Quadrants",
+                                       "Late Winter Northern Outside Quadrant",
+                                       "Spring Northern Outside Quadrant",
+                                       "Spring Northern Inside Quadrant",
+                                       "Spring Southern Outside Quadrant",
+                                       "Spring Southern Inside Quadrant",
+                                       "Summer Retention 1 All Quadrants",
+                                       "Summer Retention 1 Northern Outside Quadrant"), 
+                            nm = names(TrollMixtures))
+
+SportMixPub2017 <- setNames(object = c("Ketchikan", "Petersburg-Wrangell", "Northern Inside", "Outside All Year", "Outside Biweek 9-13", "Outside Biweek 14-18"), 
+                            nm = names(SportMixtures))
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create fully formatted spreadsheat
+
+table_format.f <- function(EstimatesStats, SampSizes, PubNames, filename, sheetname) {
+  
+  for(mix in names(EstimatesStats)) {
+    
+    nRG <- nrow(EstimatesStats[[mix]])
+    
+    TableX <- matrix(data = "", nrow = (3 + nRG), ncol = 7)
+    TableX[1, 3] <- paste0(PubNames[mix], "(n=", SampSizes[mix], ")")
+    TableX[2, 6] <- "90% CI"
+    TableX[3, 2:7] <- c("Reporting Group", "Mean", "SD", "Median", "5%", "95%")
+    TableX[4:(nRG + 3), 1] <- seq(nRG)
+    TableX[4:(nRG + 3), 2] <- rownames(EstimatesStats[[mix]])
+    TableX[4:(nRG + 3), 3:7] <- formatC(x = EstimatesStats[[mix]][, c("mean", "sd", "median", "5%", "95%")], digits = 3, format = "f")
+    
+    write.xlsx(x = TableX, file = paste0("Estimates tables/", filename, ".xlsx"),
+               col.names = FALSE, row.names = FALSE, sheetName = paste(mix, sheetname), append = TRUE)
+    
+  }
+}
+
+EstimatesStats <- Troll2017_26RG_EstimatesStats_Report
+SampSizes <- AllSampleSizes
+PubNames <- TrollMixPub2017
+filename <- "Troll2016_26RG_StratifiedEstimatesStats_FormattedPretty"
+sheetname <- "Troll 26RG"
+
+require(xlsx)
+table_format.f(EstimatesStats = Troll2017_26RG_EstimatesStats_Report, 
+               SampSizes = AllSampleSizes, 
+               PubNames = TrollMixPub2017, 
+               filename = "Troll2016_26RG_StratifiedEstimatesStats_FormattedPretty", 
+               sheetname = "Troll 26RG")
+
+table_format.f(EstimatesStats = Sport2017_26RG_EstimatesStats_Report, 
+               SampSizes = AllSampleSizes, 
+               PubNames = SportMixPub2017, 
+               filename = "Sport2016_26RG_StratifiedEstimatesStats_FormattedPretty", 
+               sheetname = "Sport 26RG")
+
+table_format.f(EstimatesStats = Troll2017_8RG_EstimatesStats_Report, 
+               SampSizes = AllSampleSizes, 
+               PubNames = TrollMixPub2017, 
+               filename = "Troll2016_8RG_StratifiedEstimatesStats_FormattedPretty", 
+               sheetname = "Troll 8RG")
+
+table_format.f(EstimatesStats = Sport2017_8RG_EstimatesStats_Report, 
+               SampSizes = AllSampleSizes, 
+               PubNames = SportMixPub2017, 
+               filename = "Sport2016_8RG_StratifiedEstimatesStats_FormattedPretty", 
+               sheetname = "Sport 8RG")
+
+table_format.f(EstimatesStats = Troll2017_4RG_EstimatesStats_Report, 
+               SampSizes = AllSampleSizes, 
+               PubNames = TrollMixPub2017, 
+               filename = "Troll2016_4RG_StratifiedEstimatesStats_FormattedPretty", 
+               sheetname = "Troll 4RG")
+
+table_format.f(EstimatesStats = Sport2017_4RG_EstimatesStats_Report, 
+               SampSizes = AllSampleSizes, 
+               PubNames = SportMixPub2017, 
+               filename = "Sport2016_4RG_StratifiedEstimatesStats_FormattedPretty", 
+               sheetname = "Sport 4RG")
+
