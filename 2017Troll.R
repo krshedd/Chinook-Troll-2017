@@ -3993,36 +3993,204 @@ require(xlsx)
 table_format.f(EstimatesStats = Troll2017_26RG_EstimatesStats_Report, 
                SampSizes = AllSampleSizes, 
                PubNames = TrollMixPub2017, 
-               filename = "Troll2016_26RG_StratifiedEstimatesStats_FormattedPretty", 
+               filename = "Troll2017_26RG_StratifiedEstimatesStats_FormattedPretty", 
                sheetname = "Troll 26RG")
 
 table_format.f(EstimatesStats = Sport2017_26RG_EstimatesStats_Report, 
                SampSizes = AllSampleSizes, 
                PubNames = SportMixPub2017, 
-               filename = "Sport2016_26RG_StratifiedEstimatesStats_FormattedPretty", 
+               filename = "Sport2017_26RG_StratifiedEstimatesStats_FormattedPretty", 
                sheetname = "Sport 26RG")
 
 table_format.f(EstimatesStats = Troll2017_8RG_EstimatesStats_Report, 
                SampSizes = AllSampleSizes, 
                PubNames = TrollMixPub2017, 
-               filename = "Troll2016_8RG_StratifiedEstimatesStats_FormattedPretty", 
+               filename = "Troll2017_8RG_StratifiedEstimatesStats_FormattedPretty", 
                sheetname = "Troll 8RG")
 
 table_format.f(EstimatesStats = Sport2017_8RG_EstimatesStats_Report, 
                SampSizes = AllSampleSizes, 
                PubNames = SportMixPub2017, 
-               filename = "Sport2016_8RG_StratifiedEstimatesStats_FormattedPretty", 
+               filename = "Sport2017_8RG_StratifiedEstimatesStats_FormattedPretty", 
                sheetname = "Sport 8RG")
 
 table_format.f(EstimatesStats = Troll2017_4RG_EstimatesStats_Report, 
                SampSizes = AllSampleSizes, 
                PubNames = TrollMixPub2017, 
-               filename = "Troll2016_4RG_StratifiedEstimatesStats_FormattedPretty", 
+               filename = "Troll2017_4RG_StratifiedEstimatesStats_FormattedPretty", 
                sheetname = "Troll 4RG")
 
 table_format.f(EstimatesStats = Sport2017_4RG_EstimatesStats_Report, 
                SampSizes = AllSampleSizes, 
                PubNames = SportMixPub2017, 
-               filename = "Sport2016_4RG_StratifiedEstimatesStats_FormattedPretty", 
+               filename = "Sport2017_4RG_StratifiedEstimatesStats_FormattedPretty", 
                sheetname = "Sport 4RG")
 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Clean workspace; dget .gcl objects and Locus Control ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+rm(list = ls(all = TRUE))
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
+# This sources all of the new GCL functions to this workspace
+source("C:/Users/krshedd/Documents/R/Functions.GCL.R")
+source("H:/R Source Scripts/Functions.GCL_KS.R")
+
+## Get objects
+SEAKobjects <- list.files(path = "Objects", recursive = FALSE)
+SEAKobjects <- SEAKobjects[-which(SEAKobjects == "Vials" | SEAKobjects == "OLD_BAD_LOCUSCONTROL")]
+SEAKobjects
+
+invisible(sapply(SEAKobjects, function(objct) {assign(x = unlist(strsplit(x = objct, split = ".txt")), value = dget(file = paste(getwd(), "Objects", objct, sep = "/")), pos = 1) })); beep(2)
+
+## Get preQC mixtures
+ONCOR_Mixtures <- c("KSPORT17", "KTROL16EW", "KTROL17LW", "KTROL17SP", "KTROL17SU")
+dput(x = ONCOR_Mixtures, file = "Objects/ONCOR_Mixtures.txt")
+invisible(sapply(ONCOR_Mixtures, function(silly) {assign(x = paste0(silly, ".gcl"), value = dget(file = paste0("Raw genotypes/OriginalCollections_Attributes/", silly, ".txt")), pos = 1)} )); beep(2)
+objects(pattern = "\\.gcl")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Data QC/Massage ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ONCOR_Mixtures_Miss <- RemoveIndMissLoci.GCL(sillyvec = ONCOR_Mixtures, proportion = 0.8)
+
+ONCOR_Mixtures_DuplicateCheck95MinProportion <- CheckDupWithinSilly.GCL(sillyvec = ONCOR_Mixtures, loci = GAPSLoci, quantile = NULL, minproportion = 0.95)
+ONCOR_Mixtures_Dups <- RemoveDups.GCL(ONCOR_Mixtures_DuplicateCheck95MinProportion)
+
+dput(x = ONCOR_Mixtures_Miss, file = "Objects/ONCOR_Mixtures_Miss.txt")
+dput(x = ONCOR_Mixtures_Dups, file = "Objects/ONCOR_Mixtures_Dups.txt")
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### ONCOR Individual Assignment ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Export genotypes to mixture files for ONCOR
+# This is for "Origins" in order to send the correct scale cards to respective agencies for aging
+# Using basline and reporting group files from the "SEAK16" directory
+
+# I will need the following files for input into ONCOR
+# baseline file: in Genepop format       (Use file "SEAK357Pops", from 2013 baseline)
+# reporting group file: column 1 is pops, column 2 is reporting group    (Use files 1) "CTCgroups_21ProposalRG", 2) "CTCgroups_30RG", 3) "GAPSgroups_26RG")
+# mixture file: in Genepop format, only one "Pop" designation
+
+# dir.create(path = "ONCOR/Mixture")
+
+# Use "all individuals" or "subsampled mixture" individuals?
+# Sara has used "all individuals" in the past to get them sent out for ages, need to check with Randy
+# Thu Jan 25 11:28:06 2018; spoke with Randy and he confirmed that we want ALL samples that have been genotyped
+date()
+
+gcl2Genepop.GCL(sillyvec = ONCOR_Mixtures[1], path = "ONCOR/Mixture/Sport2017.gen", loci = GAPSLoci, VialNums = TRUE, usat = TRUE)
+
+gcl2Genepop.GCL(sillyvec = ONCOR_Mixtures[-1], path = "ONCOR/Mixture/Troll2017.gen", loci = GAPSLoci, VialNums = TRUE, usat = TRUE)
+# Remove "Pop" designations
+rawdat <- scan(file = "ONCOR/Mixture/Troll2017.gen", what = '', sep = '\n')
+moddat <- rawdat[-grep(pattern = "Pop", x = rawdat)[-1]]
+write.table(x = moddat, file = "ONCOR/Mixture/Troll2017.gen", quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Sport 2017 Scales for Origins ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Sport attributes to join with Oncor Output
+str(KSPORT17.gcl$attributes)
+sport_attributes <- c("SillySource", "Date", "SITE", "ScaleCardNumber", "ScaleCardRow", "Length", "TAGNUM", "OTOLITH")
+sport_attributes.df <- KSPORT17.gcl$attributes[, sport_attributes]
+str(sport_attributes.df)
+
+## Read in Oncor output
+rawsport <- scan(file = "ONCOR/Output/Sport2017_21RG_out.txt", what = '', sep = '\n', blank.lines.skip = FALSE)
+skip = grep(pattern = "PROBABILITY OF EACH INDIVIDUAL IN THE MIXTURE BELONGING TO EACH REPORTING GROUP", x = rawsport) + 1
+dat <- read.table(file = "ONCOR/Output/Sport2017_21RG_out.txt", header = TRUE, skip = skip)
+str(dat)
+GroupNames21 <- colnames(dat)
+dput(x = GroupNames21, file = "Objects/GroupNames21.txt")
+
+## Base answer
+# x <- t(apply(data.matrix(dat), 1, function(ind) {
+#   c(GroupNames21[which.max(ind)], max(ind))
+# } ))
+
+## Tidy answer
+require(dplyr)
+require(tidyr)
+
+# Add FishID as factor
+dat.mod <- dat
+dat.mod$FishID <- factor(x = rownames(dat.mod), levels = rownames(dat.mod))
+
+# 1st probability RG
+dat.tdy.1 <- dat.mod %>% 
+  gather(RG, prob, -FishID) %>% 
+  group_by(FishID) %>% 
+  slice(which.max(prob))
+head(dat.tdy.1)
+
+# 2nd probability RG
+dat.tdy.2 <- dat.mod %>% 
+  gather(RG, prob, -FishID) %>% 
+  group_by(FishID) %>% 
+  filter(rank(desc(prob)) == 2) %>% 
+  arrange(FishID)
+head(dat.tdy.2)
+
+# Join 1st and 2nd probability RG with sport attributes
+sport.dat.tdy <- left_join(x = dat.tdy.1, y = dat.tdy.2, by = "FishID") %>% 
+  rename(RG.1 = RG.x, prob.1 = prob.x, RG.2 = RG.y, prob.2 = prob.y) %>% 
+  filter(prob.1 >= 0.8) %>%
+  left_join(sport_attributes.df, by = c("FishID" = "SillySource"))
+head(sport.dat.tdy)
+str(sport.dat.tdy, max.level = 1)
+dput(x = sport.dat.tdy, file = "Objects/sport.dat.tdy.txt")
+
+## Create individual sheets for different agencies
+# Canada
+canada.sport.dat.tdy <- sport.dat.tdy %>% 
+  filter(RG.1 %in% c("FraserEarly", "NorCentBC", "WCVI")) %>% 
+  arrange(RG.1, desc(prob.1))
+colnames(canada.sport.dat.tdy) <- c("IND", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "CardNo", "IndNo", "Length", "CWT", "Otolith")
+head(canada.sport.dat.tdy)
+
+# Washington
+washington.sport.dat.tdy <- sport.dat.tdy %>% 
+  filter(RG.1 %in% c("WACoast")) %>% 
+  arrange(RG.1, desc(prob.1))
+colnames(washington.sport.dat.tdy) <- c("IND", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "CardNo", "IndNo", "Length", "CWT", "Otolith")
+head(washington.sport.dat.tdy)
+
+# Oregon
+oregon.sport.dat.tdy <- sport.dat.tdy %>% 
+  filter(RG.1 %in% c("NORCoast")) %>% 
+  arrange(RG.1, desc(prob.1))
+colnames(oregon.sport.dat.tdy) <- c("IND", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "CardNo", "IndNo", "Length", "CWT", "Otolith")
+head(oregon.sport.dat.tdy)
+
+# Columbia
+columbia.sport.dat.tdy <- sport.dat.tdy %>% 
+  filter(RG.1 %in% c("IntColSuFa")) %>% 
+  arrange(RG.1, desc(prob.1))
+colnames(columbia.sport.dat.tdy) <- c("IND", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "CardNo", "IndNo", "Length", "CWT", "Otolith")
+head(columbia.sport.dat.tdy)
+
+# Alaska
+alaska.sport.dat.tdy <- sport.dat.tdy %>% 
+  filter(RG.1 %in% c("SSEAK")) %>% 
+  arrange(RG.1, desc(prob.1))
+colnames(alaska.sport.dat.tdy) <- c("IND", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "CardNo", "IndNo", "Length", "CWT", "Otolith")
+head(alaska.sport.dat.tdy)
+
+
+
+## Write out data for Anne
+# dir.create("Origins")
+write.csv(x = canada.sport.dat.tdy, file = "Origins/Sport_2017Scales_toread.csv", row.names = FALSE)
+
+require(xlsx)
+write.xlsx(x = as.data.frame(canada.sport.dat.tdy), file = "Origins/Sport_2017Scales_toread.xlsx", sheetName = "Canada", row.names = FALSE, append = TRUE)
+write.xlsx(x = as.data.frame(washington.sport.dat.tdy), file = "Origins/Sport_2017Scales_toread.xlsx", sheetName = "Washington", row.names = FALSE, append = TRUE)
+write.xlsx(x = as.data.frame(oregon.sport.dat.tdy), file = "Origins/Sport_2017Scales_toread.xlsx", sheetName = "Oregon", row.names = FALSE, append = TRUE)
+write.xlsx(x = as.data.frame(columbia.sport.dat.tdy), file = "Origins/Sport_2017Scales_toread.xlsx", sheetName = "Columbia", row.names = FALSE, append = TRUE)
+write.xlsx(x = as.data.frame(alaska.sport.dat.tdy), file = "Origins/Sport_2017Scales_toread.xlsx", sheetName = "Alaska", row.names = FALSE, append = TRUE)
