@@ -4146,47 +4146,50 @@ head(sport.dat.tdy)
 str(sport.dat.tdy, max.level = 1)
 dput(x = sport.dat.tdy, file = "Objects/sport.dat.tdy.txt")
 
+
 ## Create individual sheets for different agencies
+sport_colnames <- c("IND", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "CardNo", "IndNo", "Length", "CWT", "Otolith")
+
 # Canada
 canada.sport.dat.tdy <- sport.dat.tdy %>% 
   filter(RG.1 %in% c("FraserEarly", "NorCentBC", "WCVI")) %>% 
   arrange(RG.1, desc(prob.1))
-colnames(canada.sport.dat.tdy) <- c("IND", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "CardNo", "IndNo", "Length", "CWT", "Otolith")
+colnames(canada.sport.dat.tdy) <- sport_colnames
 head(canada.sport.dat.tdy)
 
 # Washington
 washington.sport.dat.tdy <- sport.dat.tdy %>% 
   filter(RG.1 %in% c("WACoast")) %>% 
   arrange(RG.1, desc(prob.1))
-colnames(washington.sport.dat.tdy) <- c("IND", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "CardNo", "IndNo", "Length", "CWT", "Otolith")
+colnames(washington.sport.dat.tdy) <- sport_colnames
 head(washington.sport.dat.tdy)
 
 # Oregon
 oregon.sport.dat.tdy <- sport.dat.tdy %>% 
   filter(RG.1 %in% c("NORCoast")) %>% 
   arrange(RG.1, desc(prob.1))
-colnames(oregon.sport.dat.tdy) <- c("IND", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "CardNo", "IndNo", "Length", "CWT", "Otolith")
+colnames(oregon.sport.dat.tdy) <- sport_colnames
 head(oregon.sport.dat.tdy)
 
 # Columbia
 columbia.sport.dat.tdy <- sport.dat.tdy %>% 
   filter(RG.1 %in% c("IntColSuFa")) %>% 
   arrange(RG.1, desc(prob.1))
-colnames(columbia.sport.dat.tdy) <- c("IND", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "CardNo", "IndNo", "Length", "CWT", "Otolith")
+colnames(columbia.sport.dat.tdy) <- sport_colnames
 head(columbia.sport.dat.tdy)
 
 # Alaska
 alaska.sport.dat.tdy <- sport.dat.tdy %>% 
   filter(RG.1 %in% c("SSEAK")) %>% 
   arrange(RG.1, desc(prob.1))
-colnames(alaska.sport.dat.tdy) <- c("IND", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "CardNo", "IndNo", "Length", "CWT", "Otolith")
+colnames(alaska.sport.dat.tdy) <- sport_colnames
 head(alaska.sport.dat.tdy)
 
 
 
 ## Write out data for Anne
 # dir.create("Origins")
-write.csv(x = canada.sport.dat.tdy, file = "Origins/Sport_2017Scales_toread.csv", row.names = FALSE)
+# write.csv(x = canada.sport.dat.tdy, file = "Origins/Sport_2017Scales_toread.csv", row.names = FALSE)
 
 require(xlsx)
 write.xlsx(x = as.data.frame(canada.sport.dat.tdy), file = "Origins/Sport_2017Scales_toread.xlsx", sheetName = "Canada", row.names = FALSE, append = TRUE)
@@ -4194,3 +4197,117 @@ write.xlsx(x = as.data.frame(washington.sport.dat.tdy), file = "Origins/Sport_20
 write.xlsx(x = as.data.frame(oregon.sport.dat.tdy), file = "Origins/Sport_2017Scales_toread.xlsx", sheetName = "Oregon", row.names = FALSE, append = TRUE)
 write.xlsx(x = as.data.frame(columbia.sport.dat.tdy), file = "Origins/Sport_2017Scales_toread.xlsx", sheetName = "Columbia", row.names = FALSE, append = TRUE)
 write.xlsx(x = as.data.frame(alaska.sport.dat.tdy), file = "Origins/Sport_2017Scales_toread.xlsx", sheetName = "Alaska", row.names = FALSE, append = TRUE)
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Troll 2017 Scales for Origins ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Troll ASL data to join with Oncor Output
+troll_ASL.df <- read.csv(file = "Associated Data/All 2016-2017 Troll Harvest - Detailed ASL Samples.csv", stringsAsFactors = FALSE)
+str(troll_ASL.df)
+troll_ASL.df$Date <- as.Date(x = troll_ASL.df$Sample.Date, format = c("%m/%d/%Y"))
+
+troll_attributes <- c("Dna.Specimen.No", "Date", "Port.Code", "District", "Scale.Card.No", "Specimen.Number", "Length.Millimeters", "Cwt.Strap.Tag.No", "Adipose.Clipped.No.Signal")
+troll_attributes.df <- troll_ASL.df[, troll_attributes]
+str(troll_attributes.df)
+
+## Read in Oncor output
+rawtroll <- scan(file = "ONCOR/Output/Troll2017_21RG_out.txt", what = '', sep = '\n', blank.lines.skip = FALSE)
+skip = grep(pattern = "PROBABILITY OF EACH INDIVIDUAL IN THE MIXTURE BELONGING TO EACH REPORTING GROUP", x = rawtroll) + 1
+dat <- read.table(file = "ONCOR/Output/Troll2017_21RG_out.txt", header = TRUE, skip = skip)
+str(dat)
+# GroupNames21 <- colnames(dat)
+# dput(x = GroupNames21, file = "Objects/GroupNames21.txt")
+
+## Base answer
+# x <- t(apply(data.matrix(dat), 1, function(ind) {
+#   c(GroupNames21[which.max(ind)], max(ind))
+# } ))
+
+## Tidy answer
+require(dplyr)
+require(tidyr)
+
+# Add FishID as factor
+dat.mod <- dat
+dat.mod$FishID <- factor(x = rownames(dat.mod), levels = rownames(dat.mod))
+
+# 1st probability RG
+dat.tdy.1 <- dat.mod %>% 
+  gather(RG, prob, -FishID) %>% 
+  group_by(FishID) %>% 
+  slice(which.max(prob))
+head(dat.tdy.1)
+
+# 2nd probability RG
+dat.tdy.2 <- dat.mod %>% 
+  gather(RG, prob, -FishID) %>% 
+  group_by(FishID) %>% 
+  filter(rank(desc(prob)) == 2) %>% 
+  arrange(FishID)
+head(dat.tdy.2)
+
+# Join 1st and 2nd probability RG with troll attributes
+troll.dat.tdy <- left_join(x = dat.tdy.1, y = dat.tdy.2, by = "FishID") %>% 
+  rename(RG.1 = RG.x, prob.1 = prob.x, RG.2 = RG.y, prob.2 = prob.y) %>% 
+  separate(col = FishID, into = c("SILLY", "ID"), sep = "_", remove = FALSE) %>% 
+  mutate(ID = as.numeric(ID)) %>% 
+  select(-SILLY) %>% 
+  filter(prob.1 >= 0.8) %>%
+  left_join(troll_attributes.df, by = c("ID" = "Dna.Specimen.No"))
+head(troll.dat.tdy)
+str(troll.dat.tdy, max.level = 1)
+dput(x = troll.dat.tdy, file = "Objects/troll.dat.tdy.txt")
+
+
+## Create individual sheets for different agencies
+troll_colnames <- c("IND", "Dna.Specimin.No", "Best Estimate", "Probability 1", "2nd Best Estimate", "Probability 2", "Date", "Port", "Quad/Dist", "CardNo", "IndNo", "Length", "CWT", "AdClipNoSignal")
+
+# Canada
+canada.troll.dat.tdy <- troll.dat.tdy %>% 
+  filter(RG.1 %in% c("FraserEarly", "NorCentBC", "WCVI")) %>% 
+  arrange(RG.1, desc(prob.1))
+colnames(canada.troll.dat.tdy) <- troll_colnames
+head(canada.troll.dat.tdy)
+
+# Washington
+washington.troll.dat.tdy <- troll.dat.tdy %>% 
+  filter(RG.1 %in% c("WACoast")) %>% 
+  arrange(RG.1, desc(prob.1))
+colnames(washington.troll.dat.tdy) <- troll_colnames
+head(washington.troll.dat.tdy)
+
+# Oregon
+oregon.troll.dat.tdy <- troll.dat.tdy %>% 
+  filter(RG.1 %in% c("NORCoast")) %>% 
+  arrange(RG.1, desc(prob.1))
+colnames(oregon.troll.dat.tdy) <- troll_colnames
+head(oregon.troll.dat.tdy)
+
+# Columbia
+columbia.troll.dat.tdy <- troll.dat.tdy %>% 
+  filter(RG.1 %in% c("IntColSuFa")) %>% 
+  arrange(RG.1, desc(prob.1))
+colnames(columbia.troll.dat.tdy) <- troll_colnames
+head(columbia.troll.dat.tdy)
+
+# Alaska
+alaska.troll.dat.tdy <- troll.dat.tdy %>% 
+  filter(RG.1 %in% c("SSEAK")) %>% 
+  arrange(RG.1, desc(prob.1))
+colnames(alaska.troll.dat.tdy) <- troll_colnames
+head(alaska.troll.dat.tdy)
+
+
+
+## Write out data for Anne
+# dir.create("Origins")
+# write.csv(x = canada.troll.dat.tdy, file = "Origins/Troll_2017Scales_toread.csv", row.names = FALSE)
+
+require(xlsx)
+write.xlsx(x = as.data.frame(canada.troll.dat.tdy), file = "Origins/Troll_2017Scales_toread.xlsx", sheetName = "Canada", row.names = FALSE, append = TRUE)
+write.xlsx(x = as.data.frame(washington.troll.dat.tdy), file = "Origins/Troll_2017Scales_toread.xlsx", sheetName = "Washington", row.names = FALSE, append = TRUE)
+write.xlsx(x = as.data.frame(oregon.troll.dat.tdy), file = "Origins/Troll_2017Scales_toread.xlsx", sheetName = "Oregon", row.names = FALSE, append = TRUE)
+write.xlsx(x = as.data.frame(columbia.troll.dat.tdy), file = "Origins/Troll_2017Scales_toread.xlsx", sheetName = "Columbia", row.names = FALSE, append = TRUE)
+write.xlsx(x = as.data.frame(alaska.troll.dat.tdy), file = "Origins/Troll_2017Scales_toread.xlsx", sheetName = "Alaska", row.names = FALSE, append = TRUE)
