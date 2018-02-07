@@ -4311,3 +4311,100 @@ write.xlsx(x = as.data.frame(washington.troll.dat.tdy), file = "Origins/Troll_20
 write.xlsx(x = as.data.frame(oregon.troll.dat.tdy), file = "Origins/Troll_2017Scales_toread.xlsx", sheetName = "Oregon", row.names = FALSE, append = TRUE)
 write.xlsx(x = as.data.frame(columbia.troll.dat.tdy), file = "Origins/Troll_2017Scales_toread.xlsx", sheetName = "Columbia", row.names = FALSE, append = TRUE)
 write.xlsx(x = as.data.frame(alaska.troll.dat.tdy), file = "Origins/Troll_2017Scales_toread.xlsx", sheetName = "Alaska", row.names = FALSE, append = TRUE)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#### Confirm All Year Troll Sample Sizes ####
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# 2017
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
+mixtures <- c(EWint_Mixtures,
+              LWint_Mixtures,
+              SpringRet1_Mixtures,
+              SpringRet2_Mixtures, 
+              SummerRet1_Mixtures)
+sum(sapply(mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix, ".mix")))[1]} ))
+
+All2017_Strata_SampleSizes <- rbind(K119_K120_Strata_SampleSizes, K123_Strata_SampleSizes)
+dput(x = All2017_Strata_SampleSizes, file = "Objects/All2017_Strata_SampleSizes.txt")
+
+# 2016
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK16")
+mixtures <- c("EWintNISISO_2016", "EWintNO_2016", "LWintNISISO_2016", "LWintNO_2016", 
+              "SpringNI_2016", "SpringNO_2016", "SpringSI_2016", "SpringSO_2016", 
+              "Summer1NI_2016", "Summer1NO_2016", "Summer1SI_2016", "Summer1SO_2016", 
+              "Summer2NI_2016", "Summer2NO_2016", "Summer2SI_2016", "Summer2SO_2016")
+sum(sapply(mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix, ".mix")))[1]} ))
+
+
+# 2015
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK15")
+mixtures <- c("EWintNISISO_2015", "EWintNO_2015", 
+              "LWintNISISO_2015", "LWintNO_2015", 
+              "SpringNI_2015", "SpringNO_2015", "SpringSI_2015", "SpringSO_2015", 
+              "SumRet1NISISO_2015", "SumRet1NO_2015")
+sum(sapply(mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix, ".mix")))[1]} ))
+
+
+# 2014
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK14")
+mixtures <- c("EWintNISISO.2014", "EWintNO.2014", 
+              "LWintNISISO.2014", "LWintNO.2014", 
+              "SpringNI.2014", "SpringNO.2014", "SpringSI.2014", "SpringSO.2014", 
+              "SumRet1NISISO.2014", "SumRet1NO.2014", 
+              "SumRet2NISISO.2014", "SumRet2NO.2014")
+sum(sapply(mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix, ".mix")))[1]} ))
+
+
+# 2013
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK13")
+mixtures <- c("EWintNISISO.2013", "EWintNO.2013", 
+              "LWintNISISO.2013", "LWintNO.2013", 
+              "SpringNI.2013", "SpringNO.2013", "SpringSI.2013", 
+              "SumRet1NISISO.2013", "SumRet1NO.2013")
+sum(sapply(mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix, ".mix")))[1]} ))
+
+
+# 2012
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK12")
+mixtures <- c("EWintNISISO.2012", "EWintNO.2012", 
+              "LWintNISISO.2012", "LWintNO.2012", 
+              "SpringNI.2012", "SpringNO.2012", "SpringSI.2012", 
+              "SumRet1NISISO.2012", "SumRet1NO.2012", 
+              "SumRet2NISISO.2012", "SumRet2NO.2012")
+sum(sapply(mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Mixture/", mix, ".mix")))[1]} ))
+
+
+# 2011
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK11")
+mixtures <- c("EarlyWinterNISISO", "EarlyWinterNO", 
+              "LateWinterNISISO", "LateWinterNO", 
+              "SpringNI", "SpringNO", "SpringSI", 
+              "SummerR1NISISO", "SummerR1NO", 
+              "SummerR2NISISO", "SummerR2NO")
+  sum(sapply(mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Troll/Mixture/", mix, ".mix")))[1]} ))
+
+
+# 2010
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK10")
+mixtures <- c("EarlyWinterNISISO.2010", "EarlyWinterNO.2010", 
+              "LateWinterNISISO.2010", "LateWinterNO.2010", 
+              "SpringNI.2010", "SpringNO.2010", "SpringSI.2010", 
+              "SummerR1NISISO.2010", "SummerR1NO.2010", 
+              "SummerR2NISISO.2010", "SummerR2NO.2010")
+  sum(sapply(mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Troll/Mixture/", mix, ".mix")))[1]} ))
+
+
+# 2009
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK09")
+mixtures <- c("EarlyWinterNISISO", "EarlyWinterNO", 
+              "LateWinterNISISO", "LateWinterNO", 
+              "SpringNI", "SpringNO", "SpringSI", 
+              "SummerR1NISISO", "SummerR1NO", 
+              "SummerR2NISISO", "SummerR2NO")
+sum(sapply(mixtures, function(mix) {dim(read.table(file = paste0("BAYES/Troll/Mixture/", mix, ".mix")))[1]} ))
+  
+sum(sapply(c("SumRet1NISI_2009", "SumRet1NOSO_2009", "SumRet2NISI_2009", "SumRet2NOSO_2009"), function(mix) {dim(read.table(file = paste0("BAYES/1_GAPS3.0/Mix/", mix, ".mix")))[1]} ),
+    sapply(mixtures[1:7], function(mix) {dim(read.table(file = paste0("BAYES/Troll/Mixture/", mix, ".mix")))[1]} )
+)
+  
