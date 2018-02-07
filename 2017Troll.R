@@ -2463,8 +2463,8 @@ dput(x = PBGWRNSport_2017.gcl, file = "Raw genotypes/OriginalCollections_Attribu
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 rm(list = ls(all = TRUE))
-# setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
-setwd("C:/Users/krshedd/Documents/R/SEAK17")
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
+# setwd("C:/Users/krshedd/Documents/R/SEAK17")
 # This sources all of the new GCL functions to this workspace
 source("C:/Users/krshedd/Documents/R/Functions.GCL.R")
 # source("H:\\Desktop\\R\\Functions.GCL.r")
@@ -2828,6 +2828,13 @@ CreateControlFile.GCL(sillyvec = SEAKPops357, loci = GAPSLoci_reordered, mixname
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Summarize BAYES 8RG ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sport_2017_33RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec33RG_357, groupnames = GroupNames33, maindir = "BAYES/Output", mixvec = Sport_Mixtures,
+                               prior = "", ext = "BOT", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+names(Sport_2017_33RG_EstimatesStats)
+dput(x = Sport_2017_33RG_EstimatesStats, file = "Estimates objects/Sport_2017_33RG_EstimatesStats.txt")
+Sport_2017_33RG_EstimatesStats <- dget("Estimates objects/Sport_2017_33RG_EstimatesStats.txt")
+
 Sport_2017_26RG_EstimatesStats <- 
   CustomCombineBAYESOutput.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output", mixvec = Sport_Mixtures,
                                prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
@@ -2908,6 +2915,14 @@ AllYearSport2017_18RG_StratifiedEstimatesStats <-
                           catchvec = c(13227, 2521, 3382, 20870, 12114),  newname = "Stratified_AllSport_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
 dput(AllYearSport2017_18RG_StratifiedEstimatesStats, "Estimates objects/AllYearSport2017_18RG_StratifiedEstimatesStats.txt")
 AllYearSport2017_18RG_StratifiedEstimatesStats <- dget("Estimates objects/AllYearSport2017_18RG_StratifiedEstimatesStats.txt")
+
+
+AllYearSport2017_33RG_StratifiedEstimatesStats <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec33RG_357, groupnames = GroupNames33, maindir = "BAYES/Output", ext = "BOT"
+                          mixvec = Sport_Mixtures[-c(1:2)], 
+                          catchvec = c(13227, 2521, 3382, 20870, 12114),  newname = "Stratified_AllSport_2017_90percentCI_33RG", nchains = 5, xlxs = TRUE)
+dput(AllYearSport2017_33RG_StratifiedEstimatesStats, "Estimates objects/AllYearSport2017_33RG_StratifiedEstimatesStats.txt")
+AllYearSport2017_33RG_StratifiedEstimatesStats <- dget("Estimates objects/AllYearSport2017_33RG_StratifiedEstimatesStats.txt")
 
 
 
