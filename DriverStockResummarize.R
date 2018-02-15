@@ -59,6 +59,13 @@ Sport_CRG_SIT_2012_26RG_Estimates <-
   CustomCombineBAYESOutput.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/Output/356 pop baseline", mixvec = c("CRGSport.2012", "SITSport.2012"),
                                prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
 
+## 2011
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK11")
+Sport_SIT_2011_26RG_Estimates <- 
+  CustomCombineBAYESOutput.GCL(groupvec = 1:26, groupnames = GroupNames26, maindir = "BAYES/SportSitka/Output/KSPOR11S_26RG/", mixvec = c("KSPOR11S"),
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+
+
 
 ## CRG and SIT specific mixtures only exist for 2012-2017
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,6 +75,7 @@ names(Sport_CRG_SIT_2012_2017_26RG_Estimates) <- gsub(pattern = "\\.", replaceme
 setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
 dput(x = Sport_CRG_SIT_2012_2017_26RG_Estimates, file = "Estimates objects/Sport_CRG_SIT_2012_2017_26RG_Estimates.txt")
 
+dput(x = Sport_SIT_2011_26RG_Estimates, file = "Estimates objects/Sport_SIT_2011_26RG_Estimates.txt")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### NO and SO Troll ####
