@@ -1,0 +1,71 @@
+---
+title: "GAPS 3.0 Chinook Baseline - rubias"
+author: "Kyle Shedd"
+date: "April 6, 2018"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, root.dir = "V:/Analysis/1_SEAK/Chinook/Baseline/GAPS3.0")
+```
+
+## Objectives
+
+Here I am testing Eric Anderson's new R package [rubias](https://github.com/eriqande/rubias#rubias-----genetic-stock-identification-gsi-in-the-tidyverse) on the GAPS 3.0 coastwide Chinook microsatellite baseline used in for Southeast Alaska fisheries for the Pacific Salmon Treaty. I will convert a `Genepop` file to our `.gcl` objects, then show how to convert our `.gcl` objects to `rubias` format, and demonstrate some of the built-in baseline testing capabilities.
+
+## Convert .gcl baseline to rubias
+
+First load `GCL` functions.
+
+```{r load gcl functions, results='hide'}
+source("C:/Users/krshedd/Documents/R/Functions.GCL.R")
+```
+
+Next load libraries, `LocusControl` and baseline objects (loci, groupvec, etc.).
+
+```{r load baseline objects}
+library(tidyverse)
+library(rubias)
+
+setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17/Objects")
+
+LocusControl <- dget(file = "LocusControl.txt")
+GAPSLoci <- dget(file = "GAPSLoci.txt")
+GAPSLoci_reordered <- dget(file = "GAPSLoci_reordered.txt")
+SEAKPops357 <- dget(file = "SEAKPops357.txt")
+GroupVec33RG_357 <- dget(file = "GroupVec33RG_357.txt")
+GroupNames33 <- dget(file = "GroupNames33.txt")
+# Colors15 <- dget(file = "Objects/Colors15.txt")
+```
+
+Unfortunately, `GenepopTOgcl.GCL` does not work for whatever reason. I will have to load the Genepop file manually to convert directly to `rubias` format.
+
+```{r import genepop}
+GAPSxGOA13loci_2.gen <- scan(file = "Associated Data/GAPS3xGOA13loci_2.gen", what = "", sep = "\n")
+pop.index <- grep(pattern = "Pop", x = GAPSxGOA13loci_2.gen, ignore.case = FALSE)
+all.equal(GAPSxGOA13loci_2.gen[2:(pop.index[1] - 1)], GAPSLoci)  # verify GAPSLoci is correct order of Genepop file
+genotypes.chr <- GAPSxGOA13loci_2.gen[-c(1:(pop.index[1] - 1), pop.index)]  # get rid of header, loci, and "Pop" rows
+genotypes.chr_split1 <- str_split(string = genotypes.chr, pattern = "  ,   ", simplify = TRUE)  # split to get indiv and genotypes in two separate columns
+collection <- str_split(string = genotypes.chr_split1[, 1], pattern = "\\.", simplify = TRUE)[, 1]  # split to get collection column
+indiv <- genotypes.chr_split1[, 1]  # indiv column
+genotypes.mat <- str_split(string = genotypes.chr_split1[, 2], pattern = "  ", simplify = TRUE)
+
+str(apply(genotypes.mat, 2, function(locus) {cbind(str_sub(string = locus, start = 1, end = 3),
+                                                   str_sub(string = locus, start = 4, end = 6))}))
+
+str(str_sub(string = genotypes.mat, start = 1, end = 3))
+
+```
+
+
+Next load the function `create_rubias_baseline` to create a tidy dataframe of the baseline in [`rubias` format](https://github.com/eriqande/rubias#input-data). One individual per row, with the first four columns required, then genotypes in a two column format. **Note** that the `rubias` specific GCL functions are currently only on the [develop](https://github.com/krshedd/GCL-R-Scripts/tree/develop) branch of the GCL-R-Scripts repository on <github.com>.
+
+
+```{r convert baseline to rubias}
+source("C:/Users/krshedd/Documents/R/GCL-R-Scripts/create_rubias_baseline.R")
+kma_473pops_89loci_15groups.rubias_base <- create_rubias_baseline(sillyvec = KMA473Pops, loci = loci89, group_names = Groups15, groupvec = KMA473PopsGroupVec15)
+str(kma_473pops_89loci_15groups.rubias_base, max.level = 0)
+head(kma_473pops_89loci_15groups.rubias_base[, 1:10])
+```
