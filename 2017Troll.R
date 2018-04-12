@@ -4130,12 +4130,11 @@ dput(x = GroupNames21, file = "Objects/GroupNames21.txt")
 # } ))
 
 ## Tidy answer
-require(dplyr)
-require(tidyr)
+library(tidyverse)
 
 # Add FishID as factor
-dat.mod <- dat
-dat.mod$FishID <- factor(x = rownames(dat.mod), levels = rownames(dat.mod))
+dat.mod <- dat %>% 
+  mutate(FishID = factor(x = rownames(dat), levels = rownames(dat)))
 
 # 1st probability RG
 dat.tdy.1 <- dat.mod %>% 
@@ -4152,11 +4151,13 @@ dat.tdy.2 <- dat.mod %>%
   arrange(FishID)
 head(dat.tdy.2)
 
-# Join 1st and 2nd probability RG with sport attributes
+# Join 1st and 2nd probability RG with sport attributes and filter for only outside caught fish (Sitka and Craig) that have an otolith number
 sport.dat.tdy <- left_join(x = dat.tdy.1, y = dat.tdy.2, by = "FishID") %>% 
   rename(RG.1 = RG.x, prob.1 = prob.x, RG.2 = RG.y, prob.2 = prob.y) %>% 
   filter(prob.1 >= 0.8) %>%
-  left_join(sport_attributes.df, by = c("FishID" = "SillySource"))
+  left_join(sport_attributes.df, by = c("FishID" = "SillySource")) %>% 
+  # filter(SITE %in% c("CRAIG_KLAWOCK", "SITKA")) %>%  # only filter for Craig and Sitka fish?
+  filter(OTOLIT != ".")  # filter for only fish with otolith number
 head(sport.dat.tdy)
 str(sport.dat.tdy, max.level = 1)
 dput(x = sport.dat.tdy, file = "Objects/sport.dat.tdy.txt")
@@ -4241,12 +4242,11 @@ str(dat)
 # } ))
 
 ## Tidy answer
-require(dplyr)
-require(tidyr)
+library(tidyverse)
 
 # Add FishID as factor
-dat.mod <- dat
-dat.mod$FishID <- factor(x = rownames(dat.mod), levels = rownames(dat.mod))
+dat.mod <- dat %>% 
+  mutate(FishID = factor(x = rownames(dat), levels = rownames(dat)))
 
 # 1st probability RG
 dat.tdy.1 <- dat.mod %>% 
@@ -4268,6 +4268,7 @@ troll.dat.tdy <- left_join(x = dat.tdy.1, y = dat.tdy.2, by = "FishID") %>%
   rename(RG.1 = RG.x, prob.1 = prob.x, RG.2 = RG.y, prob.2 = prob.y) %>% 
   separate(col = FishID, into = c("SILLY", "ID"), sep = "_", remove = FALSE) %>% 
   mutate(ID = as.numeric(ID)) %>% 
+  # filter(SILLY == KTROL17SU) %>%  # only filter for summer troll?
   select(-SILLY) %>% 
   filter(prob.1 >= 0.8) %>%
   left_join(troll_attributes.df, by = c("ID" = "Dna.Specimen.No"))
