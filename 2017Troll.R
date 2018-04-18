@@ -4219,6 +4219,8 @@ write.xlsx(x = as.data.frame(alaska.sport.dat.tdy), file = "Origins/Sport_2017Sc
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Troll 2017 Scales for Origins ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Need troll data for Winter, Spring, and Summer
+
 ## Troll ASL data to join with Oncor Output
 troll_ASL.df <- read.csv(file = "Associated Data/All 2016-2017 Troll Harvest - Detailed ASL Samples.csv", stringsAsFactors = FALSE)
 str(troll_ASL.df)
@@ -4268,7 +4270,6 @@ troll.dat.tdy <- left_join(x = dat.tdy.1, y = dat.tdy.2, by = "FishID") %>%
   rename(RG.1 = RG.x, prob.1 = prob.x, RG.2 = RG.y, prob.2 = prob.y) %>% 
   separate(col = FishID, into = c("SILLY", "ID"), sep = "_", remove = FALSE) %>% 
   mutate(ID = as.numeric(ID)) %>% 
-  # filter(SILLY == KTROL17SU) %>%  # only filter for summer troll?
   select(-SILLY) %>% 
   filter(prob.1 >= 0.8) %>%
   left_join(troll_attributes.df, by = c("ID" = "Dna.Specimen.No"))
