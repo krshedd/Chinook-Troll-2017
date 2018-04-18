@@ -2,12 +2,7 @@ setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17/")
 rm(list = ls())
 
 require(xlsx)
-require(reshape2)
-require(dplyr)
-require(tidyr)
-require(ggplot2)
-require(readr)
-
+library(tidyverse)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #### Harvest Data ####
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
