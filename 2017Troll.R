@@ -1801,7 +1801,7 @@ write.table(x = cbind(t(TBR_2017_5RG_EstimatesStats$D108Gill_2017[GroupNames5, c
 ), file = 'clipboard', row.names = FALSE, col.names = FALSE, sep = "\t")
 
 # D111Gill
-write.table(x = cbind(t(TBR_2017_2RG_EstimatesStats$D108Gill_2017[GroupNames2, c("mean", "sd", "5%", "95%")])
+write.table(x = cbind(t(TBR_2017_2RG_EstimatesStats$D111Gill_2017[GroupNames2, c("mean", "sd", "5%", "95%")])
 ), file = 'clipboard', row.names = FALSE, col.names = FALSE, sep = "\t")
 
 # D108Sport
@@ -2624,6 +2624,11 @@ SummerRet1_2017_8RG_EstimatesStats <-
                                prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
 dput(x = SummerRet1_2017_8RG_EstimatesStats, file = "Estimates objects/SummerRet1_2017_8RG_EstimatesStats.txt")
 
+SummerRet1_2017_18RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", mixvec = SummerRet1_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+dput(x = SummerRet1_2017_18RG_EstimatesStats, file = "Estimates objects/SummerRet1_2017_18RG_EstimatesStats.txt")
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Dput EstimatesStats
 # dir.create("Estimates objects")
@@ -2649,6 +2654,12 @@ SummerRet1_2017_8RG_StratifiedEstimates <-
                           mixvec = SummerRet1_Mixtures, catchvec = c(10020, 40721, 4037, 9551), 
                           newname = "Stratified_SummerRet1_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 dput(x = SummerRet1_2017_8RG_StratifiedEstimates, file = "Estimates objects/SummerRet1_2017_8RG_StratifiedEstimates.txt")
+
+SummerRet1_2017_18RG_StratifiedEstimates <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = SummerRet1_Mixtures, catchvec = c(10020, 40721, 4037, 9551), 
+                          newname = "Stratified_SummerRet1_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
+dput(x = SummerRet1_2017_18RG_StratifiedEstimates, file = "Estimates objects/SummerRet1_2017_18RG_StratifiedEstimates.txt")
 
 AllTrollnoSummer_2017_8RG_StratifiedEstimates <- 
   StratifiedEstimator.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", 
@@ -2712,7 +2723,7 @@ rm(list = ls(all = TRUE))
 setwd("V:/Analysis/1_SEAK/Chinook/Mixture/SEAK17")
 # This sources all of the new GCL functions to this workspace
 source("H:\\Desktop\\R\\Functions.GCL.r")
-
+source("~/../R/Functions.GCL.R")
 
 ## Get objects
 SEAKobjects <- list.files(path = "Objects", recursive = FALSE)
@@ -2847,6 +2858,11 @@ Sport_2017_8RG_EstimatesStats <-
   CustomCombineBAYESOutput.GCL(groupvec = GroupVec8, groupnames = GroupNames8, maindir = "BAYES/Output", mixvec = Sport_Mixtures,
                                prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
 
+Sport_2017_18RG_EstimatesStats <- 
+  CustomCombineBAYESOutput.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", mixvec = Sport_Mixtures,
+                               prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
+dput(x = Sport_2017_18RG_EstimatesStats, file = "Estimates objects/Sport_2017_18RG_EstimatesStats.txt")
+
 Sport_2017_4RG_EstimatesStats <- 
   CustomCombineBAYESOutput.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", mixvec = Sport_Mixtures,
                                prior = "", ext = "RGN", nchains = 5, burn = 0.5, alpha = 0.1, PosteriorOutput = FALSE)
@@ -2889,6 +2905,12 @@ OutsideSport_2017_8RG_StratifiedEstimatesStats <-
                           catchvec = c(20870, 12114),  newname = "Stratified_OutsideSport_2017_90percentCI_8RG", nchains = 5, xlxs = TRUE)
 dput(OutsideSport_2017_8RG_StratifiedEstimatesStats, "Estimates objects/OutsideSport_2017_8RG_StratifiedEstimatesStats.txt")
 OutsideSport_2017_8RG_StratifiedEstimatesStats <- dget("Estimates objects/OutsideSport_2017_8RG_StratifiedEstimatesStats.txt")
+
+OutsideSport_2017_18RG_StratifiedEstimatesStats <- 
+  StratifiedEstimator.GCL(groupvec = GroupVec18, groupnames = GroupNames18, maindir = "BAYES/Output", 
+                          mixvec = Sport_Mixtures[6:7], 
+                          catchvec = c(20870, 12114),  newname = "Stratified_OutsideSport_2017_90percentCI_18RG", nchains = 5, xlxs = TRUE)
+dput(OutsideSport_2017_18RG_StratifiedEstimatesStats, "Estimates objects/OutsideSport_2017_18RG_StratifiedEstimatesStats.txt")
 
 OutsideSport_2017_4RG_StratifiedEstimatesStats <- 
   StratifiedEstimator.GCL(groupvec = GroupVec4, groupnames = GroupNames4, maindir = "BAYES/Output", 
@@ -3882,19 +3904,22 @@ TrollMixtures <- list("EWintAllQuad_2017" = EWint_Mixtures,
                       "EWintNO_2017" = EWint_Mixtures[1],
                       "LWintAllQuad_2017" = LWint_Mixtures,
                       "LWintNO_2017" = LWint_Mixtures[1],
+                      "SpringAllQuad_2017" = c(SpringRet1_Mixtures, SpringRet2_Mixtures),
                       "SpringNO_2017" = c(SpringRet1_Mixtures[2], SpringRet2_Mixtures[2]),
                       "SpringNI_2017" = c(SpringRet1_Mixtures[1], SpringRet2_Mixtures[1]),
                       "SpringSO_2017" = c(SpringRet1_Mixtures[4], SpringRet2_Mixtures[4]),
                       "SpringSI_2017" = c(SpringRet1_Mixtures[3], SpringRet2_Mixtures[3]),
                       "SummerRet1AllQuad_2017" = SummerRet1_Mixtures,
-                      "SummerRet1NO_2017" = SummerRet1_Mixtures[2])
+                      "SummerRet1NO_2017" = SummerRet1_Mixtures[2],
+                      "AllYearTroll_2017" = c(EWint_Mixtures, LWint_Mixtures, SpringRet1_Mixtures, SpringRet2_Mixtures, SummerRet1_Mixtures))
 
 SportMixtures <- list("KTNSport_2017" = Sport_Mixtures[3],
                       "PBGWRNSport_2017" = Sport_Mixtures[4],
                       "InsideSport_2017" = Sport_Mixtures[5],
                       "OutsideSport_2017" = Sport_Mixtures[6:7],
                       "OutsidePer1Sport_2017" = Sport_Mixtures[6],
-                      "OutsidePer2Sport_2017" = Sport_Mixtures[7])
+                      "OutsidePer2Sport_2017" = Sport_Mixtures[7],
+                      "AllYearSport_2017" = Sport_Mixtures[3:7])
 
 TrollSampleSizes <- sapply(TrollMixtures, function(mix) {sum(FinalSampleSizes[mix])})
 SportSampleSizes <- sapply(SportMixtures, function(mix) {sum(FinalSampleSizes[mix])})
@@ -3924,17 +3949,30 @@ Troll2017_8RG_EstimatesStats_Report <-
        "EWintNO_2017" = EWint_2017_8RG_EstimatesStats$EWintNO_2017,
        "LWintAllQuad_2017" = LWint_2017_8RG_StratifiedEstimatesStats,
        "LWintNO_2017" = LWint_2017_8RG_EstimatesStats$LWintNO_2017,
+       "SpringAllQuad_2017" = Spring_2017_8RG_StratifiedEstimatesStats,
        "SpringNO_2017" = SpringNO_2017_8RG_StratifiedEstimatesStats,
        "SpringSI_2017" = SpringSI_2017_8RG_StratifiedEstimatesStats,
        "SummerRet1AllQuad_2017" = SummerRet1_2017_8RG_StratifiedEstimates,
-       "SummerRet1NO_2017" = SummerRet1_2017_8RG_EstimatesStats$SummerRet1NO_2017)
+       "SummerRet1NO_2017" = SummerRet1_2017_8RG_EstimatesStats$SummerRet1NO_2017,
+       "AllYearTroll_2017" = AllYearTroll2017_8RG_StratifiedEstimatesStats)
 
+Troll2017_18RG_EstimatesStats_Report <- 
+  list("EWintAllQuad_2017" = EWint_2017_18RG_StratifiedEstimatesStats,
+       "EWintNO_2017" = EWint_2017_18RG_EstimatesStats$EWintNO_2017,
+       "LWintAllQuad_2017" = LWint_2017_18RG_StratifiedEstimatesStats,
+       "LWintNO_2017" = LWint_2017_18RG_EstimatesStats$LWintNO_2017,
+       "SpringAllQuad_2017" = Spring_2017_18RG_StratifiedEstimatesStats,
+       "SpringNO_2017" = SpringNO_2017_18RG_StratifiedEstimatesStats,
+       "SpringSI_2017" = SpringSI_2017_18RG_StratifiedEstimatesStats,
+       "SummerRet1AllQuad_2017" = SummerRet1_2017_18RG_StratifiedEstimates,
+       "SummerRet1NO_2017" = SummerRet1_2017_18RG_EstimatesStats$SummerRet1NO_2017)
 
 Troll2017_26RG_EstimatesStats_Report <- 
   list("EWintAllQuad_2017" = EWint_2017_26RG_StratifiedEstimatesStats,
        "EWintNO_2017" = EWint_2017_26RG_EstimatesStats$EWintNO_2017,
        "LWintAllQuad_2017" = LWint_2017_26RG_StratifiedEstimatesStats,
        "LWintNO_2017" = LWint_2017_26RG_EstimatesStats$LWintNO_2017,
+       "SpringAllQuad_2017" = Spring_2017_26RG_StratifiedEstimatesStats,
        "SpringNO_2017" = SpringNO_2017_26RG_StratifiedEstimatesStats,
        "SpringSI_2017" = SpringSI_2017_26RG_StratifiedEstimatesStats,
        "SummerRet1AllQuad_2017" = SummerRet1_2017_26RG_StratifiedEstimates,
@@ -3950,7 +3988,13 @@ Sport2017_4RG_EstimatesStats_Report <-
 Sport2017_8RG_EstimatesStats_Report <- 
   c(Sport_2017_8RG_EstimatesStats[3:5],
     list("OutsideSport_2017" = OutsideSport_2017_8RG_StratifiedEstimatesStats),
-    Sport_2017_8RG_EstimatesStats[6:7])
+    Sport_2017_8RG_EstimatesStats[6:7],
+    list("AllYearSport_2017" = AllYearSport2017_8RG_StratifiedEstimatesStats))
+
+Sport2017_18RG_EstimatesStats_Report <- 
+  c(Sport_2017_18RG_EstimatesStats[3:5],
+    list("OutsideSport_2017" = OutsideSport_2017_18RG_StratifiedEstimatesStats),
+    Sport_2017_18RG_EstimatesStats[6:7])
 
 Sport2017_26RG_EstimatesStats_Report <- 
   c(Sport_2017_26RG_EstimatesStats[3:5],
@@ -3963,16 +4007,26 @@ TrollMixPub2017 <- setNames(object = c("Early Winter All Quadrants",
                                        "Early Winter Northern Outside Quadrant",
                                        "Late Winter All Quadrants",
                                        "Late Winter Northern Outside Quadrant",
+                                       "Spring All Quadrants",
                                        "Spring Northern Outside Quadrant",
                                        "Spring Northern Inside Quadrant",
                                        "Spring Southern Outside Quadrant",
                                        "Spring Southern Inside Quadrant",
                                        "Summer Retention 1 All Quadrants",
-                                       "Summer Retention 1 Northern Outside Quadrant"), 
+                                       "Summer Retention 1 Northern Outside Quadrant",
+                                       "AY 2017 Annual"), 
                             nm = names(TrollMixtures))
 
-SportMixPub2017 <- setNames(object = c("Ketchikan", "Petersburg-Wrangell", "Northern Inside", "Outside All Year", "Outside Biweek 9-13", "Outside Biweek 14-18"), 
-                            nm = names(SportMixtures))
+SportMixPub2017 <-  setNames(
+  object = c("Ketchikan",
+             "Petersburg-Wrangell",
+             "Northern Inside",
+             "Outside All Year",
+             "Outside Biweek 9-13",
+             "Outside Biweek 14-18",
+             "AY 2017 Annual"),
+  nm = names(SportMixtures)
+)
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4016,6 +4070,18 @@ table_format.f(EstimatesStats = Sport2017_26RG_EstimatesStats_Report,
                PubNames = SportMixPub2017, 
                filename = "Sport2017_26RG_StratifiedEstimatesStats_FormattedPretty", 
                sheetname = "Sport 26RG")
+
+table_format.f(EstimatesStats = Troll2017_18RG_EstimatesStats_Report, 
+               SampSizes = AllSampleSizes, 
+               PubNames = TrollMixPub2017, 
+               filename = "Troll2017_18RG_StratifiedEstimatesStats_FormattedPretty", 
+               sheetname = "Troll 18RG")
+
+table_format.f(EstimatesStats = Sport2017_18RG_EstimatesStats_Report, 
+               SampSizes = AllSampleSizes, 
+               PubNames = SportMixPub2017, 
+               filename = "Sport2017_18RG_StratifiedEstimatesStats_FormattedPretty", 
+               sheetname = "Sport 18RG")
 
 table_format.f(EstimatesStats = Troll2017_8RG_EstimatesStats_Report, 
                SampSizes = AllSampleSizes, 
