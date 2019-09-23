@@ -3924,7 +3924,8 @@ SportMixtures <- list("KTNSport_2017" = Sport_Mixtures[3],
 TrollSampleSizes <- sapply(TrollMixtures, function(mix) {sum(FinalSampleSizes[mix])})
 SportSampleSizes <- sapply(SportMixtures, function(mix) {sum(FinalSampleSizes[mix])})
 AllSampleSizes <- c(TrollSampleSizes, SportSampleSizes)
-
+write_csv(x = tibble(strata = names(AllSampleSizes), n = AllSampleSizes),
+          path = "Estimates tables/Troll_Sport_SampleSizes_2017.csv")
 
 ## Get objects
 SEAKobjects <- list.files(path = "Estimates objects", pattern = "2017", recursive = FALSE)
